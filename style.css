@@ -10,7 +10,7 @@ button:disabled{opacity:.4;cursor:default}button:active{transform:translateY(1px
 .turn-status{display:flex;align-items:center;gap:7px;white-space:nowrap}.turn-status b{font-size:15px;letter-spacing:.03em}.turn-status span{font-size:12px;color:#e5d09c;padding-left:7px;border-left:1px solid #76816d}
 #battleHeader .mission-link{margin-left:auto;border:0;background:transparent;color:#d2d8c8;font-size:11px;line-height:1.5;padding:4px 6px;white-space:nowrap}
 #menuBtn{border-color:#718173;color:#f5ecd5;font-size:12px;padding:7px 9px}
-#forecast{flex:none;background:#f5e2c6;border-bottom:1px solid #b58f64;color:#8c3e34;padding:6px 10px;font-size:12px;font-weight:650;line-height:1.55}
+#forecast{position:absolute;z-index:5;top:0;left:0;right:0;max-height:72px;overflow:auto;background:#f5e2c6;border-bottom:1px solid #b58f64;color:#8c3e34;padding:6px 10px;font-size:12px;font-weight:650;line-height:1.55}
 h2{font:700 23px Georgia,'Yu Mincho',serif;margin:5px 0 14px}h3{font-size:15px;margin:16px 0 7px}p{font-size:13px;line-height:1.8;margin:9px 0}
 .map-wrap{position:relative;flex:1;min-height:80px;background:#203634;border-bottom:2px solid #baaa7a;overflow:hidden}
 #mapViewport{width:100%;height:100%;overflow:auto;touch-action:pan-x pan-y pinch-zoom;scrollbar-width:thin;scrollbar-color:#91a085 #263f36;overscroll-behavior:contain;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -20,9 +20,19 @@ h2{font:700 23px Georgia,'Yu Mincho',serif;margin:5px 0 14px}h3{font-size:15px;m
 .map-tools button{padding:5px 8px;font-size:12px;border-color:#a1a483;background:#e8e5cf}.map-tools span{font-size:10px;min-width:24px;text-align:center}
 button[aria-pressed=true]{background:#954449;color:white}
 #phaseFlash{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);background:#172d2ef2;color:#ead598;white-space:nowrap;font:22px Georgia,serif;letter-spacing:.12em;border-block:1px solid #b8a16e;padding:14px 28px;pointer-events:none;opacity:0;transition:opacity .1s}#phaseFlash.visible{opacity:1}
-#orders{flex:none;background:var(--paper);overflow:hidden;padding:7px 10px}
+/* Overlay windows do not participate in battlefield layout or scroll anchoring. */
+#orders{position:absolute;z-index:3;left:8px;right:8px;width:calc(100% - 16px);max-width:360px;background:#f3edddf5;border:2px solid #e5d3a3;outline:1px solid #314e53;box-shadow:0 3px 0 #152b3b88,0 5px 12px #102a3255;border-radius:3px;overflow:hidden;padding:7px 8px}
+#orders[data-side=right]{left:auto}
+#orders[data-dock=top]{top:8px}
+#orders[data-dock=bottom]{bottom:64px}
+.map-wrap:has(#forecast:not([hidden])) #orders[data-dock=top]{top:76px}
+#mapViewport{overflow-anchor:none;scrollbar-gutter:stable}
+#orders.idle{bottom:64px;top:auto;border:0;outline:0;box-shadow:none;background:#173535d9;pointer-events:none;color:#fff5d5;max-width:max-content}
+#orders.idle .idle-tip{color:inherit}
+#orders.result{top:8px;bottom:auto}
+
 #orders.idle{height:36px;display:flex;align-items:center}.idle-tip{font-size:11px;color:#697360}
-#orders.selected{height:210px;display:grid;grid-template-rows:44px 44px minmax(0,1fr) 44px;gap:4px}
+#orders.selected{height:204px;display:grid;grid-template-rows:44px 44px minmax(0,1fr) 44px;gap:4px}
 #orders.result{min-height:110px;max-height:200px;overflow:auto}.result-title{font:700 20px Georgia,'Yu Mincho',serif}.result-title small{font:11px system-ui}
 .unit-head{display:flex;gap:6px;align-items:center;min-width:0}.unit-name{flex:1;min-width:0}.unit-name strong{font:700 18px Georgia,'Yu Mincho',serif;display:block}.unit-name small{font-size:10px;color:#687463;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
 .unit-head button{padding:5px 6px;font-size:11px}.hp{font-weight:750;color:#285f61;font-size:17px;white-space:nowrap}.hp small{font-size:11px;color:#687463}
@@ -40,7 +50,20 @@ label{font-size:12px;display:flex;gap:6px;flex-direction:column;min-width:0}sele
 #modalBody .log-line{font:11px/1.7 ui-monospace,monospace;padding:4px 0;border-bottom:1px solid #e0d8c5}details{font-size:12px;line-height:1.8;border-top:1px solid #d7ccb4;margin-top:10px}summary{font-weight:700;cursor:pointer;min-height:44px;padding:11px 0}a{color:#2b6e79}#rosterList button{width:100%;text-align:left}.focus-select{margin-top:10px}.eyebrow{font-size:10px;letter-spacing:.12em;color:#697360}
 @media(min-width:700px){#app{border-inline:1px solid #897950}}
 @media(max-width:340px){#battleHeader{gap:5px;padding-inline:6px}.turn-status{gap:4px}#battleHeader .mission-link{font-size:10px;padding-inline:3px}#orders{padding-inline:7px}.unit-head{gap:4px}}
-@media(max-height:500px){#orders.selected{height:180px}#battleHeader{height:48px}#orders.idle{height:30px}dialog{max-height:94svh}}
+@media(max-height:500px){#orders.selected{height:204px;max-width:340px}#battleHeader{height:48px}#orders.idle{height:30px}dialog{max-height:94svh}}
 @media(prefers-reduced-motion:reduce){#phaseFlash{transition:none}}
 
 #orders.selected.readonly{height:116px;grid-template-rows:44px minmax(0,1fr)}
+
+/* On short screens the command window shares the map sideways with the tools. */
+@media(max-height:500px){
+ #orders.selected[data-dock]{top:8px;bottom:auto}
+ .map-wrap:has(#forecast:not([hidden])) #orders.selected[data-dock]{top:76px;height:196px;grid-template-rows:44px 44px minmax(0,1fr) 44px}
+ .map-wrap:has(#orders.selected) .map-tools{max-width:calc(100% - 354px);flex-wrap:wrap}
+ .map-wrap:has(#orders.selected[data-side=left]) .map-tools{left:auto;right:7px}
+}
+#orders.selected.choosing{height:100px;grid-template-rows:44px minmax(0,1fr)}
+#orders.choosing .command-row,#orders.choosing .confirm-row{display:none}
+#orders .unit-name strong{font-size:16px}
+#orders .unit-head{gap:4px}
+#orders .unit-head button{padding-inline:5px}

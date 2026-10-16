@@ -18,10 +18,10 @@ async function point(p){return page.evaluate(p=>{const c=document.querySelector(
 async function tap(p){const at=await point(p);await page.touchscreen.tap(at.x,at.y);}
 try{
  await page.goto(base+'/?debug=1');await page.waitForSelector('#maps');await page.locator('#maps .map-card').first().getByRole('button').click();
- await page.screenshot({path:'test-results/mobile-idle-0.1.1.png'});
+ await page.screenshot({path:'test-results/mobile-idle-0.1.2.png'});
  await select('a1');await tap({x:5,y:14});assert((await page.locator('#actionPreview').textContent()).includes('(6, 15)'));
  assert.equal((await state()).units.find(u=>u.id==='a1').y,16);
- await page.getByRole('button',{name:'取消',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('その場'));
+ await page.getByRole('button',{name:'取消',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('移動先をタップ'));
  await page.getByRole('button',{name:'解除',exact:true}).click();assert(await page.locator('#orders.idle').count());
  await select('a1');await tap({x:5,y:16});assert(await page.locator('#orders.idle').count(),'same-unit tap deselects');
  results.push('preview, cancel and deselect');
@@ -36,7 +36,7 @@ try{
  const camera=()=>page.evaluate(()=>{const v=document.querySelector('#mapViewport'),t=document.querySelector('#battlefield').getBoundingClientRect().width/window.srpgDebug.snapshot().map.w;return {x:(v.scrollLeft+v.clientWidth/2)/t,y:(v.scrollTop+v.clientHeight/2)/t};});
  await point({x:5,y:10});const c0=await camera();await page.locator('#zoomIn').click();const c1=await camera();assert(Math.abs(c0.x-c1.x)<.12&&Math.abs(c0.y-c1.y)<.12,JSON.stringify({c0,c1}));
  await tap({x:5,y:14});await page.getByRole('button',{name:'守備 −1',exact:true}).click();
- await page.screenshot({path:'test-results/mobile-order-0.1.1.png'});
+ await page.screenshot({path:'test-results/mobile-order-0.1.2.png'});
  await page.locator('#confirmOrder').evaluate(e=>{e.click();e.click();});assert.equal((await state()).metrics.commands,1,'double confirm only one action');
  await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.equal((await state()).units.find(u=>u.id==='a1').y,14);
  results.push('zoom anchor, touch coordinates, double confirm and save');
@@ -45,7 +45,7 @@ try{
  await page.locator('#confirmOrder').click();const attacked=await state();assert.equal(attacked.units.find(u=>u.id==='e1').hp,11);assert.equal(attacked.units.find(u=>u.id==='a2').charges,1);results.push('burst target, preview and charge consumption');
  const healing=createGame(0);healing.units.find(u=>u.id==='a2').hp=5;await reset(healing);await select('a8');await tap({x:6,y:17});await page.getByRole('button',{name:'即時治癒',exact:true}).click();await tap({x:6,y:16});
  assert(await page.locator('#confirmOrder').isEnabled());await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='a2').hp,11);results.push('move then immediate heal');
- await reset(healing);await select('a5');await page.getByRole('button',{name:'待機祈祷',exact:true}).click();
+ await reset(healing);await select('a5');await page.getByRole('button',{name:'命令',exact:true}).click();await page.getByRole('button',{name:'待機祈祷',exact:true}).click();
  await page.getByRole('button',{name:'詳細',exact:true}).click();await page.getByRole('combobox',{name:'待機支援の優先対象'}).selectOption('a2');await page.getByRole('button',{name:'消費許可：ON',exact:true}).click();assert.equal((await state()).units.find(u=>u.id==='a5').spend,false);
  await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('温存'));await page.locator('#confirmOrder').click();results.push('support detail, priority, conservation and confirmation');
  await page.locator('#endTurn').click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).evaluate(e=>{e.click();e.click();});

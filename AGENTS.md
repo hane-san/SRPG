@@ -31,8 +31,10 @@ This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nag
 8. Explicitly confirm player commands before committing movement or attacks. Don't save partial playing phases; finished victory/defeat states may persist at their final phase.
 9. All tests/maps use one engine; keep settings independent (casual is not an enemy difficulty).
 
+10. Battlefield geometry and scroll offsets must stay identical through selection, command/menu/details open-close, cancel, commit and warning appearance. Windows overlay the map. Only explicit navigation, zoom and resize may adjust the camera. Keep the 44px touch targets.
+
 ## Releases
-- `node scripts/release.mjs 0.1.1` updates version tags on every ES module edge, CSS URL, package and version.json.
+- `node scripts/release.mjs 0.1.2` updates version tags on every ES module edge, CSS URL, package and version.json.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
 - Do not commit test-results/, node_modules/, browser executables, credentials or personal chat context.
