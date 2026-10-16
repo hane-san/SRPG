@@ -46,3 +46,7 @@
 - iPhone Safari/WebKit・Android実機、ネイティブのピンチ操作は未検証。スクリーンサイズ・タッチイベントの模擬を実機試験とは呼ばない。
 
 再現：通常の `npm run check` に加え、ルートをHTTPサーバーで配信し `node tests/browser-check.mjs` と `node tests/interaction-check.mjs`。
+
+## 公開確認
+
+コード更新 `ff099ca8639091cd6e78e9dbacd7f552f2daa5a3` のルールCIとPagesデプロイが成功。公開版 https://hane-san.github.io/SRPG/?v=0.1.1 を開き、部隊選択・移動先の仮指定・守備の確定・T1からT2への進行を確認。公開画面の記録は `public-ui-0.1.1.jpg`。
