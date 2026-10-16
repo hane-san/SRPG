@@ -1,0 +1,599 @@
+[
+  {
+    "map": 1,
+    "policy": "advance",
+    "healing": "H1",
+    "status": "victory",
+    "turn": 10,
+    "alive": 8,
+    "southTaken": false,
+    "reachedEast": false,
+    "commands": 76,
+    "supports": 1,
+    "misfires": 0,
+    "charges": 10,
+    "deaths": [
+      {
+        "turn": 1,
+        "id": "e1",
+        "reason": "a4"
+      },
+      {
+        "turn": 2,
+        "id": "e4",
+        "reason": "a4"
+      },
+      {
+        "turn": 5,
+        "id": "e2",
+        "reason": "a1"
+      },
+      {
+        "turn": 6,
+        "id": "e3",
+        "reason": "a4"
+      },
+      {
+        "turn": 6,
+        "id": "e5",
+        "reason": "a6"
+      },
+      {
+        "turn": 10,
+        "id": "boss",
+        "reason": "a2"
+      }
+    ],
+    "turns": 9
+  },
+  {
+    "map": 1,
+    "policy": "cautious",
+    "healing": "H1",
+    "status": "victory",
+    "turn": 16,
+    "alive": 8,
+    "southTaken": false,
+    "reachedEast": false,
+    "commands": 124,
+    "supports": 3,
+    "misfires": 0,
+    "charges": 12,
+    "deaths": [
+      {
+        "turn": 2,
+        "id": "e1",
+        "reason": "a4"
+      },
+      {
+        "turn": 3,
+        "id": "e4",
+        "reason": "a6"
+      },
+      {
+        "turn": 6,
+        "id": "e2",
+        "reason": "a1"
+      },
+      {
+        "turn": 11,
+        "id": "e5",
+        "reason": "a1"
+      },
+      {
+        "turn": 11,
+        "id": "e3",
+        "reason": "a2"
+      },
+      {
+        "turn": 16,
+        "id": "boss",
+        "reason": "a2"
+      }
+    ],
+    "turns": 15
+  },
+  {
+    "map": 1,
+    "policy": "hold",
+    "healing": "H1",
+    "status": "timeout",
+    "turn": 36,
+    "alive": 4,
+    "southTaken": false,
+    "reachedEast": false,
+    "commands": 165,
+    "supports": 0,
+    "misfires": 7,
+    "charges": 0,
+    "deaths": [
+      {
+        "turn": 4,
+        "id": "a3",
+        "reason": "e1"
+      },
+      {
+        "turn": 5,
+        "id": "a5",
+        "reason": "e4"
+      },
+      {
+        "turn": 7,
+        "id": "a4",
+        "reason": "e1"
+      },
+      {
+        "turn": 7,
+        "id": "e4",
+        "reason": "a8"
+      },
+      {
+        "turn": 9,
+        "id": "a8",
+        "reason": "e1"
+      },
+      {
+        "turn": 10,
+        "id": "e1",
+        "reason": "a2"
+      }
+    ],
+    "turns": 35
+  },
+  {
+    "map": 2,
+    "policy": "advance",
+    "healing": "H1",
+    "status": "defeat",
+    "turn": 3,
+    "alive": 6,
+    "southTaken": false,
+    "reachedEast": true,
+    "commands": 23,
+    "supports": 1,
+    "misfires": 0,
+    "charges": 4,
+    "deaths": [
+      {
+        "turn": 2,
+        "id": "a4",
+        "reason": "e2"
+      },
+      {
+        "turn": 2,
+        "id": "e2",
+        "reason": "a3"
+      },
+      {
+        "turn": 3,
+        "id": "e3",
+        "reason": "a2"
+      },
+      {
+        "turn": 3,
+        "id": "a3",
+        "reason": "e1"
+      }
+    ],
+    "turns": 2
+  },
+  {
+    "map": 2,
+    "policy": "cautious",
+    "healing": "H1",
+    "status": "victory",
+    "turn": 16,
+    "alive": 7,
+    "southTaken": false,
+    "reachedEast": true,
+    "commands": 118,
+    "supports": 2,
+    "misfires": 2,
+    "charges": 12,
+    "deaths": [
+      {
+        "turn": 2,
+        "id": "e1",
+        "reason": "a4"
+      },
+      {
+        "turn": 2,
+        "id": "e2",
+        "reason": "a4"
+      },
+      {
+        "turn": 3,
+        "id": "e5",
+        "reason": "a2"
+      },
+      {
+        "turn": 4,
+        "id": "e6",
+        "reason": "a4"
+      },
+      {
+        "turn": 6,
+        "id": "e3",
+        "reason": "a4"
+      },
+      {
+        "turn": 8,
+        "id": "a2",
+        "reason": "e4"
+      },
+      {
+        "turn": 9,
+        "id": "reinforcement-4-0",
+        "reason": "a3"
+      },
+      {
+        "turn": 11,
+        "id": "e4",
+        "reason": "a4"
+      },
+      {
+        "turn": 13,
+        "id": "reinforcement-8-0",
+        "reason": "a3"
+      },
+      {
+        "turn": 16,
+        "id": "boss",
+        "reason": "a6"
+      }
+    ],
+    "turns": 15
+  },
+  {
+    "map": 2,
+    "policy": "hold",
+    "healing": "H1",
+    "status": "defeat",
+    "turn": 3,
+    "alive": 6,
+    "southTaken": false,
+    "reachedEast": false,
+    "commands": 23,
+    "supports": 1,
+    "misfires": 2,
+    "charges": 1,
+    "deaths": [
+      {
+        "turn": 2,
+        "id": "a3",
+        "reason": "e5"
+      },
+      {
+        "turn": 3,
+        "id": "a5",
+        "reason": "e1"
+      }
+    ],
+    "turns": 2
+  },
+  {
+    "map": 2,
+    "policy": "east",
+    "healing": "H1",
+    "status": "defeat",
+    "turn": 4,
+    "alive": 6,
+    "southTaken": false,
+    "reachedEast": true,
+    "commands": 30,
+    "supports": 1,
+    "misfires": 0,
+    "charges": 4,
+    "deaths": [
+      {
+        "turn": 3,
+        "id": "e2",
+        "reason": "a3"
+      },
+      {
+        "turn": 3,
+        "id": "a4",
+        "reason": "e1"
+      },
+      {
+        "turn": 3,
+        "id": "a3",
+        "reason": "e5"
+      },
+      {
+        "turn": 4,
+        "id": "e1",
+        "reason": "a1"
+      }
+    ],
+    "turns": 3
+  },
+  {
+    "map": 2,
+    "policy": "south",
+    "healing": "H1",
+    "status": "defeat",
+    "turn": 8,
+    "alive": 6,
+    "southTaken": true,
+    "reachedEast": true,
+    "commands": 56,
+    "supports": 1,
+    "misfires": 1,
+    "charges": 7,
+    "deaths": [
+      {
+        "turn": 2,
+        "id": "e6",
+        "reason": "a4"
+      },
+      {
+        "turn": 2,
+        "id": "a3",
+        "reason": "e5"
+      },
+      {
+        "turn": 4,
+        "id": "southguard",
+        "reason": "a4"
+      },
+      {
+        "turn": 5,
+        "id": "e2",
+        "reason": "a1"
+      },
+      {
+        "turn": 6,
+        "id": "a1",
+        "reason": "e1"
+      },
+      {
+        "turn": 6,
+        "id": "e1",
+        "reason": "a7"
+      },
+      {
+        "turn": 8,
+        "id": "e3",
+        "reason": "a6"
+      }
+    ],
+    "turns": 7
+  },
+  {
+    "map": 3,
+    "policy": "advance",
+    "healing": "H1",
+    "status": "victory",
+    "turn": 21,
+    "alive": 5,
+    "southTaken": false,
+    "reachedEast": true,
+    "commands": 140,
+    "supports": 3,
+    "misfires": 1,
+    "charges": 13,
+    "deaths": [
+      {
+        "turn": 1,
+        "id": "e1",
+        "reason": "a4"
+      },
+      {
+        "turn": 2,
+        "id": "e2",
+        "reason": "a7"
+      },
+      {
+        "turn": 3,
+        "id": "e3",
+        "reason": "a3"
+      },
+      {
+        "turn": 5,
+        "id": "e4",
+        "reason": "a1"
+      },
+      {
+        "turn": 7,
+        "id": "e5",
+        "reason": "a4"
+      },
+      {
+        "turn": 8,
+        "id": "reinforcement-4-1",
+        "reason": "a4"
+      },
+      {
+        "turn": 10,
+        "id": "a8",
+        "reason": "reinforcement-4-0"
+      },
+      {
+        "turn": 12,
+        "id": "reinforcement-4-0",
+        "reason": "a3"
+      },
+      {
+        "turn": 12,
+        "id": "a4",
+        "reason": "reinforcement-8-0"
+      },
+      {
+        "turn": 14,
+        "id": "reinforcement-8-0",
+        "reason": "a1"
+      },
+      {
+        "turn": 15,
+        "id": "a5",
+        "reason": "reinforcement-8-1"
+      },
+      {
+        "turn": 17,
+        "id": "reinforcement-8-1",
+        "reason": "a6"
+      },
+      {
+        "turn": 21,
+        "id": "boss",
+        "reason": "a1"
+      }
+    ],
+    "turns": 20
+  },
+  {
+    "map": 3,
+    "policy": "cautious",
+    "healing": "H1",
+    "status": "timeout",
+    "turn": 36,
+    "alive": 2,
+    "southTaken": false,
+    "reachedEast": true,
+    "commands": 165,
+    "supports": 0,
+    "misfires": 2,
+    "charges": 10,
+    "deaths": [
+      {
+        "turn": 1,
+        "id": "e1",
+        "reason": "a4"
+      },
+      {
+        "turn": 3,
+        "id": "e3",
+        "reason": "a4"
+      },
+      {
+        "turn": 4,
+        "id": "e2",
+        "reason": "a7"
+      },
+      {
+        "turn": 8,
+        "id": "reinforcement-4-0",
+        "reason": "a2"
+      },
+      {
+        "turn": 9,
+        "id": "a8",
+        "reason": "reinforcement-4-1"
+      },
+      {
+        "turn": 12,
+        "id": "a5",
+        "reason": "reinforcement-4-1"
+      },
+      {
+        "turn": 13,
+        "id": "a4",
+        "reason": "reinforcement-4-1"
+      },
+      {
+        "turn": 13,
+        "id": "a3",
+        "reason": "reinforcement-8-0"
+      },
+      {
+        "turn": 14,
+        "id": "reinforcement-8-0",
+        "reason": "a1"
+      },
+      {
+        "turn": 17,
+        "id": "a1",
+        "reason": "reinforcement-8-1"
+      },
+      {
+        "turn": 31,
+        "id": "reinforcement-4-1",
+        "reason": "a2"
+      },
+      {
+        "turn": 31,
+        "id": "a2",
+        "reason": "reinforcement-8-1"
+      }
+    ],
+    "turns": 35
+  },
+  {
+    "map": 3,
+    "policy": "hold",
+    "healing": "H1",
+    "status": "defeat",
+    "turn": 12,
+    "alive": 0,
+    "southTaken": false,
+    "reachedEast": false,
+    "commands": 57,
+    "supports": 1,
+    "misfires": 6,
+    "charges": 1,
+    "deaths": [
+      {
+        "turn": 4,
+        "id": "a3",
+        "reason": "e1"
+      },
+      {
+        "turn": 5,
+        "id": "a5",
+        "reason": "e1"
+      },
+      {
+        "turn": 5,
+        "id": "a4",
+        "reason": "reinforcement-4-1"
+      },
+      {
+        "turn": 6,
+        "id": "a8",
+        "reason": "reinforcement-4-0"
+      },
+      {
+        "turn": 6,
+        "id": "e3",
+        "reason": "砲撃"
+      },
+      {
+        "turn": 7,
+        "id": "a2",
+        "reason": "e1"
+      },
+      {
+        "turn": 8,
+        "id": "reinforcement-4-0",
+        "reason": "a7"
+      },
+      {
+        "turn": 8,
+        "id": "a7",
+        "reason": "reinforcement-4-1"
+      },
+      {
+        "turn": 9,
+        "id": "e1",
+        "reason": "a6"
+      },
+      {
+        "turn": 10,
+        "id": "a6",
+        "reason": "reinforcement-4-1"
+      },
+      {
+        "turn": 11,
+        "id": "reinforcement-4-1",
+        "reason": "a1"
+      },
+      {
+        "turn": 12,
+        "id": "a1",
+        "reason": "reinforcement-8-0"
+      }
+    ],
+    "turns": 11
+  }
+]
