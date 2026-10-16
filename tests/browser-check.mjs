@@ -19,14 +19,14 @@ try{
    await page.getByRole('button',{name:'部隊表',exact:true}).click();await page.locator('#rosterList button').first().click();
    assert(await page.locator('#battleHeader').evaluate(e=>e.getBoundingClientRect().height<=64));
    assert.equal(await page.locator('#forecast').isVisible(),false);
-   assert.equal(await page.locator('#battleHeader').innerText().then(t=>t.includes('戦線指揮')||t.includes('FIELD COMMAND')||t.includes('0.1.')),false);
+   assert.equal(await page.locator('#battleHeader').innerText().then(t=>t.includes('戦線指揮')||t.includes('FIELD COMMAND')||/\d+\.\d+\.\d+/.test(t)),false);
    const geometry=()=>page.evaluate(()=>{const v=document.querySelector('#mapViewport'),c=document.querySelector('#battlefield'),r=v.getBoundingClientRect(),b=c.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,cx:b.x,cy:b.y,cw:b.width,ch:b.height,left:v.scrollLeft,top:v.scrollTop};});
    const unchanged=async(g,step)=>assert.deepEqual(await geometry(),g,`${label}/map${map+1}: ${step} must not shift the map`);
    await page.getByRole('button',{name:'解除',exact:true}).click();const selectionCamera=await geometry();
    await page.evaluate(()=>window.srpgDebug.select('a1'));await unchanged(selectionCamera,'selection');
    const before=await page.evaluate(()=>window.srpgDebug.snapshot());const a=before.units.find(u=>u.id==='a1');const dest=map===1?before.map.base:{x:a.x,y:a.y-2};
    const coords=await page.evaluate(p=>{const c=document.querySelector('#battlefield'),v=document.querySelector('#mapViewport'),t=c.getBoundingClientRect().width/window.srpgDebug.snapshot().map.w;v.scrollTop=Math.max(0,p.y*t-v.clientHeight/2);const r=c.getBoundingClientRect();return {x:r.left+(p.x+.5)*t,y:r.top+(p.y+.5)*t};},dest);
-   const draftCamera=await geometry();await page.touchscreen.tap(coords.x,coords.y);await unchanged(draftCamera,'movement menu');await page.getByRole('button',{name:'守備 −1',exact:true}).click();await unchanged(draftCamera,'command preview');
+   const draftCamera=await geometry();await page.touchscreen.tap(coords.x,coords.y);await unchanged(draftCamera,'movement menu');await page.getByRole('button',{name:'待機',exact:true}).click();await unchanged(draftCamera,'command preview');
    await page.getByRole('button',{name:'詳細',exact:true}).click();await unchanged(draftCamera,'details open');await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();await unchanged(draftCamera,'details close');
    await page.locator('#menuBtn').click();await unchanged(draftCamera,'main menu');await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();await unchanged(draftCamera,'main menu close');
    assert.equal((await page.evaluate(()=>window.srpgDebug.snapshot())).units.find(u=>u.id==='a1').y,a.y,'preview must not move');

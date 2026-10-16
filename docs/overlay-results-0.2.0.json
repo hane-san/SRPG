@@ -1,0 +1,257 @@
+[
+  {
+    "width": 390,
+    "height": 844,
+    "cameraStable": true,
+    "slideAndFlick": true,
+    "buttons": [
+      {
+        "text": "地図",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "解除",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "攻撃",
+        "w": 167.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "待機",
+        "w": 167.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "取消",
+        "w": 50,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "この命令を確定",
+        "w": 283,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 360,
+    "height": 740,
+    "cameraStable": true,
+    "slideAndFlick": true,
+    "buttons": [
+      {
+        "text": "地図",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "解除",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "攻撃",
+        "w": 159.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "待機",
+        "w": 159.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "取消",
+        "w": 50,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "この命令を確定",
+        "w": 267,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "cameraStable": true,
+    "slideAndFlick": true,
+    "buttons": [
+      {
+        "text": "地図",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "解除",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "攻撃",
+        "w": 140.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "待機",
+        "w": 140.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "取消",
+        "w": 50,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "この命令を確定",
+        "w": 229,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "cameraStable": true,
+    "slideAndFlick": true,
+    "buttons": [
+      {
+        "text": "地図",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "解除",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "攻撃",
+        "w": 157.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "待機",
+        "w": 157.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "取消",
+        "w": 50,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "この命令を確定",
+        "w": 263,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1363,
+    "height": 936,
+    "cameraStable": true,
+    "slideAndFlick": true,
+    "buttons": [
+      {
+        "text": "地図",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "解除",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "攻撃",
+        "w": 167.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "待機",
+        "w": 167.5,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "取消",
+        "w": 50,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "この命令を確定",
+        "w": 283,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  }
+]

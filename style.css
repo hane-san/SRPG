@@ -36,7 +36,7 @@ button[aria-pressed=true]{background:#954449;color:white}
 #orders.result{min-height:110px;max-height:200px;overflow:auto}.result-title{font:700 20px Georgia,'Yu Mincho',serif}.result-title small{font:11px system-ui}
 .unit-head{display:flex;gap:6px;align-items:center;min-width:0}.unit-name{flex:1;min-width:0}.unit-name strong{font:700 18px Georgia,'Yu Mincho',serif;display:block}.unit-name small{font-size:10px;color:#687463;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
 .unit-head button{padding:5px 6px;font-size:11px}.hp{font-weight:750;color:#285f61;font-size:17px;white-space:nowrap}.hp small{font-size:11px;color:#687463}
-.command-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.command-row button{padding:5px 3px;font-size:12px;line-height:1.25}.chosen{background:#d9e4d6;border:2px solid #45776e}
+.command-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.command-row button{padding:5px 3px;font-size:12px;line-height:1.25}.chosen{background:#d9e4d6;border:2px solid #45776e}
 .confirm-row{display:flex;gap:7px}.confirm-row .primary{flex:1}
 .preview{border-left:3px solid #bc9553;padding:4px 7px;background:#e7dfc9;font-size:12px;line-height:1.55;overflow:auto}
 .hint{font-size:12px;color:#62705e;line-height:1.7}.risk{color:#a43838;font-weight:700}
@@ -67,3 +67,5 @@ label{font-size:12px;display:flex;gap:6px;flex-direction:column;min-width:0}sele
 #orders .unit-name strong{font-size:16px}
 #orders .unit-head{gap:4px}
 #orders .unit-head button{padding-inline:5px}
+
+#mapViewport.routing,#mapViewport.routing #battlefield{touch-action:none}

@@ -1,4 +1,4 @@
-import {CLASSES,SKILLS} from './config.js?v=0.1.2';
+import {CLASSES,SKILLS} from './config.js?v=0.2.0';
 // Storage is optional. Reject partial turns and malformed/old saves before rendering.
 export const STORAGE='field-command-save-v1';
 export function readSave(storage,release,maps){

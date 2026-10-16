@@ -1,0 +1,16 @@
+{
+  "results": [
+    "live sliding cursor, weighted route preview, two commands and cancel without movement/camera shift",
+    "pointer cancellation and second finger restore the previous draft",
+    "moved wait is ordinary wait, double confirmation and saved position",
+    "real touch flick from destination selects enemy, preserves origin and previews before explicit attack",
+    "out-of-range flick never commits an attack or movement",
+    "stationary wait arms and spends finite P3 bow attack",
+    "stationary healing is deferred to P3 with priority and finite charges",
+    "drag outside blue movement range scrolls without moving cursor or issuing commands",
+    "double phase start stays locked and advances exactly once",
+    "announced artillery and rotated hit testing",
+    "finished-state restore and corrupt-save recovery"
+  ],
+  "errors": []
+}

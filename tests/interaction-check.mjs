@@ -1,4 +1,4 @@
-// Detailed UI regressions: movement cancellation, gestures, targets, saves and input locks.
+// Real touch streams: route cursor, attack flick, cancellation and automatic P3.
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
@@ -6,54 +6,37 @@ import {createGame} from '../engine.js';
 import {RELEASE} from '../config.js';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const b=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--disable-gpu']}:{} )});
-const base=process.env.TEST_URL||'http://localhost:4173',results=[],errors=[];mkdirSync('test-results',{recursive:true});
-const context=await b.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'reduce'}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-const state=()=>page.evaluate(()=>window.srpgDebug.snapshot());
-async function reset(fixture=createGame(0)){
- await page.evaluate(data=>localStorage.setItem('field-command-save-v1',JSON.stringify(data)),{release:RELEASE,state:fixture,campaign:false});
- await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert(!(await page.locator('#modal').evaluate(e=>e.open)));
-}
-async function select(id){const ss=await state(),u=ss.units.find(u=>u.id===id);await page.locator('#rosterBtn').click();await page.locator('#rosterList button').filter({hasText:u.name}).click();}
-async function point(p){return page.evaluate(p=>{const c=document.querySelector('#battlefield'),v=document.querySelector('#mapViewport'),t=c.getBoundingClientRect().width/window.srpgDebug.snapshot().map.w;v.scrollTop=p.y*t-v.clientHeight*.45;v.scrollLeft=p.x*t-v.clientWidth*.5;const r=c.getBoundingClientRect();return {x:r.left+(p.x+.5)*t,y:r.top+(p.y+.5)*t};},p);}
-async function tap(p){const at=await point(p);await page.touchscreen.tap(at.x,at.y);}
+const results=[],errors=[];mkdirSync('test-results',{recursive:true});
+const ctx=await b.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'reduce'}),page=await ctx.newPage(),cdp=await ctx.newCDPSession(page);page.on('pageerror',e=>errors.push(e.message));
+const state=()=>page.evaluate(()=>window.srpgDebug.snapshot()),draft=()=>page.evaluate(()=>window.srpgDebug.draft());
+const camera=()=>page.locator('#mapViewport').evaluate(e=>[e.scrollLeft,e.scrollTop,e.clientWidth,e.clientHeight]);
+async function reset(s=createGame(0)){await page.evaluate(data=>localStorage.setItem('field-command-save-v1',JSON.stringify(data)),{release:RELEASE,state:s,campaign:false});await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);}
+async function select(id){const u=(await state()).units.find(u=>u.id===id);await page.locator('#rosterBtn').click();await page.locator('#rosterList button').filter({hasText:u.name}).click();}
+async function point(p){return page.locator('#battlefield').evaluate((e,p)=>{const r=e.getBoundingClientRect(),t=r.width/window.srpgDebug.snapshot().map.w;return {x:r.left+(p.x+.5)*t,y:r.top+(p.y+.5)*t};},p);}
+async function tap(p){const a=await point(p);await page.touchscreen.tap(a.x,a.y);}
+async function touch(type,points){await cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map((p,i)=>({...p,id:i+1,radiusX:2,radiusY:2,force:1}))});}
+async function slide(from,to,{end=true}={}){const a=await point(from),z=await point(to);await touch('touchStart',[a]);for(let i=1;i<=6;i++)await touch('touchMove',[{x:a.x+(z.x-a.x)*i/6,y:a.y+(z.y-a.y)*i/6}]);if(end)await touch('touchEnd',[]);}
+async function endTurn(){const turn=(await state()).turn;await page.locator('#endTurn').click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).click();await page.waitForFunction(t=>window.srpgDebug.snapshot().turn===t||window.srpgDebug.snapshot().status!=='playing',turn+1);}
 try{
- await page.goto(base+'/?debug=1');await page.waitForSelector('#maps');await page.locator('#maps .map-card').first().getByRole('button').click();
- await page.screenshot({path:'test-results/mobile-idle-0.1.2.png'});
- await select('a1');await tap({x:5,y:14});assert((await page.locator('#actionPreview').textContent()).includes('(6, 15)'));
- assert.equal((await state()).units.find(u=>u.id==='a1').y,16);
- await page.getByRole('button',{name:'取消',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('移動先をタップ'));
- await page.getByRole('button',{name:'解除',exact:true}).click();assert(await page.locator('#orders.idle').count());
- await select('a1');await tap({x:5,y:16});assert(await page.locator('#orders.idle').count(),'same-unit tap deselects');
- results.push('preview, cancel and deselect');
- await select('a1');const before=await page.locator('#actionPreview').textContent(),coords=await point({x:5,y:15});
- await page.mouse.move(coords.x,coords.y);await page.mouse.down();await page.mouse.move(coords.x+35,coords.y,{steps:4});await page.mouse.move(coords.x,coords.y,{steps:4});await page.mouse.up();
- assert.equal(await page.locator('#actionPreview').textContent(),before,'returning drag must not produce a tap');
- await tap({x:5,y:14});assert((await page.locator('#actionPreview').textContent()).includes('(6, 15)'),'next real tap must work');
- await page.locator('#mapViewport').dispatchEvent('pointerdown',{pointerId:21,clientX:100,clientY:200,button:0});
- await page.locator('#mapViewport').dispatchEvent('pointercancel',{pointerId:21});
- await tap({x:5,y:13});assert((await page.locator('#actionPreview').textContent()).includes('(6, 14)'));
- results.push('drag return, cancellation and next valid touch');
- const camera=()=>page.evaluate(()=>{const v=document.querySelector('#mapViewport'),t=document.querySelector('#battlefield').getBoundingClientRect().width/window.srpgDebug.snapshot().map.w;return {x:(v.scrollLeft+v.clientWidth/2)/t,y:(v.scrollTop+v.clientHeight/2)/t};});
- await point({x:5,y:10});const c0=await camera();await page.locator('#zoomIn').click();const c1=await camera();assert(Math.abs(c0.x-c1.x)<.12&&Math.abs(c0.y-c1.y)<.12,JSON.stringify({c0,c1}));
- await tap({x:5,y:14});await page.getByRole('button',{name:'守備 −1',exact:true}).click();
- await page.screenshot({path:'test-results/mobile-order-0.1.2.png'});
- await page.locator('#confirmOrder').evaluate(e=>{e.click();e.click();});assert.equal((await state()).metrics.commands,1,'double confirm only one action');
- await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.equal((await state()).units.find(u=>u.id==='a1').y,14);
- results.push('zoom anchor, touch coordinates, double confirm and save');
- await reset();await select('a2');await tap({x:6,y:13});await page.getByRole('button',{name:'破陣',exact:true}).click();await tap({x:6,y:12});
- assert((await page.locator('#actionPreview').textContent()).includes('11'));
- await page.locator('#confirmOrder').click();const attacked=await state();assert.equal(attacked.units.find(u=>u.id==='e1').hp,11);assert.equal(attacked.units.find(u=>u.id==='a2').charges,1);results.push('burst target, preview and charge consumption');
- const healing=createGame(0);healing.units.find(u=>u.id==='a2').hp=5;await reset(healing);await select('a8');await tap({x:6,y:17});await page.getByRole('button',{name:'即時治癒',exact:true}).click();await tap({x:6,y:16});
- assert(await page.locator('#confirmOrder').isEnabled());await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='a2').hp,11);results.push('move then immediate heal');
- await reset(healing);await select('a5');await page.getByRole('button',{name:'命令',exact:true}).click();await page.getByRole('button',{name:'待機祈祷',exact:true}).click();
- await page.getByRole('button',{name:'詳細',exact:true}).click();await page.getByRole('combobox',{name:'待機支援の優先対象'}).selectOption('a2');await page.getByRole('button',{name:'消費許可：ON',exact:true}).click();assert.equal((await state()).units.find(u=>u.id==='a5').spend,false);
- await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('温存'));await page.locator('#confirmOrder').click();results.push('support detail, priority, conservation and confirmation');
- await page.locator('#endTurn').click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).evaluate(e=>{e.click();e.click();});
- assert(await page.locator('#menuBtn').isDisabled());assert(await page.locator('#rosterBtn').isDisabled());await page.waitForFunction(()=>window.srpgDebug.snapshot().turn===2);assert.equal((await state()).metrics.turns,1);results.push('phase lock and double end-turn');
- await reset(createGame(2));for(let i=0;i<2;i++){await page.locator('#endTurn').click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).click();await page.waitForFunction(t=>window.srpgDebug.snapshot().turn===t,i+2);}
- assert(await page.locator('#forecast').isVisible());assert((await page.locator('#forecast').textContent()).includes('砲撃'));results.push('artillery warning remains visible');
- await page.setViewportSize({width:844,height:390});await page.waitForTimeout(100);await select('a1');await tap({x:6,y:20});await page.getByRole('button',{name:'守備 −1',exact:true}).click();assert(await page.locator('#confirmOrder').isEnabled());await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='a1').y,20);results.push('rotation preserves hit testing');
- const terminal=createGame(0);terminal.status='defeat';terminal.phase=2;await reset(terminal);assert((await page.locator('#orders').textContent()).includes('敗北'));assert.equal((await state()).status,'defeat');results.push('finished battle restores after reload');
- await page.evaluate(()=>localStorage.setItem('field-command-save-v1','{bad'));await page.reload();await page.waitForSelector('#maps');assert.equal((await state()).turn,1);results.push('corrupt save recovers to map selection');
+ await page.goto((process.env.TEST_URL||'http://localhost:4173')+'/?debug=1');await page.locator('#maps .map-card').first().getByRole('button').click();
+ await select('a1');const c=await camera();await slide({x:5,y:16},{x:5,y:14},{end:false});
+ let d=await draft();assert.deepEqual(d.dest,{x:5,y:14});assert.equal(d.route.length,3);assert.equal((await state()).metrics.commands,0);assert.equal((await state()).units.find(u=>u.id==='a1').y,16);
+ await page.screenshot({path:'test-results/mobile-route-0.2.0.png'});await touch('touchEnd',[]);assert.deepEqual(await camera(),c);assert(await page.locator('#confirmOrder').isVisible());
+ assert.deepEqual(await page.locator('.command-row button').allTextContents(),['攻撃','待機']);
+ await slide({x:5,y:14},{x:5,y:13});assert.deepEqual((await draft()).dest,{x:5,y:13});assert.equal((await draft()).route.length,4);
+ await page.getByRole('button',{name:'取消',exact:true}).click();assert.deepEqual((await draft()).route,[]);assert.equal((await draft()).dest.y,16);assert.deepEqual(await camera(),c);results.push('live sliding cursor, weighted route preview, two commands and cancel without movement/camera shift');
+ await tap({x:5,y:14});assert.equal((await draft()).dest.y,14);const before=await draft();await slide({x:5,y:14},{x:5,y:13},{end:false});await touch('touchCancel',[]);assert.deepEqual(await draft(),before);
+ const a=await point({x:5,y:14}),z=await point({x:5,y:13});await touch('touchStart',[a]);await touch('touchMove',[z]);await touch('touchStart',[z,{x:z.x+24,y:z.y}]);await touch('touchEnd',[]);assert.deepEqual(await draft(),before);assert.equal((await state()).metrics.commands,0);results.push('pointer cancellation and second finger restore the previous draft');
+ await page.getByRole('button',{name:'待機',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('P3スキルなし'));await page.locator('#confirmOrder').evaluate(e=>{e.click();e.click();});assert.equal((await state()).metrics.commands,1);assert.equal((await state()).units.find(u=>u.id==='a1').command,null);
+ await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.equal((await state()).units.find(u=>u.id==='a1').y,14);results.push('moved wait is ordinary wait, double confirmation and saved position');
+ await reset();await select('a2');await tap({x:6,y:13});const attackCamera=await camera();await slide({x:6,y:13},{x:6,y:12});d=await draft();assert.equal(d.action,'attack');assert.equal(d.target,'e1');assert.deepEqual(d.dest,{x:6,y:13});assert.deepEqual(await camera(),attackCamera);assert((await page.locator('#actionPreview').textContent()).includes('7'));assert.equal((await state()).units.find(u=>u.id==='e1').hp,22);
+ await page.screenshot({path:'test-results/mobile-flick-0.2.0.png'});await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='e1').hp,15);assert.equal((await state()).units.find(u=>u.id==='a2').charges,2);results.push('real touch flick from destination selects enemy, preserves origin and previews before explicit attack');
+ await reset();await select('a2');await tap({x:6,y:13});await slide({x:6,y:13},{x:5,y:8});assert.equal((await draft()).target,'e2');assert(await page.locator('#confirmOrder').isDisabled());assert((await page.locator('#actionPreview').textContent()).includes('射程外'));assert.equal((await state()).metrics.commands,0);results.push('out-of-range flick never commits an attack or movement');
+ const support=createGame(0);for(const e of support.units.filter(u=>u.team==='enemy'))e.ai='hold';Object.assign(support.units.find(u=>u.id==='e1'),{x:4,y:15});await reset(support);await select('a3');await page.getByRole('button',{name:'命令',exact:true}).click();await page.getByRole('button',{name:'待機',exact:true}).click();assert((await page.locator('#actionPreview').textContent()).includes('P3攻撃準備'));await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='a3').command,'support');await endTurn();assert.equal((await state()).units.find(u=>u.id==='a3').charges,2);results.push('stationary wait arms and spends finite P3 bow attack');
+ const healing=createGame(0);for(const e of healing.units.filter(u=>u.team==='enemy'))e.ai='hold';Object.assign(healing.units.find(u=>u.id==='a2'),{x:5,y:17,hp:5});await reset(healing);await select('a5');await page.getByRole('button',{name:'命令',exact:true}).click();await page.getByRole('button',{name:'待機',exact:true}).click();await page.getByRole('button',{name:'詳細',exact:true}).click();await page.getByRole('combobox',{name:'待機支援の優先対象'}).selectOption('a2');await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='a2').hp,5);await endTurn();assert.equal((await state()).units.find(u=>u.id==='a2').hp,12);assert.equal((await state()).units.find(u=>u.id==='a5').charges,2);results.push('stationary healing is deferred to P3 with priority and finite charges');
+ await reset();await select('a1');await page.locator('#zoomIn').click();const panBefore=await camera();const pan=await page.locator('#mapViewport').evaluate(e=>{const r=e.getBoundingClientRect();return {x:r.left+18,y:r.top+r.height*.65};});await touch('touchStart',[pan]);await touch('touchMove',[{x:pan.x,y:pan.y-90}]);await touch('touchEnd',[]);assert((await camera())[1]>panBefore[1]);assert.equal((await draft()).dest.y,16);assert.equal((await state()).metrics.commands,0);results.push('drag outside blue movement range scrolls without moving cursor or issuing commands');
+ await reset();await page.locator('#endTurn').click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).evaluate(e=>{e.click();e.click();});assert(await page.locator('#menuBtn').isDisabled());await page.waitForFunction(()=>window.srpgDebug.snapshot().turn===2);assert.equal((await state()).metrics.turns,1);results.push('double phase start stays locked and advances exactly once');
+ await reset(createGame(2));await endTurn();await endTurn();assert(await page.locator('#forecast').isVisible());await page.setViewportSize({width:844,height:390});await select('a1');await tap({x:6,y:20});await page.getByRole('button',{name:'待機',exact:true}).click();await page.locator('#confirmOrder').click();assert.equal((await state()).units.find(u=>u.id==='a1').y,20);results.push('announced artillery and rotated hit testing');
+ const terminal=createGame(0);terminal.status='defeat';terminal.phase=2;await reset(terminal);assert((await page.locator('#orders').textContent()).includes('敗北'));await page.evaluate(()=>localStorage.setItem('field-command-save-v1','{bad'));await page.reload();await page.waitForSelector('#maps');results.push('finished-state restore and corrupt-save recovery');
  assert.deepEqual(errors,[]);writeFileSync('test-results/interaction-results.json',JSON.stringify({results,errors},null,2));console.log(JSON.stringify({results,errors},null,2));
 }finally{await b.close();}

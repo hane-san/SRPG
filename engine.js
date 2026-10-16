@@ -1,5 +1,5 @@
-import {RULES,TERRAINS} from './config.js?v=0.1.2';
-import {MAPS,ROSTER,unit,positions} from './data.js?v=0.1.2';
+import {RULES,TERRAINS} from './config.js?v=0.2.0';
+import {MAPS,ROSTER,unit,positions} from './data.js?v=0.2.0';
 export const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 export const key=p=>`${p.x},${p.y}`;
 export const alive=(s,team)=>s.units.filter(u=>u.alive&&(!team||u.team===team));
@@ -16,54 +16,64 @@ export function createGame(mapId=0,opts={},lost=[]){
  log(s,map.briefing);return s;
 }
 // Dijkstra uses four neighbours. Friends may be crossed; endpoints must be empty.
-export function reachable(s,u,budget=u.move,{threat=false}={}){
- const costs=new Map([[key(u),0]]),todo=[{x:u.x,y:u.y,c:0}];
+function movementField(s,u,budget=u.move,{threat=false}={}){
+ const costs=new Map([[key(u),0]]),parents=new Map(),todo=[{x:u.x,y:u.y,c:0}];
  while(todo.length){todo.sort((a,b)=>a.c-b.c);const p=todo.shift();if(p.c!==costs.get(key(p)))continue;
   for(const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]){
    const n={x:p.x+dx,y:p.y+dy},t=terrain(s,n);if(!t)continue;
    const occ=at(s,n);if(occ&&occ.team!==u.team&&!threat)continue;
    const c=p.c+t.cost;if(c>budget||c>=(costs.get(key(n))??Infinity))continue;
-   costs.set(key(n),c);todo.push({...n,c});
+   costs.set(key(n),c);parents.set(key(n),{x:p.x,y:p.y});todo.push({...n,c});
   }
  }
+ return {costs,parents};
+}
+export function reachable(s,u,budget=u.move,options={}){
+ const {costs}=movementField(s,u,budget,options),{threat=false}=options;
  return [...costs].map(([k,cost])=>{const [x,y]=k.split(',').map(Number);return {x,y,cost};}).filter(p=>!at(s,p)||at(s,p).id===u.id||threat);
+}
+// The same weighted field drives both legal movement and the preview arrow.
+export function routeTo(s,u,dest){
+ const {costs,parents}=movementField(s,u);const occupied=at(s,dest);
+ if(!costs.has(key(dest))||(occupied&&occupied.id!==u.id))return [];
+ const path=[{x:dest.x,y:dest.y}];let p=path[0];
+ while(key(p)!==key(u)){p=parents.get(key(p));if(!p)return [];path.push(p);}
+ return path.reverse();
+}
+export const supportRange=u=>u.type==='bow'?RULES.supportRange:u.range;
+export function waitCommand(u,dest=u){
+ if(dist(u,dest)>0)return null;
+ return u.skill==='heal'?'heal':u.skill==='support'&&u.charges>0?'support':null;
 }
 export function damage(s,a,b,bonus=0){return Math.max(1,a.atk+bonus-b.def-(terrain(s,b)?.def||0)-(b.guard||0));}
 export function prediction(s,u,target,position=u,bonus=0){const a={...u,...position};const dealt=damage(s,a,target,bonus);return {damage:dealt,counter:dealt>=target.hp||target.command==='support'||target.command==='heal'||!inRange(target,a)?0:damage(s,target,a)};}
 export function threatAt(s,p,u){return alive(s,'enemy').filter(e=>reachable(s,e,e.ai==='hold'?0:e.move,{threat:true}).some(n=>inRange({...e,...n},p))).reduce((sum,e)=>sum+damage(s,e,{...u,...p}),0);}
 function hurt(s,u,n,reason){u.hp=Math.max(0,u.hp-n);if(u.hp===0&&u.alive){u.alive=false;u.command=null;s.metrics.deaths.push({turn:s.turn,id:u.id,reason});if(u.team==='ally'&&s.settings.mode==='classic'&&!s.lost.includes(u.id))s.lost.push(u.id);log(s,`${u.name} ${u.team==='enemy'?'撃破':s.settings.mode==='classic'?'永久離脱':'撤退（次章復帰）'}`);}}
-function strike(s,a,b,bonus=0,counter=true){if(b.shieldPending){charge(s,b);b.shieldPending=false;log(s,`${b.name}：堅守発動・残${b.charges}`);}const n=damage(s,a,b,bonus);log(s,`${a.name} → ${b.name} ${n}ダメージ`);hurt(s,b,n,a.id);if(counter&&b.alive&&a.alive&&b.command!=='support'&&b.command!=='heal'&&inRange(b,a)){const c=damage(s,b,a);log(s,`${b.name}の反撃 ${c}`);hurt(s,a,c,b.id);}}
+function strike(s,a,b,bonus=0,counter=true){const n=damage(s,a,b,bonus);log(s,`${a.name} → ${b.name} ${n}ダメージ`);hurt(s,b,n,a.id);if(counter&&b.alive&&a.alive&&b.command!=='support'&&b.command!=='heal'&&inRange(b,a)){const c=damage(s,b,a);log(s,`${b.name}の反撃 ${c}`);hurt(s,a,c,b.id);}}
 function charge(s,u){u.charges--;s.metrics.charges++;}
-export function healAmount(s,h,t,immediate=false){
- if(h.charges>0)return Math.min(t.maxHp-t.hp,immediate?RULES.immediateHeal:RULES.heal);
+export function healAmount(s,h,t){
+ if(h.charges>0)return Math.min(t.maxHp-t.hp,RULES.heal);
  if(s.settings.healing==='H2'&&t.hurtTurn!==s.turn)return 0;
  const cap=s.settings.healing==='H1'?Math.floor(t.maxHp*RULES.emergencyCap):t.maxHp;return Math.max(0,Math.min(1,cap-t.hp));
 }
 export function supportTarget(s,u){
- const ranged=u.skill==='support';let targets=alive(s,ranged?'enemy':'ally').filter(t=>ranged?inRange(u,t,RULES.supportRange):t.id!==u.id&&dist(u,t)===1&&healAmount(s,u,t)>0);
+ const ranged=u.skill==='support';let targets=alive(s,ranged?'enemy':'ally').filter(t=>ranged?inRange(u,t,supportRange(u)):t.id!==u.id&&dist(u,t)===1&&healAmount(s,u,t)>0);
  if(!ranged&&u.charges>0)targets=targets.filter(t=>t.maxHp-t.hp>=RULES.healThreshold||u.focus===t.id);
  targets.sort((a,b)=>Number(b.id===u.focus)-Number(a.id===u.focus)||(ranged?Number(b.hp<=damage(s,u,b))-Number(a.hp<=damage(s,u,a))||b.atk-a.atk:a.hp/a.maxHp-b.hp/b.maxHp)||a.y-b.y||a.x-b.x||a.id.localeCompare(b.id));return targets[0]||null;
 }
 export function validateAction(s,id,dest,action,targetId){
  const u=s.units.find(a=>a.id===id),t=s.units.find(a=>a.id===targetId);
  if(s.status!=='playing'||s.phase!==1||!u?.alive||u.team!=='ally'||u.acted)return 'この部隊は行動できません';
- const moves=reachable(s,u,u.move+(action==='dash'?2:0));if(!moves.some(p=>p.x===dest.x&&p.y===dest.y))return '移動できない地点です';
- const moved=dest.x!==u.x||dest.y!==u.y;const a={...u,...dest};
- if(['support','heal'].includes(action)&&(moved||u.skill!==action))return '待機支援は移動せず構えてください';
- if(['support','shield','burst','dash'].includes(action)&&(u.skill!==action||u.charges<=0))return 'スキルが使えません';
- if(action==='immediate'&&(u.skill!=='immediate'||!t?.alive||t.team!=='ally'||t.id===u.id||dist(a,t)!==1||!healAmount(s,u,t,true)))return '隣接する負傷した味方を選んでください';
- if(['attack','burst'].includes(action)&&(!t?.alive||t.team!=='enemy'||!inRange(a,t)))return '射程内の敵を選んでください';
- if(!['guard','wait','attack','burst','support','heal','shield','dash','immediate'].includes(action))return '未知の命令です';return null;
+ if(!dest||!reachable(s,u).some(p=>p.x===dest.x&&p.y===dest.y))return '移動できない地点です';
+ if(!['attack','wait'].includes(action))return '命令は攻撃か待機を選んでください';
+ if(action==='attack'&&(!t?.alive||t.team!=='enemy'||!inRange({...u,...dest},t)))return '射程内の敵を選んでください';
+ return null;
 }
 export function act(s,id,dest,action,targetId){const error=validateAction(s,id,dest,action,targetId);if(error)return {ok:false,error};
- const u=s.units.find(a=>a.id===id),t=s.units.find(a=>a.id===targetId);Object.assign(u,{x:dest.x,y:dest.y,acted:true,guard:0,command:null});s.metrics.commands++;
- if(['support','heal','guard'].includes(action))u.command=action;
- if(action==='guard'||action==='dash')u.guard=RULES.guardReduction;
- if(action==='shield'){u.guard=RULES.shieldReduction;u.shieldPending=true;}
- if(action==='dash')charge(s,u);
- if(action==='attack'||action==='burst'){if(action==='burst')charge(s,u);strike(s,u,t,action==='burst'?RULES.burstBonus:0);}
- if(action==='immediate'){const n=healAmount(s,u,t,true);if(u.charges>0)charge(s,u);t.hp+=n;log(s,`${u.name} → ${t.name} 即時回復＋${n}`);}
- if(['support','heal'].includes(action))log(s,`${u.name}：${action==='heal'?'回復':'射撃'}待機（P2反撃なし）`);
+ const u=s.units.find(a=>a.id===id),t=s.units.find(a=>a.id===targetId),command=action==='wait'?waitCommand(u,dest):null;
+ Object.assign(u,{x:dest.x,y:dest.y,acted:true,guard:0,command});s.metrics.commands++;
+ if(action==='attack')strike(s,u,t);
+ else log(s,`${u.name}：${command?`${command==='heal'?'回復':'攻撃'}待機（P3準備・P2反撃なし）`:'通常待機（P3なし）'}`);
  checkOutcome(s);return {ok:true};
 }
 export function checkOutcome(s){if(s.status!=='playing')return;
@@ -73,7 +83,7 @@ export function checkOutcome(s){if(s.status!=='playing')return;
  if(s.map.south&&!s.southTaken&&alive(s,'ally').some(u=>dist(u,s.map.south)===0)){s.southTaken=true;log(s,'南城制圧。以後の南方増援停止');}
 }
 export function prepareEnemy(s){if(s.phase!==1||s.status!=='playing')return false;
- for(const u of alive(s,'ally'))if(!u.acted){u.guard=u.command==='guard'?RULES.guardReduction:0;u.acted=true;}
+ for(const u of alive(s,'ally'))if(!u.acted){u.guard=0;u.command=waitCommand(u);u.acted=true;}
  s.phase=2;log(s,'敵軍行動');return true;
 }
 export function enemyPhase(s){
@@ -119,5 +129,5 @@ export function eventPhase(s){if(s.status!=='playing')return;s.phase=4;log(s,'�
  if(s.map.spawns.length&&!s.southTaken&&next%RULES.reinforcementPeriod===0&&next/RULES.reinforcementPeriod<=(s.map.maxWaves??Infinity)){s.warnings.push({kind:'spawn',turn:next,cells:s.map.spawns});log(s,`確報：T${next} P4 紫の旗に増援。次ターンから攻撃`);}
  checkOutcome(s);
 }
-export function nextTurn(s){if(s.status!=='playing')return;s.turn++;s.metrics.turns++;s.phase=1;for(const u of alive(s)){u.acted=false;u.guard=0;u.shieldPending=false;}log(s,'味方行動開始');}
+export function nextTurn(s){if(s.status!=='playing')return;s.turn++;s.metrics.turns++;s.phase=1;for(const u of alive(s)){u.acted=false;u.guard=0;u.command=null;}log(s,'味方行動開始');}
 export function endTurn(s){if(!prepareEnemy(s))return;enemyPhase(s);supportPhase(s);eventPhase(s);nextTurn(s);return s;}
