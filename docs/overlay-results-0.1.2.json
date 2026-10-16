@@ -222,5 +222,61 @@
       }
     ],
     "errors": []
+  },
+  {
+    "width": 1363,
+    "height": 936,
+    "cameraStable": true,
+    "buttons": [
+      {
+        "text": "地図",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "解除",
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "攻撃",
+        "w": 110,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "守備 −1",
+        "w": 110,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "堅守",
+        "w": 110,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "取消",
+        "w": 50,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "text": "この命令を確定",
+        "w": 283,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
   }
 ]

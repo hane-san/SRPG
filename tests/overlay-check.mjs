@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const results=[];mkdirSync('test-results',{recursive:true});
-for(const [width,height]of [[390,844],[360,740],[320,568],[844,390]]){
+for(const [width,height]of [[390,844],[360,740],[320,568],[844,390],[1363,936]]){
  const b=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--disable-gpu']}:{} )});
  try{
   const ctx=await b.newContext({viewport:{width,height},hasTouch:true,isMobile:true}),p=await ctx.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
