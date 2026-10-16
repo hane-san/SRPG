@@ -1,8 +1,8 @@
-import {alive,at,reachable,inRange,key,terrain} from './engine.js?v=0.1.0';
+import {alive,at,reachable,inRange,key,terrain} from './engine.js?v=0.1.1';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 export function render(canvas,s,view){
- const tile=view.tile,ratio=Math.min(devicePixelRatio||1,2);canvas.width=s.map.w*tile*ratio;canvas.height=s.map.h*tile*ratio;canvas.style.width=`${s.map.w*tile}px`;canvas.style.height=`${s.map.h*tile}px`;
- const c=canvas.getContext('2d');c.scale(ratio*tile/32,ratio*tile/32);c.imageSmoothingEnabled=false;
+ const tile=view.tile,ratio=Math.min(devicePixelRatio||1,2);const width=Math.round(s.map.w*tile*ratio),height=Math.round(s.map.h*tile*ratio);if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;canvas.style.width=`${s.map.w*tile}px`;canvas.style.height=`${s.map.h*tile}px`;
+ const c=canvas.getContext('2d');c.setTransform(ratio*tile/32,0,0,ratio*tile/32,0,0);c.imageSmoothingEnabled=false;
  const selected=s.units.find(u=>u.id===view.selected),movement=selected?.team==='ally'&&!selected.acted?reachable(s,selected,selected.move+(view.action==='dash'?2:0)):[];
  const moves=new Set(movement.map(key)),danger=new Set();
  if(view.danger||selected?.team==='enemy')for(const e of selected?.team==='enemy'?[selected]:alive(s,'enemy')){
@@ -27,6 +27,7 @@ export function render(canvas,s,view){
  for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.base,'#6dc6db','本陣'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
  for(const u of alive(s))drawUnit(c,u,selected?.id===u.id);
  if(selected?.alive&&view.dest&&(view.dest.x!==selected.x||view.dest.y!==selected.y)){c.globalAlpha=.55;drawUnit(c,{...selected,...view.dest},true);c.globalAlpha=1;}
+ if(view.dest&&selected&&view.selected){c.strokeStyle='#ffefb4';c.lineWidth=2;c.setLineDash([4,2]);c.strokeRect(view.dest.x*32+2,view.dest.y*32+2,28,28);c.setLineDash([]);}
  if(view.target){const t=s.units.find(u=>u.id===view.target);if(t){c.strokeStyle='#ffe5a6';c.lineWidth=2;c.strokeRect(t.x*32+1,t.y*32+1,30,30);}}
 }
 function castle(c,x,y){c.fillStyle='#52645f';c.fillRect(x+3,y+10,26,19);c.fillStyle='#c6c6a5';c.fillRect(x+6,y+8,20,17);for(const xx of [4,13,23]){c.fillRect(x+xx,y+3,5,11);c.fillStyle='#e0d5af';c.fillRect(x+xx,y+3,5,3);c.fillStyle='#c6c6a5';}c.fillStyle='#354b4b';c.fillRect(x+13,y+16,7,10);}

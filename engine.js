@@ -1,5 +1,5 @@
-import {RULES,TERRAINS} from './config.js?v=0.1.0';
-import {MAPS,ROSTER,unit,positions} from './data.js?v=0.1.0';
+import {RULES,TERRAINS} from './config.js?v=0.1.1';
+import {MAPS,ROSTER,unit,positions} from './data.js?v=0.1.1';
 export const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 export const key=p=>`${p.x},${p.y}`;
 export const alive=(s,team)=>s.units.filter(u=>u.alive&&(!team||u.team===team));

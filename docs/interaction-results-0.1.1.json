@@ -1,0 +1,16 @@
+{
+  "results": [
+    "preview, cancel and deselect",
+    "drag return, cancellation and next valid touch",
+    "zoom anchor, touch coordinates, double confirm and save",
+    "burst target, preview and charge consumption",
+    "move then immediate heal",
+    "support detail, priority, conservation and confirmation",
+    "phase lock and double end-turn",
+    "artillery warning remains visible",
+    "rotation preserves hit testing",
+    "finished battle restores after reload",
+    "corrupt save recovers to map selection"
+  ],
+  "errors": []
+}

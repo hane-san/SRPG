@@ -8,14 +8,16 @@ This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nag
 - `npm run check` runs syntax and deterministic rules tests.
 - `npm run simulate` reproduces the baseline policy comparison (not an optimal strategy solver).
 - Optional browser QA: `npm install --no-save playwright`, `npx playwright install chromium`, serve root, then `node tests/browser-check.mjs`.
-- Production URL, once Pages is enabled: `https://hane-san.github.io/SRPG/` (case matters).
+- Production URL (Pages enabled): `https://hane-san.github.io/SRPG/` (case matters).
 
 ## Change map/data before adding rules
 - `data.js`: maps, terrain, positions, wave caps, roster. Coordinates are zero based. UI coordinates are one based.
 - `config.js`: combat numbers, classes, skill descriptions.
 - `engine.js`: pure deterministic commands and phases, no DOM or storage.
 - `render.js`: original procedural pixel art / range overlays.
-- `app.js` and `style.css`: touch UI, confirmation, local autosave, campaign.
+- `app.js` and `style.css`: compact battle UI, confirmation, campaign.
+- `ui-input.js`: single pointer gesture tracking; a drag that returns to its origin is still a drag.
+- `save.js`: optional local storage, validation, P1/finished-state restore.
 - Read `docs/balance.md` before changing balance; preserve open hypotheses rather than calling them resolved.
 
 ## Invariants
@@ -26,7 +28,7 @@ This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nag
 5. H1 emergency healing is +1 up to floor(HP max / 2); H0/H2 are test controls.
 6. Announce artillery at prior P4; spawned units first act at next P2.
 7. Classic deaths persist only when continuing the campaign. Retry restores the chapter-start roster. Casual restores named units at next chapter.
-8. Explicitly confirm player commands before committing movement or attacks. Don't save partial phases.
+8. Explicitly confirm player commands before committing movement or attacks. Don't save partial playing phases; finished victory/defeat states may persist at their final phase.
 9. All tests/maps use one engine; keep settings independent (casual is not an enemy difficulty).
 
 ## Releases
