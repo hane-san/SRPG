@@ -2,7 +2,7 @@
 
 スマートフォン縦画面で遊ぶ、決定論のオリジナルSRPGプロトタイプ。4フェーズ、有限の戦術スキル、動かずに行う援護・回復、連戦での永久離脱を試します。FEに着想を得ていますが、画像・音楽・キャラクター・コードは流用していません。
 
-**テストプレイ**：https://hane-san.github.io/SRPG/ （Pagesの初回設定後に利用できます）  
+**テストプレイ**：https://hane-san.github.io/SRPG/ （公開・起動確認済み）  
 **ソースの正本**：https://github.com/hane-san/SRPG  
 現在の版：0.1.0。プレイ画面の左上にも表示。
 
@@ -84,7 +84,7 @@ node tests/browser-check.mjs
 
 ## 公開・更新
 
-初回のみ、GitHub Settings → Pages → **Deploy from a branch / main / (root)** → Save。以後mainへのpushで更新されます。`.github/workflows/check.yml` はルールのCI検証です。Pages用のビルドツールは不要。
+GitHub Pagesは **Deploy from a branch / main / (root)** で公開済み。以後mainへのpushで更新されます。`.github/workflows/check.yml` はルールのCI検証です。Pages用のビルドツールは不要。
 
 ```sh
 node scripts/release.mjs 0.1.1
