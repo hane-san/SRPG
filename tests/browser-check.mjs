@@ -16,6 +16,7 @@ try{
   for(const map of [0,1,2]){
    if(map)await page.locator('#menuBtn').click();
    await page.locator('#maps .map-card').nth(map).getByRole('button').click();
+   if(await page.locator('#newBattleConfirm').count())await page.locator('#newBattleConfirm button').click();
    await page.getByRole('button',{name:'部隊表',exact:true}).click();await page.locator('#rosterList button').first().click();
    assert(await page.locator('#battleHeader').evaluate(e=>e.getBoundingClientRect().height<=64));
    assert.equal(await page.locator('#forecast').isVisible(),false);
@@ -37,14 +38,14 @@ try{
    await page.getByRole('button',{name:'危険域',exact:true}).click();await page.getByRole('button',{name:'危険域',exact:true}).click();
    for(let turn=0;turn<4;turn++){
     const turnCamera=await geometry();const ss=await page.evaluate(()=>window.srpgDebug.snapshot());if(ss.status!=='playing')break;
-    await page.getByRole('button',{name:'命令終了 →',exact:true}).click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).click();
+    await page.locator('#endTurn').click();await page.getByRole('button',{name:'敵フェーズへ進む',exact:true}).click();
     await page.waitForFunction(()=>window.srpgDebug.snapshot().phase===1||window.srpgDebug.snapshot().status!=='playing');await page.waitForTimeout(160);await unchanged(turnCamera,'phases and warning appearance');
    }
    const snap=await page.evaluate(()=>window.srpgDebug.snapshot());assert.equal(snap.turn,5,'all four full turns must finish');assert.equal(snap.map.id,map);
    const overflow=await page.evaluate(()=>({doc:document.documentElement.scrollWidth>innerWidth,height:document.querySelector('#app').getBoundingClientRect().height>innerHeight+1,map:document.querySelector('#mapViewport').clientHeight,end:document.querySelector('#endTurn').getBoundingClientRect().bottom>innerHeight+1}));
    assert(!overflow.doc&&!overflow.height&&!overflow.end,JSON.stringify({label,map,overflow}));
    await page.screenshot({path:`test-results/${label}-map${map+1}.png`});
-   await page.getByRole('button',{name:'戦闘記録',exact:true}).click();assert(await page.locator('#logs').textContent());await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();
+   await page.locator('#logBtn').click();assert(await page.locator('#logs').textContent());await page.getByRole('button',{name:'戦場へ戻る',exact:true}).click();
    const prior=await page.evaluate(()=>window.srpgDebug.snapshot());await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);const resumed=await page.evaluate(()=>window.srpgDebug.snapshot());assert.equal(resumed.turn,prior.turn);assert.equal(resumed.map.id,prior.map.id);
    results.push({label,map:map+1,turn:snap.turn,mapHeight:overflow.map,headerHeight:await page.locator('#battleHeader').evaluate(e=>e.clientHeight),errors:errors.length});
   }

@@ -1,0 +1,36 @@
+{
+  "results": [
+    "keyboard movement, explicit wait confirmation, Escape, stationary support and next-ready navigation",
+    "in-range target cycling and HP forecast agree with actual attack and counter",
+    "changing battles requires confirmation and returning keeps progress",
+    "v0.2.0 save resumes without losing actions",
+    "playback speed persists independently of battle saves",
+    "install icons, maskable icon and Apple touch icon load at correct sizes",
+    "retry restores chapter-start roster and settings after canceling a different battle",
+    "casual campaign restores withdrawn named units in the next chapter",
+    "individual enemy damage is observable while turn controls stay locked"
+  ],
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "src": "assets/icon-512.png",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "src": "assets/icon-maskable-512.png",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "src": "assets/apple-touch-icon.png",
+      "width": 180,
+      "height": 180
+    }
+  ],
+  "errors": []
+}

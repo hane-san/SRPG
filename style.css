@@ -32,7 +32,7 @@ button[aria-pressed=true]{background:#954449;color:white}
 #orders.result{top:8px;bottom:auto}
 
 #orders.idle{height:36px;display:flex;align-items:center}.idle-tip{font-size:11px;color:#697360}
-#orders.selected{height:204px;display:grid;grid-template-rows:44px 44px minmax(0,1fr) 44px;gap:4px}
+#orders.selected{height:244px;display:grid;grid-template-rows:44px 44px minmax(0,1fr) 44px;gap:4px}
 #orders.result{min-height:110px;max-height:200px;overflow:auto}.result-title{font:700 20px Georgia,'Yu Mincho',serif}.result-title small{font:11px system-ui}
 .unit-head{display:flex;gap:6px;align-items:center;min-width:0}.unit-name{flex:1;min-width:0}.unit-name strong{font:700 18px Georgia,'Yu Mincho',serif;display:block}.unit-name small{font-size:10px;color:#687463;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
 .unit-head button{padding:5px 6px;font-size:11px}.hp{font-weight:750;color:#285f61;font-size:17px;white-space:nowrap}.hp small{font-size:11px;color:#687463}
@@ -50,7 +50,7 @@ label{font-size:12px;display:flex;gap:6px;flex-direction:column;min-width:0}sele
 #modalBody .log-line{font:11px/1.7 ui-monospace,monospace;padding:4px 0;border-bottom:1px solid #e0d8c5}details{font-size:12px;line-height:1.8;border-top:1px solid #d7ccb4;margin-top:10px}summary{font-weight:700;cursor:pointer;min-height:44px;padding:11px 0}a{color:#2b6e79}#rosterList button{width:100%;text-align:left}.focus-select{margin-top:10px}.eyebrow{font-size:10px;letter-spacing:.12em;color:#697360}
 @media(min-width:700px){#app{border-inline:1px solid #897950}}
 @media(max-width:340px){#battleHeader{gap:5px;padding-inline:6px}.turn-status{gap:4px}#battleHeader .mission-link{font-size:10px;padding-inline:3px}#orders{padding-inline:7px}.unit-head{gap:4px}}
-@media(max-height:500px){#orders.selected{height:204px;max-width:340px}#battleHeader{height:48px}#orders.idle{height:30px}dialog{max-height:94svh}}
+@media(max-height:500px){#orders.selected{height:244px;max-width:340px}#battleHeader{height:48px}#orders.idle{height:30px}dialog{max-height:94svh}}
 @media(prefers-reduced-motion:reduce){#phaseFlash{transition:none}}
 
 #orders.selected.readonly{height:116px;grid-template-rows:44px minmax(0,1fr)}
@@ -69,3 +69,12 @@ label{font-size:12px;display:flex;gap:6px;flex-direction:column;min-width:0}sele
 #orders .unit-head button{padding-inline:5px}
 
 #mapViewport.routing,#mapViewport.routing #battlefield{touch-action:none}
+
+.battle-forecast{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;padding-block:3px;line-height:1.35}
+.battle-forecast>div{min-width:0}.battle-forecast strong,.battle-forecast span,.battle-forecast small{display:block}
+.battle-forecast strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.battle-forecast small{font-size:10px;color:#536356}.battle-forecast p{grid-column:1/-1;font-size:10px;line-height:1.4;margin:2px 0 0}
+#mapViewport:focus-visible{outline:3px solid #e5cc86;outline-offset:-3px}
+#phaseFlash{z-index:4;top:auto;bottom:64px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 20px);white-space:normal;text-align:center;font:600 13px/1.6 system-ui;letter-spacing:0;padding:8px 14px}
+footer{gap:4px;padding-inline:6px}footer button{padding-inline:7px;font-size:11px;white-space:nowrap}
+@media(max-width:340px){footer button{padding-inline:5px;font-size:10px}}

@@ -1,0 +1,98 @@
+[
+  {
+    "label": "iphone",
+    "map": 1,
+    "turn": 5,
+    "mapHeight": 733,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "iphone",
+    "map": 2,
+    "turn": 5,
+    "mapHeight": 733,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "iphone",
+    "map": 3,
+    "turn": 5,
+    "mapHeight": 733,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "android",
+    "map": 1,
+    "turn": 5,
+    "mapHeight": 629,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "android",
+    "map": 2,
+    "turn": 5,
+    "mapHeight": 629,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "android",
+    "map": 3,
+    "turn": 5,
+    "mapHeight": 629,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "small",
+    "map": 1,
+    "turn": 5,
+    "mapHeight": 457,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "small",
+    "map": 2,
+    "turn": 5,
+    "mapHeight": 457,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "small",
+    "map": 3,
+    "turn": 5,
+    "mapHeight": 457,
+    "headerHeight": 52,
+    "errors": 0
+  },
+  {
+    "label": "landscape",
+    "map": 1,
+    "turn": 5,
+    "mapHeight": 283,
+    "headerHeight": 48,
+    "errors": 0
+  },
+  {
+    "label": "landscape",
+    "map": 2,
+    "turn": 5,
+    "mapHeight": 283,
+    "headerHeight": 48,
+    "errors": 0
+  },
+  {
+    "label": "landscape",
+    "map": 3,
+    "turn": 5,
+    "mapHeight": 283,
+    "headerHeight": 48,
+    "errors": 0
+  }
+]

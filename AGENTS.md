@@ -2,12 +2,14 @@
 
 This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
 
+Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/usability-0.3.0.md](docs/usability-0.3.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
+
 ## Run and verify
 - Static ES modules, no build step, no runtime dependencies or CDN.
 - `npm run dev` serves repository root on port 4173.
-- `npm run check` runs syntax and deterministic rules tests.
+- `npm run check` runs syntax and deterministic rules tests on Node.js 22+.
 - `npm run simulate` reproduces the baseline policy comparison (not an optimal strategy solver).
-- Optional browser QA: `npm install --no-save playwright`, `npx playwright install chromium`, serve root, then `node tests/browser-check.mjs`, `node tests/interaction-check.mjs`, `node tests/overlay-check.mjs`.
+- Optional browser QA: `npm install --no-save --package-lock=false playwright@1.57.0`, `npx playwright install chromium`, serve root, then `node tests/browser-check.mjs`, `node tests/interaction-check.mjs`, `node tests/overlay-check.mjs`, `node tests/usability-check.mjs` (or `npm run test:browser`).
 - Production URL (Pages enabled): `https://hane-san.github.io/SRPG/` (case matters).
 
 ## Change map/data before adding rules
@@ -15,7 +17,9 @@ This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nag
 - `config.js`: combat numbers, classes, skill descriptions.
 - `engine.js`: pure deterministic commands and phases, no DOM or storage.
 - `render.js`: original procedural pixel art / range overlays.
-- `app.js` and `style.css`: compact battle UI, confirmation, campaign.
+- `app.js` and `style.css`: compact battle UI, confirmation, campaign, keyboard and display-only playback.
+- `ui-model.js`: forecast/target/next-ready helpers; delegate rule calculations to engine.
+- `assets/`: temporary original knight app icon and exported PNGs; `npm run icons` uses optional sharp.
 - `ui-input.js`: single pointer gesture tracking; a drag that returns to its origin is still a drag.
 - `save.js`: optional local storage, validation, P1/finished-state restore.
 - Read `docs/balance.md` before changing balance; preserve open hypotheses rather than calling them resolved.
@@ -36,7 +40,9 @@ This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nag
 11. Route previews must use engine.routeTo, the same weighted movement field as reachable. Selected blue-range drags edit the cursor; outside-range drags pan. Flick from the draft destination to an enemy selects an attack target but never commits. Cancellation / multitouch restore the pre-gesture draft.
 
 ## Releases
-- `node scripts/release.mjs 0.2.0` updates version tags on every ES module edge, CSS URL, package and version.json.
+- `node scripts/release.mjs 0.3.0` updates version tags on every ES module edge, CSS URL, package and version.json.
+- Keep compatible saves when rules/schema are unchanged; 0.3.0 explicitly accepts stable 0.2.0 saves.
+- Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
 - Do not commit test-results/, node_modules/, browser executables, credentials or personal chat context.

@@ -4,7 +4,13 @@
 
 **テストプレイ**：https://hane-san.github.io/SRPG/ （公開・起動確認済み）  
 **ソースの正本**：https://github.com/hane-san/SRPG  
-現在の版：0.2.0。バージョンはメニューの「このゲーム・検証記録」に表示。
+現在の版：0.3.0。バージョンはメニューの「このゲーム・検証記録」に表示。
+
+## v0.3.0の改善
+
+双方の残HPが見える戦闘予測、射程内の攻撃対象切替、未行動部隊への切替、敵・支援の一隊ずつ再生と高速設定を追加。盤面をクリックして矢印で移動先、Aで攻撃、Wで待機、Enterで命令を開く／確定、Escで一段戻る、Nで次の部隊を選べます。確定前にはゲーム状態を変えません。
+
+[今回の検証と制限](docs/usability-0.3.0.md) · [GPT / Claude Codeの共通開発手順](docs/DEVELOPMENT.md) · [次の改善項目](docs/ROADMAP.md)
 
 ## はじめかた
 
@@ -15,10 +21,10 @@
 - 「危険域」は敵の移動後射程。「詳細」にある移動先の最大被害は各敵の単独到達を合算した保守的な上限。守備隊の行動制限や相互の進路妨害を省くので、予言ではありません。
 - メニューでクラシック／カジュアル、敵火力、回復H0／H1／H2、「難易度・回復・スキル回数の設定」を開き、スキル回数1／初期値／4を変更して**新しい戦闘を開始**。進行中の数値は変わりません。
 - 単体試験は毎回全隊が揃う。連戦はクラシックの離脱が次章へ残り、カジュアルは次章に復帰。HP・残回数は次章で回復。全軍4隊未満なら無名の予備隊を追加。
-- 同じ端末・ブラウザではP1と勝敗確定状態を自動保存。クラウド同期・オンライン送信なし。再試行はその章の開始時の部隊構成へ戻る。版が変わると途中保存は引き継がない。
+- 同じ端末・ブラウザではP1と勝敗確定状態を自動保存。クラウド同期・オンライン送信なし。再試行はその章の開始時の部隊構成へ戻る。v0.2.0の保存は0.3.0へ引き継ぐ。互換性のない版のみ新規開始。
 - 北城へ入れば勝利。南北挟撃では本陣に敵が入ると敗北、南城の制圧で増援停止。
 
-iPhone Safari：共有 → ホーム画面に追加。Android Chrome：メニュー → ホーム画面に追加。ブラウザからそのまま遊べます。iOSの専用PNGアイコンは未制作のため、機種によってホーム画面の見た目は異なります。
+iPhone Safari：共有 → ホーム画面に追加。Android Chrome：メニュー → ホーム画面に追加。ブラウザからそのまま遊べます。チェスのナイトを模した仮アイコンを同梱。Apple touch iconとAndroid用maskable PNGに対応。実際のインストール表示は端末ごとの確認が必要です。
 
 ## ルール
 
@@ -66,18 +72,18 @@ npm run simulate
 | `data.js` | 3マップの地形・配置・目的地・増援位置・初期部隊 |
 | `engine.js` | 移動・戦闘・敵AI・4フェーズ・勝敗の処理 |
 | `app.js` / `style.css` | 命令UI・メニュー・連戦 |
-| `ui-input.js` / `save.js` | タップとドラッグの判定・保存データの検証 |
+| `ui-input.js` / `ui-model.js` / `save.js` | 入力判定・表示用の予測と未行動巡回・保存の検証 |
 | `render.js` | 手続き生成のオリジナル仮ドット絵・範囲・全体図 |
 | `tests/` | ルール・ブラウザ・簡易方策の再現試験 |
 | `docs/balance.md` | 採用理由・検証結果・残る問題 |
-| `AGENTS.md` | Codex / Claude Code等への編集時の引継ぎ |
+| `AGENTS.md` / `CLAUDE.md` | GPT / Codex / Claude Codeの共通契約と読込入口 |
 
 マップ座標は0始まり、UI表示は1始まり。スキル枠は兵種ごとに1つ。新規ルールを足す前に、配置と数値で調整します。
 
 任意のブラウザテスト：
 
 ```sh
-npm install --no-save playwright
+npm install --no-save --package-lock=false playwright@1.57.0
 npx playwright install chromium
 # 別ターミナルで npm run dev
 node tests/browser-check.mjs
@@ -92,7 +98,7 @@ node tests/overlay-check.mjs
 GitHub Pagesは **Deploy from a branch / main / (root)** で公開済み。以後mainへのpushで更新されます。`.github/workflows/check.yml` はルールのCI検証です。Pages用のビルドツールは不要。
 
 ```sh
-node scripts/release.mjs 0.2.0
+node scripts/release.mjs 0.3.0
 npm run check
 git add .
 git commit -m "Tune SRPG balance"
