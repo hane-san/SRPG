@@ -5,7 +5,8 @@ import {unit} from '../data.js';
 import {launch,setup} from './browser-helpers.mjs';
 const browser=await launch(),results=[];
 try{
- const t=await setup(browser),{page}=t,s=createGame();
+ const t=await setup(browser,844,390),{page}=t,s=createGame();
+ await t.reset();const startupCamera=await page.evaluate(()=>new Promise(resolve=>{const vp=document.querySelector('#mapViewport');vp.scrollTop=80;requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(vp.scrollTop)));}));assert.equal(startupCamera,80);results.push('initial camera centering cannot override navigation after startup');await page.setViewportSize({width:390,height:844});
  s.units=[unit({id:'a',name:'剣士',type:'sword',x:4,y:16},'ally'),unit({id:'e',name:'敵',type:'shield',x:6,y:13,ai:'hold'},'enemy')];
  await t.reset(s);const camera=await t.camera();await t.slide({x:4,y:16},{x:5,y:13});const draft=await t.draft();assert.deepEqual(draft.dest,{x:5,y:13});assert.deepEqual(draft.route,routeTo(s,s.units[0],draft.dest));
  const from=await t.point(draft.dest),detour=await t.point({x:5,y:12}),enemy=await t.point({x:6,y:13});await t.touch('touchStart',[from]);await t.touch('touchMove',[detour]);await t.touch('touchMove',[enemy]);await t.touch('touchEnd',[]);

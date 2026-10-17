@@ -563,6 +563,7 @@
   },
   "destination-results-0.5.1.json": {
     "results": [
+      "initial camera centering cannot override navigation after startup",
       "a second flick crossing another empty tile retains the complete drawn route and attacks from its endpoint",
       "out-of-range target does not reroute or spend an action",
       "a second flick beginning on the original unit also preserves the chosen endpoint",
