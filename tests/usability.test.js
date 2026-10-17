@@ -14,9 +14,9 @@ test('forecast HP matches committed combat, including terrain and lethal counter
  }
 });
 test('next ready unit wraps, ignores acted and dead units, and returns null when done',()=>{
- const s=E.createGame();assert.equal(nextReady(s).id,'a1');assert.equal(nextReady(s,'a8').id,'a1');
- s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a8').id,'a3');
- for(const u of E.alive(s,'ally'))u.acted=true;assert.equal(nextReady(s,'a8'),null);
+ const s=E.createGame();assert.equal(nextReady(s).id,'a1');assert.equal(nextReady(s,'a9').id,'a1');
+ s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a9').id,'a3');
+ for(const u of E.alive(s,'ally'))u.acted=true;assert.equal(nextReady(s,'a9'),null);
 });
 test('playback feedback reports the current hit/counter/heal and skips idle enemies',()=>{
  const before=E.createGame(),after=structuredClone(before),actor=after.units.find(u=>u.id==='e1');
@@ -44,3 +44,4 @@ test('v0.2 saves migrate without losing actions; corrupt nested data is rejected
  }
  assert(values.get(STORAGE));
 });
+

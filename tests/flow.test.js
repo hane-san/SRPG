@@ -33,7 +33,7 @@ test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
  }
 });
 test('enemy move events follow adjacent traversable tiles, one actor at a time',()=>{
- for(let id=0;id<3;id++){
+ for(let id=0;id<MAPS.length;id++){
   const s=E.createGame(id),events=[];E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
   for(const {event,actor,state} of events){assert(event.path.length>1);assert.deepEqual(event.path.at(-1),{x:actor.x,y:actor.y});for(let i=1;i<event.path.length;i++){assert.equal(E.dist(event.path[i-1],event.path[i]),1);assert(Number.isFinite(E.terrain(state,event.path[i]).cost));}}
   assert(events.length);
@@ -46,4 +46,9 @@ test('sound unavailable or storage disabled never blocks play; mute preference p
 });
 test('0.4 accepts stable 0.2 and 0.3 saves without changing the roster or actions',()=>{
  for(const release of ['0.2.0','0.3.0']){let value;const storage={setItem:(_k,v)=>{value=v;},getItem:()=>value},s=E.createGame(1,{},['a2']);E.act(s,'a1',s.units[0],'wait');writeSave(storage,release,s,true);const read=readSave(storage,'0.4.0',MAPS);assert(read.campaign);assert.deepEqual(read.state,s);}
+});
+
+
+test('0.5 preserves stable prior saves and all added battlefield saves',()=>{
+ for(const release of ['0.2.0','0.3.0','0.4.0','0.5.0'])for(const m of MAPS){let value;const storage={setItem:(_k,v)=>value=v,getItem:()=>value},s=E.createGame(m.id);writeSave(storage,release,s,false);assert.deepEqual(readSave(storage,'0.5.0',MAPS).state,s);}
 });

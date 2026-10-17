@@ -5,13 +5,29 @@ import {unit,MAPS} from '../data.js';
 function fixture(){const s=E.createGame();s.map.tiles=Array(20).fill('.'.repeat(12));s.map.spawns=[];s.units=[];return s;}
 const add=(s,type,x,y,team='ally',id=type)=>{const u=unit({id,name:id,type,x,y},team);s.units.push(u);return u;};
 const cmd=(s,u,action,t,dest=u)=>E.act(s,u.id,{x:dest.x,y:dest.y},action,t?.id);
-test('all maps: units occupy legal unique tiles and bases can be reached',()=>{for(let i=0;i<3;i++){const s=E.createGame(i),occupied=new Set();assert.equal(E.alive(s,'ally').length,8);for(const u of s.units){assert(Number.isFinite(E.terrain(s,u)?.cost),`${i} ${u.id} ${u.x},${u.y}`);assert(!occupied.has(E.key(u)));occupied.add(E.key(u));}const field=E.distanceField(s,s.map.goal,'ally');assert(E.alive(s,'ally').some(u=>Number.isFinite(field.get(E.key(u)))));}});
+test('all maps: units occupy legal unique tiles and bases can be reached',()=>{for(let i=0;i<MAPS.length;i++){const s=E.createGame(i),occupied=new Set();assert.equal(E.alive(s,'ally').length,9+(MAPS[i].extraAllies?.length||0));for(const u of s.units){assert(Number.isFinite(E.terrain(s,u)?.cost),`${i} ${u.id} ${u.x},${u.y}`);assert(!occupied.has(E.key(u)));occupied.add(E.key(u));}const field=E.distanceField(s,s.map.goal,'ally');assert(E.alive(s,'ally').some(u=>Number.isFinite(field.get(E.key(u)))));}});
 test('four phases; each ally acts once; restart state is independent',()=>{const s=fixture(),a=add(s,'sword',2,5);assert(cmd(s,a,'wait').ok);assert.equal(cmd(s,a,'wait').ok,false);E.prepareEnemy(s);assert.equal(s.phase,2);E.enemyPhase(s);E.supportPhase(s);assert.equal(s.phase,3);E.eventPhase(s);assert.equal(s.phase,4);E.nextTurn(s);assert.equal(s.turn,2);assert(!a.acted);assert.equal(E.createGame().units[0].hp,26);});
 test('support requires no movement, no counter; consumes on effect only',()=>{const s=fixture(),a=add(s,'bow',3,5),e=add(s,'bow',3,3,'enemy');e.ai='hold';assert(cmd(s,a,'wait').ok);E.prepareEnemy(s);const hp=e.hp;E.enemyPhase(s);assert.equal(e.hp,hp,'P2 no ally counter');E.supportPhase(s);assert(e.hp<hp);assert.equal(a.charges,2);assert.equal(s.metrics.supports,1);
  const b=fixture(),c=add(b,'bow',2,5);cmd(b,c,'wait');E.prepareEnemy(b);E.supportPhase(b);assert.equal(c.charges,3);});
 test('P3 is not countered; focus then kill then attack ordering',()=>{const s=fixture(),a=add(s,'bow',3,5),e=add(s,'bow',3,3,'enemy','first'),f=add(s,'mage',5,5,'enemy','second');assert.equal(E.supportTarget(s,a).id,'second');a.focus=e.id;assert.equal(E.supportTarget(s,a).id,'first');cmd(s,a,'wait');E.prepareEnemy(s);const hp=a.hp;E.supportPhase(s);assert.equal(a.hp,hp);});
-test('healing threshold, focus override, conservation and empty charges',()=>{const s=fixture(),h=add(s,'healer',3,5),t=add(s,'shield',4,5);t.hp-=2;cmd(s,h,'wait');E.prepareEnemy(s);E.supportPhase(s);assert.equal(h.charges,3);h.focus=t.id;E.supportPhase(s);assert.equal(t.hp,t.maxHp);assert.equal(h.charges,2);
- t.hp-=7;h.spend=false;E.supportPhase(s);assert.equal(h.charges,2);assert.equal(t.hp,t.maxHp-7);});
+test('P3 healing reaches every adjacent ally and spends once per turn, regardless of headcount',()=>{
+ for(const type of ['healer','medic']){
+  const s=fixture(),h=add(s,type,4,5),friends=[[4,4],[3,5],[5,5],[4,6]].map(([x,y],i)=>add(s,'shield',x,y,'ally',`friend${i}`));
+  for(const [i,u]of friends.entries())u.hp-=i+1;
+  const diagonal=add(s,'shield',5,6,'ally','diagonal'),enemy=add(s,'sword',4,7,'enemy');diagonal.hp=1;enemy.hp=1;h.hp=1;
+  assert(cmd(s,h,'wait').ok);for(const u of s.units)if(u.id!==h.id)u.acted=true;E.prepareEnemy(s);const events=[];E.supportPhase(s,(_s,_u,event)=>events.push(event));
+  assert(friends.every(u=>u.hp===u.maxHp));assert.equal(h.hp,1);assert.equal(diagonal.hp,1);assert.equal(enemy.hp,1);
+  assert.equal(h.charges,2);assert.equal(s.metrics.charges,1);assert.equal(s.metrics.supports,1);assert.equal(events.filter(e=>e.kind==='heal').length,4);
+  friends[0].hp-=7;E.supportPhase(s);assert.equal(h.charges,2);assert.equal(friends[0].hp,friends[0].maxHp-7,'cannot activate twice during one turn');
+  E.nextTurn(s);cmd(s,h,'wait');E.prepareEnemy(s);E.supportPhase(s);assert.equal(h.charges,1);assert.equal(friends[0].hp,friends[0].maxHp);
+ }
+});
+test('area healing: no target costs nothing; conserve and emergency caps apply to everyone',()=>{
+ const s=fixture(),h=add(s,'healer',3,5),a=add(s,'shield',4,5),b=add(s,'shield',3,4);cmd(s,h,'wait');E.prepareEnemy(s);E.supportPhase(s);assert.equal(h.charges,3);
+ a.hp=1;b.hp=2;h.spend=false;E.supportPhase(s);assert.equal(h.charges,3);assert.equal(a.hp,1);
+ h.spend=true;h.charges=1;E.supportPhase(s);assert.equal(a.hp,8);assert.equal(b.hp,9);assert.equal(h.charges,0,'one charge heals both at full strength');
+ E.nextTurn(s);a.hp=12;b.hp=13;cmd(s,h,'wait');E.prepareEnemy(s);E.supportPhase(s);assert.equal(a.hp,13);assert.equal(b.hp,13);assert.equal(h.charges,0);
+});
 test('H1 emergency cap; H0 unbounded; H2 requires injury this turn; no self heal',()=>{const s=fixture(),h=add(s,'healer',3,5),t=add(s,'shield',4,5);h.charges=0;t.hp=12;assert.equal(E.healAmount(s,h,t),1);t.hp=13;assert.equal(E.healAmount(s,h,t),0);s.settings.healing='H0';assert.equal(E.healAmount(s,h,t),1);s.settings.healing='H2';assert.equal(E.healAmount(s,h,t),0);t.hurtTurn=s.turn;assert.equal(E.healAmount(s,h,t),1);t.hp=t.maxHp;h.hp=1;assert.equal(E.supportTarget(s,h),null,'self healing is never a target');});
 test('wait after moving never arms P3; medic now heals only on stationary wait',()=>{
  const s=fixture(),h=add(s,'medic',3,5),t=add(s,'shield',5,5);t.hp=3;
@@ -48,4 +64,31 @@ test('south capture suppresses subsequent scheduled reinforcements',()=>{const s
 test('moved attackers retain P2 counter but have no P3; zero charges restore counter',()=>{
  for(const empty of [false,true]){const s=fixture(),a=add(s,'sword',3,5),e=add(s,'sword',4,empty?5:4,'enemy');e.ai='hold';
   if(empty)a.charges=0;assert(cmd(s,a,'wait',null,empty?a:{x:3,y:4}).ok);assert.equal(a.command,null);E.prepareEnemy(s);E.enemyPhase(s);assert(e.hp<e.maxHp);const hp=e.hp;E.supportPhase(s);assert.equal(e.hp,hp);}
+});
+
+
+test('shooter: one P3 shot per enemy within five tiles, one charge per turn, no counters',()=>{
+ const s=fixture(),a=add(s,'shooter',4,10),near=add(s,'sword',4,9,'enemy','near'),edge=add(s,'mage',4,5,'enemy','edge'),outside=add(s,'bow',4,4,'enemy','outside');
+ assert.equal(a.hp,10);assert.deepEqual(E.supportRange(a),[1,5]);a.charges=1;cmd(s,a,'wait');E.prepareEnemy(s);const hp=a.hp,events=[];E.supportPhase(s,(_s,_u,e)=>events.push(e));
+ assert(near.hp<near.maxHp);assert(edge.hp<edge.maxHp);assert.equal(outside.hp,outside.maxHp);assert.equal(a.hp,hp);assert.equal(a.charges,0);assert.equal(s.metrics.charges,1);assert.equal(s.metrics.supports,1);
+ assert.deepEqual(events.filter(e=>e.kind==='hit').map(e=>e.target).sort(),['edge','near']);assert(events.filter(e=>e.kind==='hit').every(e=>!e.counter));
+ const after=structuredClone(s);E.supportPhase(s);assert.deepEqual(s.units,after.units,'volley cannot repeat in the same turn');
+});
+test('shooter moving, no targets and conserve never spend a volley charge',()=>{
+ for(const mode of ['moving','empty','conserve']){const s=fixture(),a=add(s,'shooter',4,10);if(mode!=='empty')add(s,'sword',4,8,'enemy','enemy');if(mode==='conserve')a.spend=false;cmd(s,a,'wait',null,mode==='moving'?{x:5,y:10}:a);E.prepareEnemy(s);E.supportPhase(s);assert.equal(a.charges,2);assert.equal(s.metrics.charges,0);}
+});
+test('rain repeats clear clear light heavy light at P4 boundaries; every movement budget uses it',()=>{
+ const s=E.createGame(4),a=s.units.find(u=>u.type==='shield'&&u.team==='ally'),horse=s.units.find(u=>u.type==='horse'&&u.team==='ally'),shooter=s.units.find(u=>u.type==='shooter');
+ const sequence=['clear','clear','light','heavy','light','clear','clear','light','heavy','light','clear','clear'];
+ for(let i=0;i<sequence.length;i++){
+  assert.equal(s.turn,i+1);assert.equal(E.weatherAt(s),sequence[i]);const w=E.WEATHER[sequence[i]];
+  assert.equal(E.movement(s,a),Math.max(1,a.move-w.foot));assert.equal(E.movement(s,horse),Math.max(1,horse.move-w.horse));assert.equal(E.movement(s,shooter),Math.max(1,shooter.move-w.foot));
+  for(const u of [a,horse,shooter])for(const p of E.reachable(s,u)){assert(p.cost<=E.movement(s,u));assert(E.routeTo(s,u,p).length);}
+  E.eventPhase(s);assert(s.log.some(l=>l.includes(`次のT${s.turn+1}は${E.WEATHER[E.weatherAt(s,s.turn+1)].label}`)));E.nextTurn(s);
+ }
+ for(const type of ['sword','horse'])assert.equal(E.movement({...s,turn:4},{type,move:1}),1);
+ for(const m of [0,1,2,3,5])assert.equal(E.weatherAt(E.createGame(m),4),'clear');
+});
+test('enemy movement obeys rain and never rewrites base movement stats',()=>{
+ const s=E.createGame(4);s.turn=4;E.prepareEnemy(s);const base=s.units.map(u=>[u.id,u.move]);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move'){const cost=event.path.slice(1).reduce((n,p)=>n+E.terrain(state,p).cost,0);assert(cost<=E.movement(state,actor));}});assert.deepEqual(s.units.map(u=>[u.id,u.move]),base);
 });

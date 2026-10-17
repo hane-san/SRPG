@@ -5,7 +5,7 @@ import {writeFileSync} from 'node:fs';
 export function play(mapId,policy='advance',opts={},maxTurns=35){const s=E.createGame(mapId,opts);let reachedEast=false;
  while(s.status==='playing'&&s.turn<=maxTurns){
   const enemies=E.alive(s,'enemy');
-  const enemyReach=enemies.map(e=>({e,positions:E.reachable(s,e,e.ai==='hold'?0:e.move,{threat:true})}));
+  const enemyReach=enemies.map(e=>({e,positions:E.reachable(s,e,e.ai==='hold'?0:E.movement(s,e),{threat:true})}));
   function risk(p,u){return enemyReach.reduce((v,{e,positions})=>v+(positions.some(n=>E.inRange({...e,...n},p))?E.damage(s,e,{...u,...p}):0),0);}
   // Fighters first, healers after movement to recover them. Bow before melee where possible.
   const allies=E.alive(s,'ally').sort((a,b)=>Number(['healer','medic'].includes(a.type))-Number(['healer','medic'].includes(b.type))||Number(b.type==='bow')-Number(a.type==='bow')||a.id.localeCompare(b.id));
@@ -18,7 +18,7 @@ export function play(mapId,policy='advance',opts={},maxTurns=35){const s=E.creat
     const attackers=E.alive(s,'enemy').filter(e=>e.y>17);if(attackers.length)goal=s.map.base;
    }
    if(['healer','medic'].includes(u.type)){const wounded=E.alive(s,'ally').filter(a=>a.id!==u.id).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);goal=wounded[0]||goal;if(wounded.every(a=>a.hp===a.maxHp))goal=E.alive(s,'ally').filter(a=>!['healer','medic'].includes(a.type)).sort((a,b)=>a.y-b.y)[0]||goal;}
-   const field=E.distanceField(s,goal,u.team);const pos=E.reachable(s,u,u.move);const choices=[];
+   const field=E.distanceField(s,goal,u.team);const pos=E.reachable(s,u);const choices=[];
    const healType=['healer','medic'].includes(u.type),goalDistance=p=>field.get(E.key(p))??999;
    for(const p of pos){const moved=E.dist(p,u)>0;let r=risk(p,u),dangerPenalty=r*(policy==='cautious'?1.1:.65)+(r>=u.hp?30:0);const imminent=s.warnings.some(w=>w.kind==='cannon'&&w.turn===s.turn&&w.cells.some(c=>E.dist(c,p)===0));if(imminent)dangerPenalty+=12;
     let score=-goalDistance(p)*1.5-dangerPenalty+(E.terrain(s,p)?.def||0);
@@ -38,4 +38,5 @@ export function play(mapId,policy='advance',opts={},maxTurns=35){const s=E.creat
  const result={map:mapId+1,policy,healing:s.settings.healing,status:s.status==='playing'?'timeout':s.status,turn:s.turn,alive:E.alive(s,'ally').length,southTaken:s.southTaken,reachedEast,...s.metrics};
  return {s,result};
 }
-if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2])for(const policy of ['advance','cautious','hold',...(id===1?['east','south']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
+if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===1?['east','south']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
+

@@ -2,12 +2,15 @@
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {createGame} from '../engine.js';
+import {MAPS} from '../data.js';
 import {launch,setup} from './browser-helpers.mjs';
 let browser;const results=[];
 try{
  for(const [label,width,height]of [['iphone',390,844],['android',360,740],['small',320,568],['landscape',844,390]]){
   browser=await launch();const t=await setup(browser,width,height),{page}=t;
-  for(let map=0;map<3;map++){
+  // Full-speed animation is covered separately by usability/readability checks.
+  await page.evaluate(()=>localStorage.setItem('field-command-fast','true'));
+  for(let map=0;map<MAPS.length;map++){
    await t.reset(createGame(map));await t.select('a1');await page.getByRole('button',{name:'戻る',exact:true}).click();
    const u=(await t.state()).units.find(u=>u.id==='a1'),camera=await t.camera();
    await t.slide(u,{x:u.x,y:u.y-1});assert.deepEqual(await t.camera(),camera);
@@ -15,7 +18,7 @@ try{
    await page.getByRole('button',{name:'詳細',exact:true}).click();assert.deepEqual(await t.camera(),camera);await page.locator('#closeModal').click();assert.deepEqual(await t.camera(),camera);
    await page.locator('#menuBtn').click();assert.deepEqual(await t.camera(),camera);await page.locator('#closeModal').click();
    await page.locator('#waitOrder').click();await t.settled();assert.equal((await t.state()).units.find(a=>a.id===u.id).y,u.y-1);assert.deepEqual(await t.camera(),camera);
-   await page.locator('#zoomIn').click();await page.locator('#zoomOut').click();await page.locator('#dangerBtn').click();await page.locator('#dangerBtn').click();
+   await page.locator('#toolsToggle').click();await page.locator('#zoomIn').click();await page.locator('#zoomOut').click();await page.locator('#dangerBtn').click();await page.locator('#dangerBtn').click();await page.locator('#toolsToggle').click();
    for(let turn=0;turn<4;turn++){const before=await t.camera();await t.endTurn();assert.deepEqual(await t.camera(),before);}
    const state=await t.state();assert.equal(state.turn,5);assert.equal(state.map.id,map);
    const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,app:document.querySelector('#app').getBoundingClientRect().height>innerHeight+1,end:document.querySelector('#endTurn').getBoundingClientRect().bottom>innerHeight+1}));assert.deepEqual(geometry,{overflow:false,app:false,end:false});
@@ -27,3 +30,4 @@ try{
  }
  writeFileSync('test-results/browser-results.json',JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
 }finally{if(browser?.isConnected())await browser.close();}
+

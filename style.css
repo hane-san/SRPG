@@ -109,3 +109,22 @@ html,body{height:100%;overflow:hidden}
 dialog{background:#f5f0e2ed}dialog::backdrop{background:#071b2359;backdrop-filter:blur(2px)}
 #closeModal{background:#f5f0e2eb;box-shadow:0 -7px 14px #f5f0e288}
 .map-card{background:#fffcf1d6}
+
+
+/* v0.5: leave the lower battlefield open; windows avoid the active tiles. */
+#orders.idle{display:none}
+.map-tools{background:#162e2e94;box-shadow:none;max-width:calc(100% - 14px)}
+#mapToolChoices{display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+#toolsToggle{background:#173c3bca;color:#fff3d3;border-color:#c4d6bb80}
+#orders{max-width:284px;background:#152f328f;backdrop-filter:none;-webkit-backdrop-filter:none}
+#orders.selected:not(.choosing):not(.readonly):not(.has-target){height:158px}
+#orders .unit-head,#orders .preview{background:#112e32b3;border-radius:3px}
+#orders .unit-head{padding-inline:3px}
+#orders .preview{font-size:11px;line-height:1.4}
+#minimap{opacity:.8;width:36px;height:68px}
+#phaseFlash{bottom:auto;top:8px;background:#132e30e8;transform:translateX(-50%);max-width:calc(100% - 96px);padding:7px 10px}
+.map-wrap:has(#forecast:not([hidden])) #phaseFlash{top:76px}
+@media(max-height:500px){
+ .map-wrap:has(#orders.selected) .map-tools{max-width:calc(100% - 14px);flex-wrap:nowrap;left:7px;right:auto}
+ #orders.selected:not(.choosing):not(.readonly){max-width:284px}
+}
