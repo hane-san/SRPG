@@ -1,0 +1,342 @@
+[
+  {
+    "width": 390,
+    "height": 844,
+    "warning": false,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "warning": true,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 360,
+    "height": 740,
+    "warning": false,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 360,
+    "height": 740,
+    "warning": true,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "warning": false,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "warning": true,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "warning": false,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "warning": true,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1363,
+    "height": 936,
+    "warning": false,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1363,
+    "height": 936,
+    "warning": true,
+    "cameraStable": true,
+    "translucent": true,
+    "buttons": [
+      {
+        "text": "詳細",
+        "w": 44,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "攻撃",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "待機",
+        "w": 90.671875,
+        "h": 44,
+        "onScreen": true
+      },
+      {
+        "text": "戻る",
+        "w": 90.65625,
+        "h": 44,
+        "onScreen": true
+      }
+    ],
+    "errors": []
+  }
+]

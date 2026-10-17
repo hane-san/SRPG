@@ -8,7 +8,7 @@ GPTのチャット（GitHub接続あり）、Codex、Claude Codeから同じ `ha
 
 1. `git status --short` と `git log -5 --oneline` で現在地と未コミット変更を確認。
 2. 新規環境は `git clone https://github.com/hane-san/SRPG.git`。既存環境がクリーンなら `git pull --ff-only`。
-3. `AGENTS.md`、`docs/ROADMAP.md`、現行の `docs/usability-0.3.0.md` を読む。
+3. `AGENTS.md`、`docs/ROADMAP.md`、現行の `docs/flow-0.4.0.md` を読む。
 4. `npm run check` で基準を確認してから編集。
 
 別の作業者の未コミット変更は消さない。同時作業では小さいブランチを使う。
@@ -47,14 +47,18 @@ Chromiumの画面サイズ・タッチ模擬はSafari/iOS実機テストでは�
 |---|---|
 | `engine.js` | 同期・決定論のルール。DOM、タイマー、保存を持たない |
 | `data.js` / `config.js` | 地形、配置、編成、数値と説明 |
-| `ui-model.js` | 攻撃候補・残HP予測・未行動の巡回。ルールはengineに委譲 |
+| `ui-model.js` | 攻撃候補・残HP予測・連続スライド・未行動の巡回。ルールはengineに委譲 |
 | `app.js` / `ui-input.js` | 画面、明示確認、キー・タッチ、表示用の行動再生 |
+| `playback.js` / `audio.js` | 移動・交互攻撃の描画補間、効果音とユーザー操作による音の解禁 |
 | `render.js` / `style.css` | オリジナル描画、範囲、カメラに干渉しないウィンドウ |
 | `save.js` | 安定状態だけの保存、互換性と入れ子データの検証 |
 | `assets/` | 仮アイコンの原画と配信用PNG |
 
-敵・支援のobserverは各行動の確定状態を通知する。UIは別の状態を解決してから
-スナップショットを順に表示し、最後に最終状態へ揃える。再生速度で結果は変えない。
+engineのobserverは `(state, actor, event)` で move / hit / heal / settled を通知する。
+moveには合法な隣接マスの経路、hitには攻撃側・対象・量・反撃フラグを持たせる。
+UIは別の状態を同期解決し、移動の補間→攻撃→反撃を順に表示して最終状態へ揃える。
+P1の直接選択は最終状態を先に保存し、演出中の再読込でも命令を失わない。
+敵フェーズ途中は保存しない。再生速度・音・動きを減らす設定で結果は変えない。
 テスト用操作は `?debug=1` のときだけ。通常起動にデバッグ状態を公開しない。
 
 ## 仮アイコン
@@ -76,7 +80,7 @@ npm run icons
 1. 変更理由と実際の観測、残る問題を `docs/` に記録。完了した項目をroadmapへ反映。
 2. `node scripts/release.mjs X.Y.Z` で全ES moduleの参照とCSS、version.jsonを更新。
 3. `npm run check`。ルール・数値変更はsimulationも比較。UI変更はブラウザ4スクリプトも実行。
-4. 保存互換性を `save.js` で明示。現行0.3.0は0.2.0の安定保存を引き継ぐ。
+4. 保存互換性を `save.js` で明示。現行0.4.0は0.2.0・0.3.0の安定保存を引き継ぐ。
 5. `git diff --check` と差分確認。ソース・検証文書をコミットしてmainへpush。
 6. GitHub ActionsとPagesの結果を確認。公開後も版番号と主要操作を確認して記録。
 

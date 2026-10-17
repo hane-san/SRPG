@@ -1,5 +1,5 @@
-import {RULES,TERRAINS} from './config.js?v=0.3.0';
-import {MAPS,ROSTER,unit,positions} from './data.js?v=0.3.0';
+import {RULES,TERRAINS} from './config.js?v=0.4.0';
+import {MAPS,ROSTER,unit,positions} from './data.js?v=0.4.0';
 export const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 export const key=p=>`${p.x},${p.y}`;
 export const alive=(s,team)=>s.units.filter(u=>u.alive&&(!team||u.team===team));
@@ -49,7 +49,20 @@ export function damage(s,a,b,bonus=0){return Math.max(1,a.atk+bonus-b.def-(terra
 export function prediction(s,u,target,position=u,bonus=0){const a={...u,...position};const dealt=damage(s,a,target,bonus);return {damage:dealt,counter:dealt>=target.hp||target.command==='support'||target.command==='heal'||!inRange(target,a)?0:damage(s,target,a)};}
 export function threatAt(s,p,u){return alive(s,'enemy').filter(e=>reachable(s,e,e.ai==='hold'?0:e.move,{threat:true}).some(n=>inRange({...e,...n},p))).reduce((sum,e)=>sum+damage(s,e,{...u,...p}),0);}
 function hurt(s,u,n,reason){u.hp=Math.max(0,u.hp-n);if(u.hp===0&&u.alive){u.alive=false;u.command=null;s.metrics.deaths.push({turn:s.turn,id:u.id,reason});if(u.team==='ally'&&s.settings.mode==='classic'&&!s.lost.includes(u.id))s.lost.push(u.id);log(s,`${u.name} ${u.team==='enemy'?'撃破':s.settings.mode==='classic'?'永久離脱':'撤退（次章復帰）'}`);}}
-function strike(s,a,b,bonus=0,counter=true){const n=damage(s,a,b,bonus);log(s,`${a.name} → ${b.name} ${n}ダメージ`);hurt(s,b,n,a.id);if(counter&&b.alive&&a.alive&&b.command!=='support'&&b.command!=='heal'&&inRange(b,a)){const c=damage(s,b,a);log(s,`${b.name}の反撃 ${c}`);hurt(s,a,c,b.id);}}
+const noop=()=>{};
+function moveUnit(s,u,dest,observe){
+ if(dist(u,dest)===0)return;
+ const path=routeTo(s,u,dest);Object.assign(u,{x:dest.x,y:dest.y});
+ observe(s,u,{kind:'move',actor:u.id,path});
+}
+function strike(s,a,b,bonus=0,counter=true,observe=noop){
+ const n=damage(s,a,b,bonus);log(s,`${a.name} → ${b.name} ${n}ダメージ`);hurt(s,b,n,a.id);
+ observe(s,a,{kind:'hit',actor:a.id,target:b.id,amount:n,counter:false});
+ if(counter&&b.alive&&a.alive&&b.command!=='support'&&b.command!=='heal'&&inRange(b,a)){
+  const c=damage(s,b,a);log(s,`${b.name}の反撃 ${c}`);hurt(s,a,c,b.id);
+  observe(s,b,{kind:'hit',actor:b.id,target:a.id,amount:c,counter:true});
+ }
+}
 function charge(s,u){u.charges--;s.metrics.charges++;}
 export function healAmount(s,h,t){
  if(h.charges>0)return Math.min(t.maxHp-t.hp,RULES.heal);
@@ -69,10 +82,10 @@ export function validateAction(s,id,dest,action,targetId){
  if(action==='attack'&&(!t?.alive||t.team!=='enemy'||!inRange({...u,...dest},t)))return '射程内の敵を選んでください';
  return null;
 }
-export function act(s,id,dest,action,targetId){const error=validateAction(s,id,dest,action,targetId);if(error)return {ok:false,error};
+export function act(s,id,dest,action,targetId,observe=noop){const error=validateAction(s,id,dest,action,targetId);if(error)return {ok:false,error};
  const u=s.units.find(a=>a.id===id),t=s.units.find(a=>a.id===targetId),command=action==='wait'?waitCommand(u,dest):null;
- Object.assign(u,{x:dest.x,y:dest.y,acted:true,guard:0,command});s.metrics.commands++;
- if(action==='attack')strike(s,u,t);
+ moveUnit(s,u,dest,observe);Object.assign(u,{acted:true,guard:0,command});s.metrics.commands++;
+ if(action==='attack')strike(s,u,t,0,true,observe);
  else log(s,`${u.name}：${command?`${command==='heal'?'回復':'攻撃'}待機（P3準備・P2反撃なし）`:'通常待機（P3なし）'}`);
  checkOutcome(s);return {ok:true};
 }
@@ -93,19 +106,19 @@ export function enemyPhase(s,observe=()=>{}){
  const friends=alive(s,'ally');let positions=reachable(s,e,e.ai==='hold'?0:e.move);const home=s.map.enemies.find(a=>a.id===e.id)||e;
  if(e.ai==='defend')positions=positions.filter(p=>dist(p,home)<=3);
  if(e.ai==='skirmish'){const nearby=friends.filter(a=>a.x<9);if(!nearby.length)continue;}
- if(e.ai==='raid'&&s.map.base&&positions.some(p=>dist(p,s.map.base)===0)){Object.assign(e,s.map.base);log(s,`${e.name}が本陣へ突入`);checkOutcome(s);observe(s,e);continue;}
+ if(e.ai==='raid'&&s.map.base&&positions.some(p=>dist(p,s.map.base)===0)){moveUnit(s,e,s.map.base,observe);log(s,`${e.name}が本陣へ突入`);checkOutcome(s);observe(s,e,{kind:'settled',actor:e.id});continue;}
  const targets=e.ai==='skirmish'?friends.filter(a=>a.x<9):friends;
  const shots=[];for(const p of positions)for(const t of targets)if(inRange({...e,...p},t))shots.push({p,t,score:(damage(s,e,t)>=t.hp?100:0)+(e.ai==='raid'&&['healer','medic','bow'].includes(t.type)?12:0)+damage(s,e,t)-t.hp/10});
  shots.sort((a,b)=>b.score-a.score||a.p.cost-b.p.cost||a.t.y-b.t.y||a.t.x-b.t.x||a.p.y-b.p.y||a.p.x-b.p.x);
- if(shots.length){const {p,t}=shots[0];Object.assign(e,{x:p.x,y:p.y});const hp=t.hp;strike(s,e,t);if(t.hp<hp)t.hurtTurn=s.turn;}
+ if(shots.length){const {p,t}=shots[0];moveUnit(s,e,p,observe);const hp=t.hp;strike(s,e,t,0,true,observe);if(t.hp<hp)t.hurtTurn=s.turn;}
  else if(e.ai!=='hold'){
   const goal=e.ai==='raid'&&s.map.base?s.map.base:[...targets].sort((a,b)=>dist(e,a)-dist(e,b)||a.y-b.y||a.x-b.x)[0];
   if(goal){ // Global distance field avoids getting stuck behind a river or a wall.
    const field=distanceField(s,goal,e.team);positions.sort((a,b)=>(field.get(key(a))??Infinity)-(field.get(key(b))??Infinity)||a.cost-b.cost||a.y-b.y||a.x-b.x);
-   if(positions[0]&&Number.isFinite(field.get(key(positions[0]))))Object.assign(e,{x:positions[0].x,y:positions[0].y});
+   if(positions[0]&&Number.isFinite(field.get(key(positions[0]))))moveUnit(s,e,positions[0],observe);
   }
  }
- checkOutcome(s);observe(s,e);
+ checkOutcome(s);observe(s,e,{kind:'settled',actor:e.id});
  }
 }
 export function distanceField(s,goal,team){const costs=new Map([[key(goal),0]]),q=[{...goal,c:0}];while(q.length){q.sort((a,b)=>a.c-b.c);const p=q.shift();if(p.c!==costs.get(key(p)))continue;for(const [dx,dy]of [[0,-1],[-1,0],[1,0],[0,1]]){const n={x:p.x+dx,y:p.y+dy},t=terrain(s,n);if(!t)continue;const occ=at(s,n);if(occ&&occ.team!==team&&dist(n,goal)!==0)continue;const c=p.c+(terrain(s,p)?.cost||1);if(c>=(costs.get(key(n))??Infinity)||!Number.isFinite(c))continue;costs.set(key(n),c);q.push({...n,c});}}return costs;}
@@ -113,15 +126,15 @@ export function supportPhase(s,observe=()=>{}){if(s.status!=='playing')return;s.
  for(const u of alive(s,'ally'))if(['support','heal'].includes(u.command)){
   if((!u.spend&&u.charges>0)||(u.skill==='support'&&u.charges===0)){log(s,`${u.name}：温存／残数0のため支援なし`);s.metrics.misfires++;continue;}
   const t=supportTarget(s,u);if(!t){s.metrics.misfires++;log(s,`${u.name}：対象なし・消費なし`);continue;}
-  if(u.skill==='support'){charge(s,u);strike(s,u,t,0,false);}
-  else{const n=healAmount(s,u,t);if(u.charges>0)charge(s,u);t.hp+=n;log(s,`${u.name} → ${t.name} 待機回復＋${n}`);}
-  s.metrics.supports++;checkOutcome(s);observe(s,u);
+  if(u.skill==='support'){charge(s,u);strike(s,u,t,0,false,observe);}
+  else{const n=healAmount(s,u,t);if(u.charges>0)charge(s,u);t.hp+=n;log(s,`${u.name} → ${t.name} 待機回復＋${n}`);observe(s,u,{kind:'heal',actor:u.id,target:t.id,amount:n});}
+  s.metrics.supports++;checkOutcome(s);observe(s,u,{kind:'settled',actor:u.id});
  }
 }
 function spawn(s,cells){for(let i=0;i<cells.length;i++){const p=cells[i];if(at(s,p)){log(s,`増援地点(${p.x+1},${p.y+1})占有・到着中止`);continue;}s.units.push(unit({id:`reinforcement-${s.turn}-${i}`,name:'増援隊',type:i%2?'sword':'horse',ai:s.map.base?'raid':'advance',...p},'enemy',s.settings));}log(s,'増援到着。行動は次ターンP2から');}
-export function eventPhase(s){if(s.status!=='playing')return;s.phase=4;log(s,'戦場更新');
+export function eventPhase(s,observe=noop){if(s.status!=='playing')return;s.phase=4;log(s,'戦場更新');
  for(const w of s.warnings.filter(w=>w.turn===s.turn)){
-  if(w.kind==='cannon'){log(s,`予告砲撃：各${RULES.barrageDamage}ダメージ`);for(const u of alive(s))if(w.cells.some(p=>dist(u,p)===0))hurt(s,u,RULES.barrageDamage,'砲撃');}
+  if(w.kind==='cannon'){log(s,`予告砲撃：各${RULES.barrageDamage}ダメージ`);for(const u of alive(s))if(w.cells.some(p=>dist(u,p)===0)){hurt(s,u,RULES.barrageDamage,'砲撃');observe(s,u,{kind:'hit',actor:null,target:u.id,amount:RULES.barrageDamage});}}
   else if(!s.southTaken)spawn(s,w.cells);
  }
  s.warnings=s.warnings.filter(w=>w.turn>s.turn);

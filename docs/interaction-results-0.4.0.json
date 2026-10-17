@@ -1,0 +1,14 @@
+{
+  "results": [
+    "press unselected ally, slide live arrow, release for three direct choices, return without action",
+    "single continuous slide reaches enemy while preserving approach arrow; one attack choice executes exactly once",
+    "one wait choice commits movement, disables P3 after moving and persists on reload",
+    "pointer cancellation and second finger on map or preview button restore the entire pre-press draft",
+    "700ms real long press suppresses context menu, text selection, page scrolling and native touch gestures",
+    "holding a route at the viewport edge scrolls the map under the finger without a browser gesture",
+    "empty-space drags use game-controlled panning and never issue commands",
+    "stationary quick wait still prepares finite P3 support",
+    "quick wait preserves P3 healing, finite charges and preferred targets"
+  ],
+  "errors": []
+}

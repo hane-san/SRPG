@@ -1,10 +1,10 @@
-import {CLASSES,SKILLS} from './config.js?v=0.3.0';
+import {CLASSES,SKILLS} from './config.js?v=0.4.0';
 // Storage is optional. Reject partial turns and malformed/old saves before rendering.
 export const STORAGE='field-command-save-v1';
 export function readSave(storage,release,maps){
  try{
   const saved=JSON.parse(storage.getItem(STORAGE)),s=saved?.state,m=maps[s?.map?.id];
-  const compatible=saved?.release===release||(release==='0.3.0'&&saved?.release==='0.2.0');
+  const compatible=saved?.release===release||(['0.3.0','0.4.0'].includes(release)&&['0.2.0','0.3.0'].includes(saved?.release));
   if(!compatible||!s||!m||s.map.w!==m.w||s.map.h!==m.h||!['playing','victory','defeat'].includes(s.status)||(![1,2,3,4].includes(s.phase))||(s.status==='playing'&&s.phase!==1))return null;
   if(!Number.isInteger(s.turn)||s.turn<1||!Array.isArray(s.units)||!s.units.length||!Array.isArray(s.log)||!Array.isArray(s.lost)||!Array.isArray(s.warnings)||!s.metrics||!s.settings)return null;
   if(!['classic','casual'].includes(s.settings.mode)||!['H0','H1','H2'].includes(s.settings.healing)||![-2,0,2].includes(s.settings.enemyAttack))return null;

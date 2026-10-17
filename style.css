@@ -78,3 +78,34 @@ label{font-size:12px;display:flex;gap:6px;flex-direction:column;min-width:0}sele
 #phaseFlash{z-index:4;top:auto;bottom:64px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 20px);white-space:normal;text-align:center;font:600 13px/1.6 system-ui;letter-spacing:0;padding:8px 14px}
 footer{gap:4px;padding-inline:6px}footer button{padding-inline:7px;font-size:11px;white-space:nowrap}
 @media(max-width:340px){footer button{padding-inline:5px;font-size:10px}}
+
+/* v0.4: one gesture, one quick choice. The battlefield owns touch from down. */
+html,body{height:100%;overflow:hidden}
+#app{-webkit-user-select:none;user-select:none}
+#mapViewport,#battlefield,#mapViewport.routing,#mapViewport.routing #battlefield{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+#soundBtn{font-size:10px;padding:5px;border-color:#718173;background:transparent;color:#f5ecd5;flex:none}
+#soundBtn[aria-pressed=true]{background:#315953;color:#f5ecd5}
+#battleHeader{gap:5px}#battleHeader .mission-link{padding-inline:3px}
+#orders{max-width:300px;background:#152f32cf;color:#fff5dc;border:1px solid #dbc99199;outline:1px solid #132c34aa;box-shadow:0 3px 12px #102a3255;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);border-radius:8px;padding:7px 8px}
+#orders.selected:not(.choosing):not(.readonly){height:194px;grid-template-rows:44px minmax(0,1fr) 44px}
+#orders.selected.choosing{height:90px;grid-template-rows:44px minmax(0,1fr)}
+#orders.selected.readonly{height:116px;grid-template-rows:44px minmax(0,1fr)}
+#orders .unit-name small,#orders .hp small{color:#d3e2d2}#orders .hp{color:#aee4da}
+#orders .unit-head button,#orders .subtle{background:#f3eddd14;color:#fff3d3;border-color:#f3eddd44}
+#orders .preview{color:#fff4dc;background:#0d242638;border-left:2px solid #d7ba78}
+#orders .battle-forecast small{color:#d4e6d6}#orders .battle-forecast .risk{color:#ffb0a2}
+#orders .hint{color:#e3e8d9;margin:2px 0}
+#orders .command-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+#orders .command-row button{font-size:13px;background:#2f6564e8;border-color:#a6d1bf80;color:#fff7df}
+#orders .command-row .attack{background:#914d4be6;border-color:#e9ae9677}
+#orders .command-row .subtle{background:#f3eddd14;border-color:#f3eddd55}
+#orders .command-row button:disabled{opacity:.3}
+#phaseFlash{background:#132e30ce;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);font-size:12px;max-height:88px;overflow:hidden;border-radius:5px}
+@media(max-height:500px){
+ #orders.selected:not(.choosing):not(.readonly){height:194px;max-width:300px}
+ .map-wrap:has(#forecast:not([hidden])) #orders.selected:not(.choosing):not(.readonly){height:188px;grid-template-rows:44px minmax(0,1fr) 44px}
+ .map-wrap:has(#orders.selected) .map-tools{max-width:calc(100% - 314px)}
+}
+dialog{background:#f5f0e2ed}dialog::backdrop{background:#071b2359;backdrop-filter:blur(2px)}
+#closeModal{background:#f5f0e2eb;box-shadow:0 -7px 14px #f5f0e288}
+.map-card{background:#fffcf1d6}

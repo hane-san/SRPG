@@ -1,4 +1,4 @@
-import {alive,inRange,prediction,terrain} from './engine.js?v=0.3.0';
+import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo} from './engine.js?v=0.4.0';
 
 export const attackTargets=(s,u,dest=u)=>alive(s,'enemy').filter(t=>inRange({...u,...dest},t));
 export function battleForecast(s,u,target,dest=u){
@@ -17,4 +17,20 @@ export function actionMessage(before,after,actor){
   const delta=u.hp-old.hp;return [`${u.name} HP ${old.hp}→${u.hp} (${delta>0?'+':''}${delta})${!u.alive?(u.team==='enemy'?'・撃破':after.settings.mode==='classic'?'・永久離脱':'・撤退'):''}`];});
  const old=before.units.find(u=>u.id===actor.id),moved=old&&(old.x!==actor.x||old.y!==actor.y);
  return changes.length?`${actor.name}：${changes.join(' / ')}`:moved?`${actor.name}が (${actor.x+1}, ${actor.y+1})へ移動`:null;
+}
+// Continue the arrow into an enemy without moving onto its occupied tile.
+export function slideDraft(s,u,p,current=u){
+ const target=at(s,p);
+ if(target?.team==='enemy'){
+  let dest=current;
+  if(!inRange({...u,...dest},target)){
+   const options=reachable(s,u).filter(n=>inRange({...u,...n},target));
+   options.sort((a,b)=>dist(a,current)-dist(b,current)||a.cost-b.cost||a.y-b.y||a.x-b.x);
+   dest=options[0];
+  }
+  if(!dest)return null;
+  const route=routeTo(s,u,dest);if(!route.length)return null;
+  return {dest:{x:dest.x,y:dest.y},route,target:target.id};
+ }
+ const route=routeTo(s,u,p);return route.length?{dest:{x:p.x,y:p.y},route,target:null}:null;
 }

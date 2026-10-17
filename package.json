@@ -1,13 +1,13 @@
 {
   "name": "field-command-srpg",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "private": true,
   "description": "A deterministic mobile tactical prototype; no build or runtime dependencies",
   "scripts": {
     "dev": "python3 -m http.server 4173",
     "test": "node --test --test-reporter=spec tests/*.test.js",
-    "check": "node --check app.js && node --check engine.js && node --check render.js && node --check save.js && node --check ui-input.js && node --check ui-model.js && node --test --test-reporter=spec tests/*.test.js",
+    "check": "node --check app.js && node --check engine.js && node --check render.js && node --check save.js && node --check ui-input.js && node --check ui-model.js && node --check audio.js && node --check playback.js && node --test --test-reporter=spec tests/*.test.js",
     "simulate": "node tests/simulate.mjs",
     "test:browser": "node tests/browser-check.mjs && node tests/interaction-check.mjs && node tests/overlay-check.mjs && node tests/usability-check.mjs",
     "icons": "node scripts/icons.mjs"

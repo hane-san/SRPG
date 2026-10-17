@@ -1,0 +1,24 @@
+{
+  "results": [
+    "normal-speed ally movement interpolates tile by tile; attack and counter animate and change HP separately",
+    "enemies move and fight one at a time, completing counters before the next enemy moves; partial phases never save",
+    "Web Audio unlocks after a gesture; step/attack cues schedule, and mute persists with no sounds after reload",
+    "keyboard route, menu, Escape and direct W choice match the touch flow",
+    "reloading during presentation restores the complete committed command, never a visual intermediate state",
+    "stable v0.2 and v0.3 saves migrate to v0.4",
+    "battle switching still confirms discarding progress while ordinary orders execute directly",
+    "retry retains prior-chapter losses and restores this chapter’s losses",
+    "casual campaign restores withdrawn captains at the next chapter",
+    "fast playback preference persists independently of campaign and sound",
+    "corrupt saves reset safely without blocking the menu or sound initialization"
+  ],
+  "traceSamples": {
+    "ally": 85,
+    "enemy": 249,
+    "moveOrder": [
+      "e1",
+      "e4"
+    ]
+  },
+  "errors": []
+}

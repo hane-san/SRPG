@@ -2,7 +2,7 @@
 
 This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
 
-Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/usability-0.3.0.md](docs/usability-0.3.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
+Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/flow-0.4.0.md](docs/flow-0.4.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
 ## Run and verify
 - Static ES modules, no build step, no runtime dependencies or CDN.
@@ -17,8 +17,10 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `config.js`: combat numbers, classes, skill descriptions.
 - `engine.js`: pure deterministic commands and phases, no DOM or storage.
 - `render.js`: original procedural pixel art / range overlays.
-- `app.js` and `style.css`: compact battle UI, confirmation, campaign, keyboard and display-only playback.
-- `ui-model.js`: forecast/target/next-ready helpers; delegate rule calculations to engine.
+- `app.js` and `style.css`: quick-action battle UI, campaign, keyboard; Attack/Wait are the final choice with no extra confirmation.
+- `ui-model.js`: forecast/target/slide/next-ready helpers; delegate rule calculations to engine.
+- `playback.js`: tile interpolation and ordered hit/counter/heal presentation; never resolve rules here.
+- `audio.js`: original Web Audio cues, gesture unlock, persistent mute; audio failure cannot block play.
 - `assets/`: temporary original knight app icon and exported PNGs; `npm run icons` uses optional sharp.
 - `ui-input.js`: single pointer gesture tracking; a drag that returns to its origin is still a drag.
 - `save.js`: optional local storage, validation, P1/finished-state restore.
@@ -32,16 +34,17 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 5. H1 emergency healing is +1 up to floor(HP max / 2); H0/H2 are test controls.
 6. Announce artillery at prior P4; spawned units first act at next P2.
 7. Classic deaths persist only when continuing the campaign. Retry restores the chapter-start roster. Casual restores named units at next chapter.
-8. Explicitly confirm player commands before committing movement or attacks. Don't save partial playing phases; finished victory/defeat states may persist at their final phase.
+8. Press/slide/release only edits a draft and opens Attack / Wait / Back. Choices are disabled while the route finger is still held; after release, choosing Attack or Wait commits immediately; do not add a separate command/confirm step. Back/cancel/multitouch never consumes an action. Save the complete resolved P1 command before its presentation, never an intermediate visual/playing phase; finished outcomes may persist at their final phase.
 9. All tests/maps use one engine; keep settings independent (casual is not an enemy difficulty).
 
-10. Battlefield geometry and scroll offsets must stay identical through selection, command/menu/details open-close, cancel, commit and warning appearance. Windows overlay the map. Only explicit navigation, zoom and resize may adjust the camera. Keep the 44px touch targets.
+10. Battlefield geometry and scroll offsets must stay identical through selection, command/menu/details open-close, cancel, commit and warning appearance. Windows overlay the map. Only explicit navigation, zoom and resize may adjust the camera. Holding a route near an edge is explicit navigation and may auto-scroll. Keep the 44px touch targets.
 
-11. Route previews must use engine.routeTo, the same weighted movement field as reachable. Selected blue-range drags edit the cursor; outside-range drags pan. Flick from the draft destination to an enemy selects an attack target but never commits. Cancellation / multitouch restore the pre-gesture draft.
+11. Route previews and movement events must use engine.routeTo, the weighted movement field shared with reachable. Pointerdown on an unselected ready ally selects it immediately and captures the gesture. Sliding into an enemy keeps the last legal firing position or finds a legal approach. Enemy contact may open its preview while still held; release opens the quick menu. Neither commits. Empty/outside-range drags pan through game handlers. Set touch-action:none before pointerdown and suppress map contextmenu, selection and touch callouts. Cancellation/multitouch restore the entire pre-press draft.
+12. Animate movement along adjacent route tiles, then first strike, then a legal counter as separate engine observations. Present enemies sequentially. Playback speed/reduced motion/sound must not change results or enable input mid-command. Sound starts only after a user gesture and has persistent mute.
 
 ## Releases
-- `node scripts/release.mjs 0.3.0` updates version tags on every ES module edge, CSS URL, package and version.json.
-- Keep compatible saves when rules/schema are unchanged; 0.3.0 explicitly accepts stable 0.2.0 saves.
+- `node scripts/release.mjs 0.4.0` updates version tags on every ES module edge, CSS URL, package and version.json.
+- Keep compatible saves when rules/schema are unchanged; 0.4.0 explicitly accepts stable 0.2.0 and 0.3.0 saves.
 - Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
