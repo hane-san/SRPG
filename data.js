@@ -1,4 +1,4 @@
-import {CLASSES} from './config.js?v=0.5.1';
+import {CLASSES} from './config.js?v=0.5.2';
 const row = (w,h) => Array.from({length:h},()=>Array(w).fill('.'));
 function path(g,x,y0,y1,t='='){for(let y=y0;y<=y1;y++)g[y][x]=t;}
 function patch(g,x,y,w,h,t){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)g[j][i]=t;}
