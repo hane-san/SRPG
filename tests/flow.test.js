@@ -64,3 +64,6 @@ test('blue movement and outside attack areas use weather-aware legal movement wi
 test('0.5.1 keeps 0.5.0 saved roster and commands intact',()=>{
  let value;const storage={getItem:()=>value,setItem:(_k,v)=>value=v},s=E.createGame(4);E.act(s,'a1',s.units[0],'wait');writeSave(storage,'0.5.0',s,false);assert.deepEqual(readSave(storage,'0.5.1',MAPS).state,s);
 });
+test('0.5.2 preserves compatible saves and resolved commands on every map',()=>{
+ for(const release of ['0.2.0','0.3.0','0.4.0','0.5.0','0.5.1'])for(const m of MAPS){let value;const storage={getItem:()=>value,setItem:(_k,v)=>value=v},s=E.createGame(m.id);E.act(s,'a1',s.units[0],'wait');writeSave(storage,release,s,true);const read=readSave(storage,'0.5.2',MAPS);assert(read.campaign);assert.deepEqual(read.state,s);}
+});

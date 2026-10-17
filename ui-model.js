@@ -1,4 +1,4 @@
-import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo} from './engine.js?v=0.5.1';
+import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo} from './engine.js?v=0.5.2';
 
 export const attackTargets=(s,u,dest=u)=>alive(s,'enemy').filter(t=>inRange({...u,...dest},t));
 export function battleForecast(s,u,target,dest=u){

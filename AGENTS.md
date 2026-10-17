@@ -2,7 +2,7 @@
 
 This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
 
-Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/destination-0.5.1.md](docs/destination-0.5.1.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
+Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/commands-0.5.2.md](docs/commands-0.5.2.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
 ## Run and verify
 - Static ES modules, no build step, no runtime dependencies or CDN.
@@ -38,20 +38,20 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 9. Press/slide/release only edits a draft and opens Attack / Wait / Back. Choices are disabled while the route finger is still held; after release, choosing Attack or Wait commits immediately; do not add a separate command/confirm step. Back/cancel/multitouch never consumes an action. Save the complete resolved P1 command before its presentation, never an intermediate visual/playing phase; finished outcomes may persist at their final phase.
 10. All tests/maps use one engine; keep settings independent (casual is not an enemy difficulty).
 
-11. Battlefield geometry and scroll offsets must stay identical through selection, command/menu/details open-close, cancel, commit and warning appearance. Windows overlay the map. Only explicit navigation, zoom and resize may adjust the camera. Holding a route near an edge is explicit navigation and may auto-scroll. Keep the 44px touch targets.
+11. Battlefield geometry and scroll offsets must stay identical through selection, command/menu/details open-close, cancel, commit and warning appearance. Command controls live in a fixed-height dock outside the clipped map viewport; opening or hiding controls cannot change its reserved height. Only explicit navigation, zoom and resize may adjust the camera. Holding a route near an edge is explicit navigation and may auto-scroll. Keep the 44px touch targets.
 
-12. Route previews and movement events must use engine.routeTo, the weighted movement field shared with reachable. Pointerdown on an unselected ready ally selects it immediately and captures the gesture. Sliding into an enemy keeps the last legal firing position or finds a legal approach. Enemy contact may open its preview while still held; release opens the quick menu. Neither commits. Empty/outside-range drags pan through game handlers. Set touch-action:none before pointerdown and suppress map contextmenu, selection and touch callouts. Cancellation/multitouch restore the entire pre-press draft.
+12. Route previews and movement events must use engine.routeTo, the weighted movement field shared with reachable. Pointerdown on an unselected ready ally selects it immediately and captures the gesture. Sliding into an enemy keeps the last legal firing position or finds a legal approach. Enemy contact may update the draft preview while still held, but command controls stay hidden throughout the drag; release shows the quick menu. Neither commits. Empty/outside-range drags pan through game handlers. Set touch-action:none before pointerdown and suppress map contextmenu, selection and touch callouts. Cancellation/multitouch restore the entire pre-press draft.
 13. Animate movement along adjacent route tiles, then first strike, then a legal counter as separate engine observations. Present enemies sequentially. Playback speed/reduced motion/sound must not change results or enable input mid-command. Sound starts only after a user gesture and has persistent mute.
 
 ## Releases
-- `node scripts/release.mjs 0.5.1` updates version tags on every ES module edge, CSS URL, package and version.json.
-- Keep compatible saves when rules/schema are unchanged; 0.5.1 accepts stable 0.2.0 through 0.5.0 saves. The P3 area-heal rule applies prospectively.
+- `node scripts/release.mjs 0.5.2` updates version tags on every ES module edge, CSS URL, package and version.json.
+- Keep compatible saves when rules/schema are unchanged; 0.5.2 accepts stable 0.2.0 through 0.5.1 saves. The P3 area-heal rule applies prospectively.
 - Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
 - Do not commit test-results/, node_modules/, browser executables, credentials or personal chat context.
 
 
-Optional maps 04–06 are standalone only; retain the original three-chapter campaign. Map controls start collapsed. Keep active origin/destination/target tiles clear of command windows where the viewport allows; window repositioning never scrolls the map.
+Optional maps 04–06 are standalone only; retain the original three-chapter campaign. Map controls start collapsed. Command controls must never overlap the map viewport or movement/attack ranges. Keep the dock height stable during all draft and command states.
 
-When a route is already drawn, an enemy flick must retain that endpoint and route. A secondary gesture may start at the endpoint, original selected unit or empty map. Intermediate empty cells do not edit the anchor before the final intent is known; releasing on an empty tile explicitly edits the route. Out-of-range targets disable attack and explain why; never silently choose another firing position or another target. Without an explicit route, a direct enemy selection may still suggest a legal approach. Command popups are anchored by the destination with a pointer, clamped to the viewport without camera movement. Blue movement and the outer red normal-attack area must not overlap; P3 remains separately described.
+When a route is already drawn, an enemy flick must retain that endpoint and route. A secondary gesture may start at the endpoint, original selected unit or empty map. Intermediate empty cells do not edit the anchor before the final intent is known; releasing on an empty tile explicitly edits the route. Out-of-range targets disable attack and explain why; never silently choose another firing position or another target. Without an explicit route, a direct enemy selection may still suggest a legal approach. Command controls are outside the map, hidden during route editing, and show concise information with readable text (forecast/actions at least 14px); move long explanations to Details. Blue movement and the outer cyan normal-attack area must not overlap; P3 remains separately described.

@@ -7,10 +7,10 @@ import {launch,setup} from './browser-helpers.mjs';
 const browser=await launch(),results=[];
 try{
  const t=await setup(browser,390,844,{reducedMotion:'no-preference'}),{page}=t;
- await t.reset();assert(!(await page.locator('#orders').isVisible()));assert(!(await page.locator('#mapToolChoices').isVisible()));
- const camera=await t.camera();await page.locator('#toolsToggle').click();assert(await page.locator('#zoomIn').isVisible());await page.locator('#toolsToggle').click();assert.deepEqual(await t.camera(),camera);results.push('idle strip absent and tool expansion leaves camera unchanged');
+ await t.reset();assert.equal(await page.locator('#orders button').count(),0);assert(!(await page.locator('#mapToolChoices').isVisible()));
+ const camera=await t.camera();await page.locator('#toolsToggle').click();assert(await page.locator('#zoomIn').isVisible());await page.locator('#toolsToggle').click();assert.deepEqual(await t.camera(),camera);results.push('idle instructions have no buttons and tool expansion leaves camera unchanged');
  await t.slide({x:6,y:16},{x:6,y:12});
- const overlap=await page.evaluate(()=>{const r=document.querySelector('#orders').getBoundingClientRect(),c=document.querySelector('#battlefield').getBoundingClientRect(),s=srpgDebug.snapshot(),v=srpgDebug.draft(),tile=c.width/s.map.w;return [s.units.find(u=>u.id===v.selected),v.dest,s.units.find(u=>u.id===v.target)].filter(Boolean).some(p=>{const x=c.left+(p.x+.5)*tile,y=c.top+(p.y+.5)*tile;return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;});});assert(!overlap);results.push('attack window avoids origin, destination and target at phone size');
+ const overlap=await page.evaluate(()=>{const r=document.querySelector('#orders').getBoundingClientRect(),c=document.querySelector('#battlefield').getBoundingClientRect(),s=srpgDebug.snapshot(),v=srpgDebug.draft(),tile=c.width/s.map.w;return [s.units.find(u=>u.id===v.selected),v.dest,s.units.find(u=>u.id===v.target)].filter(Boolean).some(p=>{const x=c.left+(p.x+.5)*tile,y=c.top+(p.y+.5)*tile;return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;});});assert(!overlap);results.push('command dock avoids origin, destination and target at phone size');
  const arch=createGame();arch.units=[unit({id:'archer',name:'弓隊',type:'bow',x:5,y:16},'ally'),unit({id:'target',name:'標的',type:'shield',x:5,y:14,ai:'hold'},'enemy')];
  await t.reset(arch);await t.select('archer');assert((await page.locator('#actionPreview').innerText()).includes('隣接不可'));
  await page.evaluate(()=>{window.arrowTrace=[];window.arrowTimer=setInterval(()=>{const v=srpgDebug.draft();window.arrowTrace.push({at:performance.now(),animation:v.animation,projectile:v.projectile});},10);});

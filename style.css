@@ -129,13 +129,18 @@ dialog{background:#f5f0e2ed}dialog::backdrop{background:#071b2359;backdrop-filte
  #orders.selected:not(.choosing):not(.readonly){max-width:284px}
 }
 
-/* v0.5.1: destination-anchored command popup with a spatial pointer. */
-#orders{max-width:248px;overflow:visible;background:#152f32bc}
-#orders .unit-name small{font-size:10px}
-#orders .preview{min-height:0}
-#orders[data-pointer]::after{content:"";position:absolute;width:0;height:0;border:8px solid transparent;pointer-events:none}
-#orders[data-pointer=top]::after{top:-16px;left:calc(var(--pointer-x) - 8px);border-bottom-color:#e5d3a3}
-#orders[data-pointer=bottom]::after{bottom:-16px;left:calc(var(--pointer-x) - 8px);border-top-color:#e5d3a3}
-#orders[data-pointer=left]::after{left:-16px;top:calc(var(--pointer-y) - 8px);border-right-color:#e5d3a3}
-#orders[data-pointer=right]::after{right:-16px;top:calc(var(--pointer-y) - 8px);border-left-color:#e5d3a3}
-@media(max-height:500px){#orders.selected:not(.choosing):not(.readonly){max-width:248px}}
+/* v0.5.2: command controls live outside the clipped battlefield. */
+#commandDock{height:128px;flex:none;position:relative;background:#17343b;border-top:1px solid #89b7c6;color:#eff8ff}
+#commandHint{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;color:#c8e0eb;pointer-events:none}
+#commandDock #orders{position:static;width:100%;max-width:none;height:100%;min-height:0;max-height:none;display:grid;grid-template-rows:20px minmax(0,1fr) 44px;gap:4px;padding:6px 10px;border:0;outline:0;border-radius:0;box-shadow:none;background:#17343be6;overflow:hidden}
+#commandDock #orders::after{display:none}
+#commandDock #orders .unit-head{background:none;padding:0;display:flex;gap:10px;min-height:0;align-items:center;white-space:nowrap;overflow:hidden}
+#commandDock #orders .unit-head strong{font:700 15px system-ui}
+#commandDock #orders .unit-head span{font-size:13px;color:#c4dbe8;overflow:hidden;text-overflow:ellipsis}
+#commandDock #orders .preview{background:none;border:0;padding:0;font-size:14px;line-height:1.35;white-space:pre-line;min-height:0;overflow:auto;color:#f0f8ff}
+#commandDock #orders .command-row{display:grid;grid-template-columns:repeat(var(--choices,4),minmax(44px,1fr));gap:6px}
+#commandDock #orders .command-row button{font-size:14px;padding:5px 3px;min-height:44px;min-width:44px;line-height:1.2}
+#commandDock #orders .command-row .attack{background:#306a9b;border-color:#8dbede}
+#commandDock #orders.idle{display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1.6;color:#c8e0eb;text-align:center}
+#commandDock #orders.result{display:block}
+#commandDock #orders.result .action-row{margin-top:10px}

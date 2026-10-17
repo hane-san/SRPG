@@ -1,5 +1,5 @@
 // One finite tactical resource per unit. No RNG or hidden difficulty scaling.
-export const RELEASE = '0.5.1';
+export const RELEASE = '0.5.2';
 export const RULES = {
   heal: 7, emergencyCap: 0.5,
   barrageDamage: 6,

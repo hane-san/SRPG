@@ -14,7 +14,7 @@ try{
    await t.reset(createGame(map));await t.select('a1');await page.getByRole('button',{name:'戻る',exact:true}).click();
    const u=(await t.state()).units.find(u=>u.id==='a1'),camera=await t.camera();
    await t.slide(u,{x:u.x,y:u.y-1});assert.deepEqual(await t.camera(),camera);
-   assert.deepEqual(await page.locator('.command-row button').allTextContents(),['攻撃','待機','戻る']);assert.equal(await page.locator('#confirmOrder').count(),0);
+   assert.deepEqual(await page.locator('.command-row button').allTextContents(),['攻撃','待機','戻る','詳細']);assert.equal(await page.locator('#confirmOrder').count(),0);
    await page.getByRole('button',{name:'詳細',exact:true}).click();assert.deepEqual(await t.camera(),camera);await page.locator('#closeModal').click();assert.deepEqual(await t.camera(),camera);
    await page.locator('#menuBtn').click();assert.deepEqual(await t.camera(),camera);await page.locator('#closeModal').click();
    await page.locator('#waitOrder').click();await t.settled();assert.equal((await t.state()).units.find(a=>a.id===u.id).y,u.y-1);assert.deepEqual(await t.camera(),camera);

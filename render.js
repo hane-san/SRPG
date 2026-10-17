@@ -1,5 +1,5 @@
-import {tacticalRanges} from './ui-model.js?v=0.5.1';
-import {alive,at,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.5.1';
+import {tacticalRanges} from './ui-model.js?v=0.5.2';
+import {alive,at,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.5.2';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
  {'.':'#919e7b','=':'#beb792',f:'#627d68','~':'#769aab'},
@@ -37,11 +37,11 @@ export function render(canvas,s,view){
    if(t==='f'){c.moveTo(px+3,py+25);c.lineTo(px+7,py+17);c.lineTo(px+11,py+25);c.closePath();c.moveTo(px+7,py+25);c.lineTo(px+7,py+29);}
    else if(t==='='||t==='+'){c.moveTo(px+3,py+27);c.lineTo(px+11,py+27);c.moveTo(px+3,py+24);c.lineTo(px+11,py+24);}
    else if(t==='c'||t==='v'){c.rect(px+3,py+21,8,7);c.moveTo(px+3,py+21);c.lineTo(px+7,py+17);c.lineTo(px+11,py+21);}c.stroke();
-  }else if(attacks.has(`${x},${y}`)){c.fillStyle='#ff496366';c.fillRect(px,py,32,32);}
+  }else if(attacks.has(`${x},${y}`)){c.fillStyle='#5edcfa70';c.fillRect(px,py,32,32);}
   if(['bow','shooter'].includes(selected?.type)&&view.menu&&view.dest&&key(view.dest)===key(selected)&&inRange(selected,{x,y},supportRange(selected))){c.strokeStyle='#e5c5ffbb';c.lineWidth=1.5;c.setLineDash([3,3]);c.strokeRect(px+2,py+2,28,28);c.setLineDash([]);}
   if(selected?.skill==='heal'&&view.dest&&key(view.dest)===key(selected)&&Math.abs(selected.x-x)+Math.abs(selected.y-y)===1){c.strokeStyle='#b5ffe0';c.lineWidth=2;c.strokeRect(px+2,py+2,28,28);}
  }
- if(moves.size){outline(c,new Set([...moves,...attacks]),'#ff6c84',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
+ if(moves.size){outline(c,new Set([...moves,...attacks]),'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
  for(const w of s.warnings)for(const p of w.cells){c.strokeStyle=w.kind==='cannon'?'#ffdfb0':'#e0b9f2';c.lineWidth=2;c.strokeRect(p.x*32+2,p.y*32+2,28,28);c.fillStyle=w.kind==='cannon'?'#b34545bb':'#79568ebb';c.fillRect(p.x*32+3,p.y*32+3,26,8);c.fillStyle='#fff2cd';c.font='bold 7px sans-serif';c.textAlign='center';c.fillText(w.kind==='cannon'?`P4 −6`:`増援T${w.turn}`,p.x*32+16,p.y*32+10);}
  for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.base,'#6dc6db','本陣'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
  const weather=weatherAt(s);
