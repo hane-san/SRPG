@@ -4,9 +4,14 @@
 
 **テストプレイ**：https://hane-san.github.io/SRPG/ （公開・起動確認済み）  
 **ソースの正本**：https://github.com/hane-san/SRPG  
-現在の版：0.5.0。バージョンはメニューの「このゲーム・検証記録」に表示。
+現在の版：0.5.1。バージョンはメニューの「このゲーム・検証記録」に表示。
 
-## v0.5.0の操作
+## v0.5.1の操作
+
+矢印を描いてから敵へフリックすると、描いた矢印の終点から攻撃します。途中のマスや別の射撃位置に勝手に変えません。届かない敵は射程外と表示し、攻撃を無効にします。移動先を変えるときは空きマスで離して選び直します。攻撃・待機・戻るの窓は移動先の近くに矢印付きで表示します。
+
+移動は地形印を残した統一した青、外周は明るい縁どり。移動後に通常攻撃できる範囲は青の外側の赤い発光領域です。これはP3の待機射撃とは別です。攻撃音は短い打撃・金属音を重ねた合成音に調整しています。
+
 
 新規戦闘ではシューター「ニコ」（HP10・攻9・守1・移3）が加入。通常攻撃2〜3マス、動かず待機したP3に距離1〜5の敵全員へ1発ずつ攻撃します。人数によらず1ターンの発動で1回分だけ消費、残2回。旧保存の部隊は維持するため、すぐ使う場合は新しく戦闘を開始してください。
 
@@ -33,7 +38,7 @@
 - 確定したP1命令と勝敗を端末保存。演出中に再読込しても確定した命令を復元。0.2.0・0.3.0の保存も引き継ぐ。
 - 北城への移動で勝利。第2章は本陣への敵侵入で敗北、南城の制圧で増援停止。
 
-[今回の検証と制限](docs/readability-0.5.0.md) · [GPT / Claude Code共通開発手順](docs/DEVELOPMENT.md) · [次の改善項目](docs/ROADMAP.md)
+[今回の検証と制限](docs/destination-0.5.1.md) · [GPT / Claude Code共通開発手順](docs/DEVELOPMENT.md) · [次の改善項目](docs/ROADMAP.md)
 
 ホーム画面への追加：iPhone Safariは共有、Android Chromeはメニューから。
 オリジナルのナイト駒風PNGアイコンを同梱。実際のインストール表示は端末で確認が必要です。
@@ -111,7 +116,7 @@ node tests/overlay-check.mjs
 GitHub Pagesは **Deploy from a branch / main / (root)** で公開済み。以後mainへのpushで更新されます。`.github/workflows/check.yml` はルールのCI検証です。Pages用のビルドツールは不要。
 
 ```sh
-node scripts/release.mjs 0.5.0
+node scripts/release.mjs 0.5.1
 npm run check
 git add .
 git commit -m "Tune SRPG balance"

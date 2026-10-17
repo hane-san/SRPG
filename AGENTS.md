@@ -2,7 +2,7 @@
 
 This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
 
-Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/readability-0.5.0.md](docs/readability-0.5.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
+Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/destination-0.5.1.md](docs/destination-0.5.1.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
 ## Run and verify
 - Static ES modules, no build step, no runtime dependencies or CDN.
@@ -44,8 +44,8 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 13. Animate movement along adjacent route tiles, then first strike, then a legal counter as separate engine observations. Present enemies sequentially. Playback speed/reduced motion/sound must not change results or enable input mid-command. Sound starts only after a user gesture and has persistent mute.
 
 ## Releases
-- `node scripts/release.mjs 0.5.0` updates version tags on every ES module edge, CSS URL, package and version.json.
-- Keep compatible saves when rules/schema are unchanged; 0.5.0 accepts stable 0.2.0, 0.3.0 and 0.4.0 saves. The P3 area-heal rule applies prospectively.
+- `node scripts/release.mjs 0.5.1` updates version tags on every ES module edge, CSS URL, package and version.json.
+- Keep compatible saves when rules/schema are unchanged; 0.5.1 accepts stable 0.2.0 through 0.5.0 saves. The P3 area-heal rule applies prospectively.
 - Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
@@ -53,3 +53,5 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 
 
 Optional maps 04–06 are standalone only; retain the original three-chapter campaign. Map controls start collapsed. Keep active origin/destination/target tiles clear of command windows where the viewport allows; window repositioning never scrolls the map.
+
+When a route is already drawn, an enemy flick must retain that endpoint and route. A secondary gesture may start at the endpoint, original selected unit or empty map. Intermediate empty cells do not edit the anchor before the final intent is known; releasing on an empty tile explicitly edits the route. Out-of-range targets disable attack and explain why; never silently choose another firing position or another target. Without an explicit route, a direct enemy selection may still suggest a legal approach. Command popups are anchored by the destination with a pointer, clamped to the viewport without camera movement. Blue movement and the outer red normal-attack area must not overlap; P3 remains separately described.

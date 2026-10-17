@@ -128,3 +128,14 @@ dialog{background:#f5f0e2ed}dialog::backdrop{background:#071b2359;backdrop-filte
  .map-wrap:has(#orders.selected) .map-tools{max-width:calc(100% - 14px);flex-wrap:nowrap;left:7px;right:auto}
  #orders.selected:not(.choosing):not(.readonly){max-width:284px}
 }
+
+/* v0.5.1: destination-anchored command popup with a spatial pointer. */
+#orders{max-width:248px;overflow:visible;background:#152f32bc}
+#orders .unit-name small{font-size:10px}
+#orders .preview{min-height:0}
+#orders[data-pointer]::after{content:"";position:absolute;width:0;height:0;border:8px solid transparent;pointer-events:none}
+#orders[data-pointer=top]::after{top:-16px;left:calc(var(--pointer-x) - 8px);border-bottom-color:#e5d3a3}
+#orders[data-pointer=bottom]::after{bottom:-16px;left:calc(var(--pointer-x) - 8px);border-top-color:#e5d3a3}
+#orders[data-pointer=left]::after{left:-16px;top:calc(var(--pointer-y) - 8px);border-right-color:#e5d3a3}
+#orders[data-pointer=right]::after{right:-16px;top:calc(var(--pointer-y) - 8px);border-left-color:#e5d3a3}
+@media(max-height:500px){#orders.selected:not(.choosing):not(.readonly){max-width:248px}}
