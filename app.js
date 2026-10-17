@@ -4,7 +4,7 @@ import * as E from './engine.js?v=0.3.0';
 import {render,mini} from './render.js?v=0.3.0';
 import {bindMapInput} from './ui-input.js?v=0.3.0';
 import {readSave,writeSave} from './save.js?v=0.3.0';
-import {attackTargets,battleForecast,nextReady} from './ui-model.js?v=0.3.0';
+import {attackTargets,battleForecast,nextReady,actionMessage} from './ui-model.js?v=0.3.0';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;
 let lastSize={w:0,h:0};
@@ -156,8 +156,9 @@ async function runTurn(){if(locked||s.phase!==1||s.status!=='playing')return;
    if(s.status!=='playing')break;s.phase=phase;$('phaseFlash').textContent=label;$('phaseFlash').classList.add('visible');refresh();
    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
    await pause(reduced||fast?40:200);
-   const frames=[],resolved=structuredClone(s);fn(resolved,(state,actor)=>frames.push({state:structuredClone(state),actor:actor.id}));
-   if(!fast)for(const frame of frames){s=frame.state;const actor=s.units.find(u=>u.id===frame.actor);view.active=actor?.alive?actor.id:null;draw();$('phaseFlash').textContent=s.log.at(-1).replace(/^T\d+ P\d+ · /,'');await pause(reduced?20:260);}
+   const frames=[],resolved=structuredClone(s);let previous=structuredClone(s);
+   fn(resolved,(state,actor)=>{const message=actionMessage(previous,state,actor);if(message)frames.push({state:structuredClone(state),actor:actor.id,message});previous=structuredClone(state);});
+   if(!fast)for(const frame of frames){s=frame.state;const actor=s.units.find(u=>u.id===frame.actor);view.active=actor?.alive?actor.id:null;draw();$('phaseFlash').textContent=frame.message;await pause(reduced?20:260);}
    s=resolved;view.active=null;draw();await pause(reduced||fast?20:100);$('phaseFlash').classList.remove('visible');
   }
   E.nextTurn(s);save();

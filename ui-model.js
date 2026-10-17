@@ -10,3 +10,11 @@ export function nextReady(s,current){
  for(let i=1;i<=units.length;i++){const u=units[(start+i)%units.length];if(!u.acted)return u;}
  return null;
 }
+// Derive feedback from actual state changes, including counters and healing.
+// A stationary enemy doing nothing must not repeat the previous enemy's damage.
+export function actionMessage(before,after,actor){
+ const changes=after.units.flatMap(u=>{const old=before.units.find(a=>a.id===u.id);if(!old||old.hp===u.hp)return [];
+  const delta=u.hp-old.hp;return [`${u.name} HP ${old.hp}→${u.hp} (${delta>0?'+':''}${delta})${!u.alive?(u.team==='enemy'?'・撃破':after.settings.mode==='classic'?'・永久離脱':'・撤退'):''}`];});
+ const old=before.units.find(u=>u.id===actor.id),moved=old&&(old.x!==actor.x||old.y!==actor.y);
+ return changes.length?`${actor.name}：${changes.join(' / ')}`:moved?`${actor.name}が (${actor.x+1}, ${actor.y+1})へ移動`:null;
+}

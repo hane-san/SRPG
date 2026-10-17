@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../engine.js';
 import {MAPS} from '../data.js';
-import {attackTargets,battleForecast,nextReady} from '../ui-model.js';
+import {attackTargets,battleForecast,nextReady,actionMessage} from '../ui-model.js';
 import {readSave,writeSave,STORAGE} from '../save.js';
 
 test('forecast HP matches committed combat, including terrain and lethal counters',()=>{
@@ -17,6 +17,13 @@ test('next ready unit wraps, ignores acted and dead units, and returns null when
  const s=E.createGame();assert.equal(nextReady(s).id,'a1');assert.equal(nextReady(s,'a8').id,'a1');
  s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a8').id,'a3');
  for(const u of E.alive(s,'ally'))u.acted=true;assert.equal(nextReady(s,'a8'),null);
+});
+test('playback feedback reports the current hit/counter/heal and skips idle enemies',()=>{
+ const before=E.createGame(),after=structuredClone(before),actor=after.units.find(u=>u.id==='e1');
+ after.log.push('a previous enemy hit');assert.equal(actionMessage(before,after,actor),null);
+ actor.y--;assert(actionMessage(before,after,actor).includes('へ移動'));
+ after.units[0].hp-=5;actor.hp-=2;const hit=actionMessage(before,after,actor);assert(hit.includes('26→21'));assert(hit.includes('22→20'));
+ before.units[0].hp=20;after.units[0].hp=21;assert(actionMessage(before,after,actor).includes('(+1)'));
 });
 test('action playback produces identical complete state to instantaneous resolution',()=>{
  for(let id=0;id<3;id++){
