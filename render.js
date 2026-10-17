@@ -1,4 +1,5 @@
-import {alive,at,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.5.0';
+import {tacticalRanges} from './ui-model.js?v=0.5.1';
+import {alive,at,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.5.1';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
  {'.':'#919e7b','=':'#beb792',f:'#627d68','~':'#769aab'},
@@ -13,7 +14,7 @@ export function render(canvas,s,view){
  const tile=view.tile,ratio=Math.min(devicePixelRatio||1,2);const width=Math.round(s.map.w*tile*ratio),height=Math.round(s.map.h*tile*ratio);if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;canvas.style.width=`${s.map.w*tile}px`;canvas.style.height=`${s.map.h*tile}px`;
  const c=canvas.getContext('2d');c.setTransform(ratio*tile/32,0,0,ratio*tile/32,0,0);c.imageSmoothingEnabled=false;
  const selected=s.units.find(u=>u.id===view.selected),movement=selected?.team==='ally'&&!selected.acted?reachable(s,selected):[];
- const moves=new Set(movement.map(key)),danger=new Set();
+ const {moves,attacks}=movement.length?tacticalRanges(s,selected,movement):{moves:new Set(),attacks:new Set()},danger=new Set();
  if(view.danger||selected?.team==='enemy')for(const e of selected?.team==='enemy'?[selected]:alive(s,'enemy')){
   const poss=reachable(s,e,e.ai==='hold'?0:moveBudget(s,e),{threat:true});
   for(const p of poss)for(let dy=-e.range[1];dy<=e.range[1];dy++)for(let dx=-e.range[1];dx<=e.range[1];dx++){const t={x:p.x+dx,y:p.y+dy};if(terrain(s,t)&&inRange({...e,...p},t))danger.add(key(t));}
@@ -29,11 +30,18 @@ export function render(canvas,s,view){
   if(t==='c')castle(c,px,py);
   if(t==='v'){c.fillStyle='#e0c58f';c.fillRect(px+7,py+14,19,13);c.fillStyle='#8f614d';c.beginPath();c.moveTo(px+4,py+14);c.lineTo(px+16,py+4);c.lineTo(px+29,py+14);c.fill();c.fillStyle='#524e45';c.fillRect(px+15,py+21,4,6);}
   if(danger.has(`${x},${y}`)){c.fillStyle='#b4445548';c.fillRect(px,py,32,32);}
-  if(moves.has(`${x},${y}`)){c.fillStyle='#5fbece55';c.fillRect(px+1,py+1,30,30);c.strokeStyle='#b4e4dd88';c.lineWidth=.5;c.strokeRect(px+.5,py+.5,31,31);}
-  if(['bow','shooter'].includes(selected?.type)&&view.dest&&key(view.dest)===key(selected)&&inRange(selected,{x,y},supportRange(selected))){c.strokeStyle='#e5c5ffbb';c.lineWidth=1.5;c.setLineDash([3,3]);c.strokeRect(px+2,py+2,28,28);c.setLineDash([]);}
+  if(moves.has(`${x},${y}`)){
+   c.fillStyle='#306acbd4';c.fillRect(px,py,32,32);c.strokeStyle='#c1ddff48';c.lineWidth=.5;c.strokeRect(px+.5,py+.5,31,31);
+   // Terrain stays identifiable under a consistent blue plane.
+   c.strokeStyle='#bddcffb3';c.lineWidth=1;c.beginPath();
+   if(t==='f'){c.moveTo(px+3,py+25);c.lineTo(px+7,py+17);c.lineTo(px+11,py+25);c.closePath();c.moveTo(px+7,py+25);c.lineTo(px+7,py+29);}
+   else if(t==='='||t==='+'){c.moveTo(px+3,py+27);c.lineTo(px+11,py+27);c.moveTo(px+3,py+24);c.lineTo(px+11,py+24);}
+   else if(t==='c'||t==='v'){c.rect(px+3,py+21,8,7);c.moveTo(px+3,py+21);c.lineTo(px+7,py+17);c.lineTo(px+11,py+21);}c.stroke();
+  }else if(attacks.has(`${x},${y}`)){c.fillStyle='#ff496366';c.fillRect(px,py,32,32);}
+  if(['bow','shooter'].includes(selected?.type)&&view.menu&&view.dest&&key(view.dest)===key(selected)&&inRange(selected,{x,y},supportRange(selected))){c.strokeStyle='#e5c5ffbb';c.lineWidth=1.5;c.setLineDash([3,3]);c.strokeRect(px+2,py+2,28,28);c.setLineDash([]);}
   if(selected?.skill==='heal'&&view.dest&&key(view.dest)===key(selected)&&Math.abs(selected.x-x)+Math.abs(selected.y-y)===1){c.strokeStyle='#b5ffe0';c.lineWidth=2;c.strokeRect(px+2,py+2,28,28);}
-  if(selected&&view.dest&&inRange({...selected,...view.dest},{x,y})){c.fillStyle='#e7a14a33';c.fillRect(px+1,py+1,30,30);}
  }
+ if(moves.size){outline(c,new Set([...moves,...attacks]),'#ff6c84',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
  for(const w of s.warnings)for(const p of w.cells){c.strokeStyle=w.kind==='cannon'?'#ffdfb0':'#e0b9f2';c.lineWidth=2;c.strokeRect(p.x*32+2,p.y*32+2,28,28);c.fillStyle=w.kind==='cannon'?'#b34545bb':'#79568ebb';c.fillRect(p.x*32+3,p.y*32+3,26,8);c.fillStyle='#fff2cd';c.font='bold 7px sans-serif';c.textAlign='center';c.fillText(w.kind==='cannon'?`P4 −6`:`増援T${w.turn}`,p.x*32+16,p.y*32+10);}
  for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.base,'#6dc6db','本陣'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
  const weather=weatherAt(s);
@@ -66,6 +74,15 @@ export function render(canvas,s,view){
  }
  if(view.flash){const t=s.units.find(u=>u.id===view.flash.id);if(t){c.fillStyle=view.flash.heal?`rgba(132,255,194,${view.flash.amount*.45})`:`rgba(255,247,220,${view.flash.amount*.7})`;c.fillRect(t.x*32+3,t.y*32+3,26,27);}}
  if(view.effect){const e=view.effect;c.save();c.globalAlpha=1-e.progress*.4;c.font='bold 12px system-ui';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#132b32';c.fillStyle=e.heal?'#b8ffd0':'#fff2c2';const x=e.x*32+16,y=e.y*32+5-e.progress*13;c.strokeText(e.text,x,y);c.fillText(e.text,x,y);c.restore();}
+}
+function outline(c,cells,color,width,glow){
+ c.save();c.strokeStyle=color;c.lineWidth=width;c.lineJoin='round';c.shadowColor=color;c.shadowBlur=glow;c.beginPath();
+ for(const k of cells){const [x,y]=k.split(',').map(Number),px=x*32,py=y*32;
+  if(!cells.has(`${x},${y-1}`)){c.moveTo(px,py);c.lineTo(px+32,py);}
+  if(!cells.has(`${x+1},${y}`)){c.moveTo(px+32,py);c.lineTo(px+32,py+32);}
+  if(!cells.has(`${x},${y+1}`)){c.moveTo(px+32,py+32);c.lineTo(px,py+32);}
+  if(!cells.has(`${x-1},${y}`)){c.moveTo(px,py+32);c.lineTo(px,py);}
+ }c.stroke();c.restore();
 }
 function drawRoute(c,path){
  c.save();c.globalAlpha=.58;c.lineJoin='round';c.lineCap='round';

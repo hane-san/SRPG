@@ -1,12 +1,12 @@
-import {RELEASE,SKILLS} from './config.js?v=0.5.0';
-import {MAPS} from './data.js?v=0.5.0';
-import * as E from './engine.js?v=0.5.0';
-import {render,mini} from './render.js?v=0.5.0';
-import {bindMapInput} from './ui-input.js?v=0.5.0';
-import {readSave,writeSave} from './save.js?v=0.5.0';
-import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.5.0';
-import {createAudio} from './audio.js?v=0.5.0';
-import {createPlayback} from './playback.js?v=0.5.0';
+import {RELEASE,SKILLS} from './config.js?v=0.5.1';
+import {MAPS} from './data.js?v=0.5.1';
+import * as E from './engine.js?v=0.5.1';
+import {render,mini} from './render.js?v=0.5.1';
+import {bindMapInput} from './ui-input.js?v=0.5.1';
+import {readSave,writeSave} from './save.js?v=0.5.1';
+import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.5.1';
+import {createAudio} from './audio.js?v=0.5.1';
+import {createPlayback} from './playback.js?v=0.5.1';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;
 let lastSize={w:0,h:0};
@@ -25,7 +25,7 @@ function close(){$('modal').close();}
 $('closeModal').onclick=close;
 function button(text,fn,cls=''){const b=document.createElement('button');b.textContent=text;if(cls)b.className=cls;b.onclick=ev=>{sound.unlock();fn(ev);};return b;}
 function selected(){return s.units.find(u=>u.id===view.selected);}
-function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false});}
+function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null});}
 function center(){return {x:(vp.scrollLeft+vp.clientWidth/2)/view.tile,y:(vp.scrollTop+vp.clientHeight/2)/view.tile};}
 function recenter(p){vp.scrollLeft=p.x*view.tile-vp.clientWidth/2;vp.scrollTop=p.y*view.tile-vp.clientHeight/2;}
 function fit(){lastSize={w:vp.clientWidth,h:vp.clientHeight};view.tile=Math.max(20,Math.floor(vp.clientWidth/s.map.w))*[1,1.4,1.9][zoom];$('zoomLabel').textContent=['全幅','×1.4','×1.9'][zoom];}
@@ -46,15 +46,18 @@ function refresh(){
  panel();fit();placeOrders();draw();
 }
 function placeOrders(){
- const root=$('orders'),u=selected();root.style.removeProperty('top');root.style.removeProperty('bottom');root.style.removeProperty('left');root.style.removeProperty('right');
+ const root=$('orders'),u=selected();for(const k of ['top','bottom','left','right'])root.style.removeProperty(k);delete root.dataset.pointer;
  if(!u||s.status!=='playing')return;
  const wrap=vp.parentElement,box=root.getBoundingClientRect(),warning=$('forecast'),top=warning.hidden?8:warning.offsetHeight+8;
- const bottom=Math.max(top,wrap.clientHeight-box.height-62),right=Math.max(8,wrap.clientWidth-box.width-8);
- const points=[u,view.dest, s.units.find(a=>a.id===view.target)].filter(Boolean).map(p=>({x:(p.x+.5)*view.tile-vp.scrollLeft,y:(p.y+.5)*view.tile-vp.scrollTop}));
- const candidates=[{x:right,y:top},{x:8,y:top},{x:right,y:bottom},{x:8,y:bottom}];
- const score=p=>points.reduce((sum,q)=>sum+(q.x>=p.x-16&&q.x<=p.x+box.width+16&&q.y>=p.y-16&&q.y<=p.y+box.height+16?100:0),0)+(p.y===top?0:1);
- candidates.sort((a,b)=>score(a)-score(b));const p=candidates[0];
- Object.assign(root.style,{left:`${p.x}px`,right:'auto',top:`${p.y}px`,bottom:'auto'});
+ const maxX=Math.max(8,wrap.clientWidth-box.width-8),maxY=Math.max(top,wrap.clientHeight-box.height-62),half=view.tile/2+12;
+ const pos=p=>({x:(p.x+.5)*view.tile-vp.scrollLeft,y:(p.y+.5)*view.tile-vp.scrollTop});
+ const dest=pos(view.dest||u),points=[{...pos(u),weight:1000},{...dest,weight:1500},...E.alive(s,'enemy').map(a=>({...pos(a),weight:a.id===view.target?1200:E.dist(a,view.dest||u)<=u.range[1]+3?800:10}))];
+ const critical=points.filter(p=>p.weight>100&&p.y>=top&&p.y<=wrap.clientHeight),upper=Math.min(dest.y,...critical.map(p=>p.y)),lower=Math.max(dest.y,...critical.map(p=>p.y));
+ const candidates=[{x:dest.x-box.width/2,y:upper-half-box.height,pointer:'bottom'},{x:dest.x-box.width/2,y:lower+half,pointer:'top'},{x:dest.x-box.width/2,y:dest.y-half-box.height,pointer:'bottom'},{x:dest.x-box.width/2,y:dest.y+half,pointer:'top'},{x:dest.x+half,y:dest.y-box.height/2,pointer:'left'},{x:dest.x-half-box.width,y:dest.y-box.height/2,pointer:'right'}].map(p=>({...p,x:Math.max(8,Math.min(maxX,p.x)),y:Math.max(top,Math.min(maxY,p.y))}));
+ const score=p=>points.reduce((sum,q)=>sum+(q.x>=p.x-14&&q.x<=p.x+box.width+14&&q.y>=p.y-14&&q.y<=p.y+box.height+14?q.weight:0),0)+Math.hypot(Math.max(p.x-dest.x,0,dest.x-p.x-box.width),Math.max(p.y-dest.y,0,dest.y-p.y-box.height));
+ candidates.sort((a,b)=>score(a)-score(b));const p=candidates[0];Object.assign(root.style,{left:`${p.x}px`,right:'auto',top:`${p.y}px`,bottom:'auto'});
+ root.dataset.pointer=p.pointer;root.style.setProperty('--pointer-x',`${Math.max(14,Math.min(box.width-14,dest.x-p.x))}px`);root.style.setProperty('--pointer-y',`${Math.max(14,Math.min(box.height-14,dest.y-p.y))}px`);
+ root.dataset.destination=`${(view.dest||u).x},${(view.dest||u).y}`;
 }
 function cancelDraft(){const u=selected();if(u)view.cursor={x:u.x,y:u.y};sound.play('cancel');resetSelection();refresh();}
 function unitDetails(u){const risk=view.dest&&u.team==='ally'?E.threatAt(s,view.dest,u):null;
@@ -70,7 +73,7 @@ function panel(){
  if(!u){root.innerHTML=`<span class="idle-tip">${locked?'部隊が行動中…':'青い部隊を押してスライド。離すと攻撃・待機・戻る。'}</span>`;return;}
  const dest=view.dest||u,targets=u.team==='ally'&&!u.acted?attackTargets(s,u,dest):[];
  const head=document.createElement('div');head.className='unit-head';head.innerHTML=`<div class="unit-name"><strong>${escapeHTML(u.name)}</strong><small>${escapeHTML(u.label)}${u.team==='ally'?` · 残${u.charges}`:''}${u.acted?' · 行動済':''}</small></div><span class="hp">${u.hp}<small>/${u.maxHp}</small></span>`;
- if(view.menu&&targets.length>1){const cycle=button('↻',()=>{const i=targets.findIndex(t=>t.id===view.target);view.target=targets[(i+1)%targets.length].id;sound.play('cursor');refresh();},'subtle');cycle.id='targetCycle';cycle.setAttribute('aria-label','次の攻撃対象');head.append(cycle);}
+ if(view.menu&&targets.length>1){const cycle=button('↻',()=>{const i=targets.findIndex(t=>t.id===view.target);view.target=targets[(i+1)%targets.length].id;view.attackError=null;sound.play('cursor');refresh();},'subtle');cycle.id='targetCycle';cycle.setAttribute('aria-label','次の攻撃対象');head.append(cycle);}
  head.append(button('詳細',()=>unitDetails(u),'subtle'));
  if(u.team==='enemy'||u.acted)head.append(button('解除',()=>{resetSelection();refresh();},'subtle'));root.append(head);root.classList.toggle('has-target',!!view.target);
  if(u.team==='enemy'){
@@ -83,7 +86,7 @@ function panel(){
  const pre=document.createElement('div');pre.id='actionPreview';pre.className='preview';pre.setAttribute('aria-live','polite');
  const target=targets.find(t=>t.id===view.target);
  if(target){const p=battleForecast(s,u,target,dest);pre.classList.add('battle-forecast');pre.innerHTML=`<div><strong>${escapeHTML(u.name)}</strong><span>HP ${u.hp} → <b class="${p.allyAfter===0?'risk':''}">${p.allyAfter}</b></span><small>${p.terrain.name} · 守備＋${p.terrain.def}</small></div><div><strong>${escapeHTML(target.name)}</strong><span>HP ${target.hp} → <b>${p.enemyAfter}</b></span><small>${p.enemyAfter===0?'撃破':`反撃 ${p.counter}`}</small></div><p>攻撃 ${p.damage} / 反撃 ${p.counter}${p.allyAfter===0?' ⚠ この攻撃で離脱':''}<br>${escapeHTML(bowHint+healHint+waitText)}</p>`;}
- else pre.textContent=`${bowHint}${healHint}(${dest.x+1}, ${dest.y+1}) ${E.terrain(s,dest).name} · 射程内の敵なし。${command?waitText:'通常待機・P3なし。射程が合えば反撃。'}`;
+ else pre.textContent=`${view.attackError||''}${bowHint}${healHint}(${dest.x+1}, ${dest.y+1}) ${E.terrain(s,dest).name} · 射程内の敵なし。${command?waitText:'通常待機・P3なし。射程が合えば反撃。'}`;
  root.append(pre);
  const row=document.createElement('div');row.className='command-row';
  const attack=button('攻撃',()=>commit('attack'),'attack primary');attack.id='attackOrder';attack.disabled=!target||!!view.dragging;attack.setAttribute('aria-label','攻撃');
@@ -92,7 +95,7 @@ function panel(){
 }
 function openDraft(){
  const u=selected();if(!u||u.acted||u.team!=='ally')return;
- const targets=attackTargets(s,u,view.dest||u);if(!targets.some(t=>t.id===view.target))view.target=targets[0]?.id||null;
+ const targets=attackTargets(s,u,view.dest||u);if(view.attackError)view.target=null;else if(!targets.some(t=>t.id===view.target))view.target=targets[0]?.id||null;
  view.menu=true;view.invalid=false;view.action=null;refresh();
 }
 function supportControls(root,u){const targets=E.supportTargets(s,u);const p=document.createElement('p');p.className='hint';p.textContent=`P3の現時点候補：${targets.length?targets.map(t=>u.skill==='heal'?`${t.name}＋${E.healAmount(s,u,t)}`:t.name).join('、'):'なし'}。敵移動・被害後に再判定。${u.type==='shooter'?'射程5の敵全員。発動1回で1消費':u.skill==='support'?'指定→撃破可能→攻撃力順':'上下左右の味方全員。発動1回で1消費'}。対象なしは消費0。`;root.append(p);
@@ -112,10 +115,10 @@ async function commit(action){
 function selectUnit(u,open=false){view.selected=u.id;view.dest={x:u.x,y:u.y};view.cursor={x:u.x,y:u.y};view.keyboard=false;view.action=null;view.target=null;view.menu=false;view.route=[];
  // Move the window, never the battlefield. Keep its position through submenus.
  sound.play('select');view.dock=(u.y+.5)*view.tile-vp.scrollTop>vp.clientHeight/2?'top':'bottom';
- view.side=(u.x+.5)*view.tile-vp.scrollLeft>vp.clientWidth/2?'left':'right';if(open)openDraft();else refresh();}
+ view.attackError=null;view.side=(u.x+.5)*view.tile-vp.scrollLeft>vp.clientWidth/2?'left':'right';if(open)openDraft();else refresh();}
 function mapPoint(clientX,clientY){const r=canvas.getBoundingClientRect();return {x:Math.floor((clientX-r.left)/view.tile),y:Math.floor((clientY-r.top)/view.tile)};}
-function draftMove(u,p){
- const draft=slideDraft(s,u,p,view.dest||u);view.invalid=!draft;if(!draft)return false;
+function draftMove(u,p,anchor=null){
+ const draft=slideDraft(s,u,p,anchor?.dest||view.dest||u,{preserve:!!anchor,route:anchor?.route});view.invalid=!draft;if(!draft)return false;
  const changed=E.key(draft.dest)!==E.key(view.dest||u)||draft.target!==view.target;
  Object.assign(view,draft,{cursor:{...p},action:null});if(changed)sound.play('cursor');return true;
 }
@@ -129,12 +132,15 @@ function mapTap(clientX,clientY){
 bindMapInput(vp,mapTap,(clientX,clientY)=>{
  if(locked||s.status!=='playing'||$('modal').open)return {pan:true};
  const p=mapPoint(clientX,clientY),pressed=E.at(s,p),before=structuredClone(view);let u=selected();
- if(pressed?.team==='ally'&&!pressed.acted){u=pressed;selectUnit(u);}
+ const anchor=before.menu&&before.route?.length>1&&(pressed?.team!=='ally'||pressed.id===u?.id)?{dest:before.dest,route:before.route}:null;
+ if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
  else if(u?.team!=='ally'||u.acted||(!E.routeTo(s,u,p).length&&pressed?.team!=='enemy'))return {pan:true};
  view.dragging=true;view.menu=false;refresh();vp.focus({preventScroll:true});
- const update=(x,y)=>{const wasMenu=view.menu,oldTarget=view.target;const legal=draftMove(u,mapPoint(x,y));view.menu=legal&&!!view.target;if(view.menu&&(!wasMenu||oldTarget!==view.target))openDraft();else if(wasMenu&&!view.menu)refresh();else draw();};
+ const update=(x,y,release=false)=>{const p=mapPoint(x,y),enemy=E.at(s,p)?.team==='enemy';
+  if(anchor&&!enemy&&!release){view.cursor={...p};draw();return;}
+  const wasMenu=view.menu,oldTarget=view.target,legal=draftMove(u,p,enemy?anchor:null);view.menu=legal&&(!!view.target||!!view.attackError);if(view.menu&&(!wasMenu||oldTarget!==view.target))openDraft();else if(wasMenu&&!view.menu)refresh();else draw();};
  const restore=()=>{for(const k of Object.keys(view))if(!(k in before))delete view[k];Object.assign(view,before);refresh();};
- const end=(x,y)=>{view.dragging=false;update(x,y);if(view.invalid){sound.play('cancel');restore();return;}openDraft();};
+ const end=(x,y)=>{view.dragging=false;update(x,y,true);if(view.invalid){sound.play('cancel');restore();return;}openDraft();};
  return {move:update,end,tap:end,cancel:restore};
 });
 $('toolsToggle').onclick=()=>{const open=$('mapToolChoices').hidden;$('mapToolChoices').hidden=!open;$('toolsToggle').setAttribute('aria-expanded',String(open));};

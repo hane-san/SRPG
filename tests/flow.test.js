@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../engine.js';
 import {unit,MAPS} from '../data.js';
-import {slideDraft} from '../ui-model.js';
+import {slideDraft,tacticalRanges} from '../ui-model.js';
 import {createAudio} from '../audio.js';
 import {readSave,writeSave} from '../save.js';
 
@@ -51,4 +51,16 @@ test('0.4 accepts stable 0.2 and 0.3 saves without changing the roster or action
 
 test('0.5 preserves stable prior saves and all added battlefield saves',()=>{
  for(const release of ['0.2.0','0.3.0','0.4.0','0.5.0'])for(const m of MAPS){let value;const storage={setItem:(_k,v)=>value=v,getItem:()=>value},s=E.createGame(m.id);writeSave(storage,release,s,false);assert.deepEqual(readSave(storage,'0.5.0',MAPS).state,s);}
+});
+
+test('a drawn endpoint never moves to make an out-of-range enemy attackable',()=>{
+ const s=E.createGame(),u=s.units.find(u=>u.id==='a2'),draft=slideDraft(s,u,{x:6,y:14});
+ const aim=slideDraft(s,u,{x:6,y:12},draft.dest,{preserve:true,route:draft.route});assert.deepEqual(aim.dest,draft.dest);assert.deepEqual(aim.route,draft.route);assert.equal(aim.target,null);assert(aim.attackError);
+ const hit=slideDraft(s,u,{x:6,y:12},{x:6,y:13},{preserve:true,route:E.routeTo(s,u,{x:6,y:13})});assert.equal(hit.target,'e1');assert.equal(hit.dest.y,13);
+});
+test('blue movement and outside attack areas use weather-aware legal movement without overlap',()=>{
+ for(const id of [0,4]){const s=E.createGame(id);s.turn=4;for(const u of s.units.filter(u=>u.team==='ally')){const {moves,attacks}=tacticalRanges(s,u),legal=E.reachable(s,u);for(const ally of E.alive(s,'ally'))assert(!attacks.has(E.key(ally)));assert.deepEqual(moves,new Set(legal.map(E.key)));for(const k of attacks){assert(!moves.has(k));const [x,y]=k.split(',').map(Number);assert(legal.some(p=>E.inRange({...u,...p},{x,y})));}}}
+});
+test('0.5.1 keeps 0.5.0 saved roster and commands intact',()=>{
+ let value;const storage={getItem:()=>value,setItem:(_k,v)=>value=v},s=E.createGame(4);E.act(s,'a1',s.units[0],'wait');writeSave(storage,'0.5.0',s,false);assert.deepEqual(readSave(storage,'0.5.1',MAPS).state,s);
 });
