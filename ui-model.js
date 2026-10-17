@@ -1,4 +1,4 @@
-import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo} from './engine.js?v=0.4.0';
+import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo} from './engine.js?v=0.5.0';
 
 export const attackTargets=(s,u,dest=u)=>alive(s,'enemy').filter(t=>inRange({...u,...dest},t));
 export function battleForecast(s,u,target,dest=u){
@@ -34,3 +34,4 @@ export function slideDraft(s,u,p,current=u){
  }
  const route=routeTo(s,u,p);return route.length?{dest:{x:p.x,y:p.y},route,target:null}:null;
 }
+
