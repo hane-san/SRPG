@@ -1,13 +1,13 @@
-import {RELEASE,SKILLS} from './config.js?v=0.7.0';
-import {MAPS} from './data.js?v=0.7.0';
-import * as E from './engine.js?v=0.7.0';
-import {render,mini} from './render.js?v=0.7.0';
-import {bindMapInput} from './ui-input.js?v=0.7.0';
-import {readSave,writeSave} from './save.js?v=0.7.0';
-import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.7.0';
-import {createAudio} from './audio.js?v=0.7.0';
-import {createMusic,buildTrack,SCORES,MUSIC_LIBRARY} from './music.js?v=0.7.0-library26';
-import {createPlayback} from './playback.js?v=0.7.0';
+import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0';
+import {MAPS} from './data.js?v=0.8.0';
+import * as E from './engine.js?v=0.8.0';
+import {render,mini} from './render.js?v=0.8.0';
+import {bindMapInput} from './ui-input.js?v=0.8.0';
+import {readSave,writeSave} from './save.js?v=0.8.0';
+import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.8.0';
+import {createAudio} from './audio.js?v=0.8.0';
+import {createMusic,buildTrack,SCORES,MUSIC_LIBRARY} from './music.js?v=0.8.0-library26';
+import {createPlayback} from './playback.js?v=0.8.0';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;
 let lastSize={w:0,h:0};
@@ -59,16 +59,18 @@ function placeOrders(){
 }
 function cancelDraft(){const u=selected();if(u)view.cursor={x:u.x,y:u.y};sound.play('cancel');resetSelection();refresh();}
 function unitDetails(u){const ai={hold:'このマスを守り動かない',defend:'初期位置の周囲3マスまで守備',advance:'接近し射程内へ攻撃',skirmish:'西側の部隊を追う。東道は追わない',raid:'空いた本陣へ突入。回復・弓も狙う'},risk=view.dest&&u.team==='ally'?E.threatAt(s,view.dest,u):null;
- modal(`<h2>${escapeHTML(u.name)} · ${escapeHTML(u.label)}</h2><p>HP ${u.hp}/${u.maxHp}　攻撃 ${u.atk}　守備 ${u.def}<br>移動 ${E.movement(s,u)}（基礎${u.move}）　射程 ${u.range.join('–')}${u.team==='ally'&&u.skill==='support'?` / P3 ${E.supportRange(u).join('–')}`:''}</p>${u.team==='ally'?`<p>${SKILLS[u.type==='shooter'?'volley':u.skill].label}：残り${u.charges}回<br>${SKILLS[u.type==='shooter'?'volley':u.skill].text}</p><p>${u.type==='bow'?'弓の通常射程は2、静止待機のP3は2〜3で隣接不可。<br>':''}仮の移動先のP2被害上限：${risk}。各敵の単独到達を合算した安全側の値で、敵同士の進路競合やP3の効果を省いています。</p>`:`<p>敵方針：${ai[u.ai]||'方針なし'}。</p>`}<div id="unitDetailControls"></div>`);
+ modal(`<h2>${escapeHTML(u.name)} · ${escapeHTML(u.label)}</h2><p>HP ${u.hp}/${u.maxHp}　攻撃 ${u.atk}　軽減 ${u.def}${u.specialty?`　固有：${PROMOTIONS[u.specialty].label}`:''}<br>移動 ${E.movement(s,u)}（基礎${u.move}）　射程 ${u.range.join('–')}${u.team==='ally'&&u.skill==='support'?` / P3 ${E.supportRange(u).join('–')}`:''}</p>${u.team==='ally'?`<p>${SKILLS[u.skill].label}：待機弾薬 ${u.charges}/${u.maxCharges}<br>${SKILLS[u.skill].text}</p><p>${u.type==='bow'?'弓の射程は2で隣接不可。<br>':''}仮の移動先のP2被害上限：${risk}。各敵の単独到達を合算した安全側の値で、敵同士の進路競合やP3の効果を省いています。</p>`:`<p>敵方針：${ai[u.ai]||'方針なし'}。</p>`}<div id="unitDetailControls"></div>`);
  if(u.team==='ally'&&['heal','support'].includes(u.skill))supportControls($('unitDetailControls'),u);
 }
 function panel(){
  const root=$('orders'),u=selected();root.innerHTML='';root.className=s.status!=='playing'?'result':u?'selected'+(u.team==='enemy'||u.acted?' readonly':!view.menu?' choosing':''):'idle';
  if(s.status!=='playing'){
   root.innerHTML=`<div class="result-title">${s.status==='victory'?'北城制圧':'敗北'} <small>T${s.turn} · 味方離脱 ${s.metrics.deaths.filter(d=>s.units.find(u=>u.id===d.id)?.team==='ally').length}</small></div>`;
-  const row=document.createElement('div');row.className='action-row';row.append(button('再試行',()=>confirmRestart(s.map.id)));if(s.status==='victory'&&s.map.id<2)row.append(button(campaign?'次章へ（離脱継承）':'次のマップ',()=>start(s.map.id+1,campaign,campaign?s.lost:[]),'primary'));root.append(row);return;
+  const row=document.createElement('div');row.className='action-row';row.append(button('再試行',()=>confirmRestart(s.map.id)));if(s.status==='victory'&&s.map.id<2){if(campaign&&s.map.id===1)row.append(button('上級職の技能を選ぶ',promotionMenu));row.append(button(campaign?'次章へ（補充と昇格）':'次のマップ',()=>start(s.map.id+1,campaign,campaign?s.lost:[],campaign?s.specialties:{}),'primary'));}root.append(row);return;
  }
- if(!u){if(battleCard||lastNotice){renderReport(root);return;}root.textContent=locked?'部隊が行動中…':'部隊→移動先タップで移動。攻撃時は押したまま敵へ。';return;}
+ if(!u){if(battleCard||lastNotice){renderReport(root);return;}if(locked){root.textContent='部隊が行動中…';return;}
+   const hint=document.createElement('span');hint.textContent='部隊を動かすか、本城から追加出撃。';root.append(hint);
+   const b=button(`出撃 ${E.reserves(s).length}隊（${s.deployedThisTurn}/${RULES.deploymentsPerTurn}）`,openDeployment,'subtle');b.disabled=!E.canDeploy(s);root.append(b);return;}
  const dest=view.dest||u,targets=u.team==='ally'&&!u.acted?attackTargets(s,u,dest):[],target=targets.find(t=>t.id===view.target);
  const head=document.createElement('div');head.className='unit-head';head.innerHTML=`<strong>${escapeHTML(u.name)}</strong><span>${escapeHTML(u.label)}${target?` → ${escapeHTML(target.name)}`:` · HP ${u.hp}/${u.maxHp}`}</span>`;root.append(head);
  const pre=document.createElement('div');pre.id='actionPreview';pre.className='preview';pre.setAttribute('aria-live','polite');
@@ -80,7 +82,7 @@ function panel(){
   const bar=(hp,max,kind)=>`<div class="hp-track ${kind}" aria-hidden="true"><i style="width:${Math.max(0,hp/max*100)}%"></i></div>`;
   pre.innerHTML=`<div><span>自HP ${u.hp} → ${p.allyAfter}</span>${bar(p.allyAfter,u.maxHp,'ally')}<small class="${p.allyAfter===0?'fatal':''}">反撃 ${p.counter}${p.allyAfter===0?' · ⚠ 離脱':''}</small></div><div><span>敵HP ${target.hp} → ${p.enemyAfter}</span>${bar(p.enemyAfter,target.maxHp,'enemy')}<small>攻撃 ${p.damage}${p.enemyAfter===0?' · 撃破':u.type==='bow'?' · 隣接不可':u.type==='shooter'?' · P3全敵':''}</small></div>`;
  }
- else{const command=E.waitCommand(u,dest);pre.textContent=(s.map.base&&E.dist(u,s.map.base)===0&&E.dist(dest,u)>0?'本陣から離れます ／ ':'')+(u.type==='bow'?'弓2マス・隣接不可 ／ ':u.type==='shooter'?'P3は射程5の全敵 ／ ':'')+(command==='heal'?'待機：隣接全員回復':command==='support'?'待機：P3攻撃を準備':'待機：P3なし');}
+ else{const command=E.waitCommand(u,dest);pre.textContent=(s.map.base&&E.dist(u,s.map.base)===0&&E.dist(dest,u)>0?'本陣から離れます ／ ':'')+(u.type==='bow'?'弓2マス・隣接不可 ／ ':u.type==='shooter'?'遠距離3マスは1ダメージ ／ ':'')+(command==='heal'?'待機：隣接全員回復':command==='support'?'待機：P3攻撃を準備':'待機：P3なし');}
  root.append(pre);
  const row=document.createElement('div');row.className='command-row';
  if(u.team==='ally'&&!u.acted){
@@ -112,9 +114,9 @@ function openDraft(){
  const targets=attackTargets(s,u,view.dest||u);if(view.attackError)view.target=null;else if(!targets.some(t=>t.id===view.target))view.target=targets[0]?.id||null;
  view.menu=true;view.invalid=false;view.action=null;refresh();
 }
-function supportControls(root,u){const targets=E.supportTargets(s,u);const p=document.createElement('p');p.className='hint';p.textContent=`P3の現時点候補：${targets.length?targets.map(t=>u.skill==='heal'?`${t.name}＋${E.healAmount(s,u,t)}`:t.name).join('、'):'なし'}。敵移動・被害後に再判定。${u.type==='shooter'?'射程5の敵全員。発動1回で1消費':u.skill==='support'?'指定→撃破可能→攻撃力順':'上下左右の味方全員。発動1回で1消費'}。対象なしは消費0。`;root.append(p);
+function supportControls(root,u){const targets=E.supportTargets(s,u);const p=document.createElement('p');p.className='hint';p.textContent=`P3の現時点候補：${targets.length?targets.map(t=>u.skill==='heal'?`${t.name}＋${E.healAmount(s,u,t)}`:t.name).join('、'):'なし'}。敵移動・被害後に再判定。${u.type==='shooter'?'射程内の敵1隊。距離3は威力1':u.skill==='support'?'指定→撃破可能→攻撃力順':'隣接味方1隊を2回復'}。対象なしは消費0。`;root.append(p);
  root.append(button(u.spend?'消費許可：ON':'消費許可：温存',()=>{if(locked)return;u.spend=!u.spend;save();refresh();unitDetails(u);}));
- if(u.skill==='heal'||u.type==='shooter')return;
+ if(u.skill==='heal')return;
  const select=document.createElement('select');select.className='focus-select';select.setAttribute('aria-label','待機支援の優先対象');select.add(new Option('対象は自動選択',''));
  for(const a of E.alive(s,'enemy'))select.add(new Option(`${a.name}を優先（射程外なら自動）`,a.id));select.value=u.focus||'';select.onchange=()=>{if(locked)return;u.focus=select.value||null;save();refresh();unitDetails(u);};root.append(select);
 }
@@ -125,7 +127,7 @@ async function commit(action){
  battleCard=null;lastNotice={title:`${u.name} · ${action==='attack'?'攻撃':'待機'}`,text:'移動を表示中',tail:'確定済み'};
  locked=true;resetSelection();refresh();sound.play('confirm');save(resolved);
  try{await playback.play(frames);}catch(error){console.error('Presentation skipped',error);}
- finally{s=resolved;playback.clear();locked=false;if(!battleCard){const moved=E.dist(u,resolved.units.find(a=>a.id===u.id))>0,command=resolved.units.find(a=>a.id===u.id)?.command;lastNotice={title:`${u.name} · ${moved?'移動待機':'待機'}`,text:command?`P3${command==='heal'?'隣接全員回復':'攻撃'}を準備 · P2反撃なし`:'通常待機 · P3なし',tail:'続けて部隊を選択できます'};}$('phaseFlash').classList.remove('visible');save();refresh();vp.focus({preventScroll:true});}
+ finally{s=resolved;playback.clear();locked=false;if(!battleCard){const moved=E.dist(u,resolved.units.find(a=>a.id===u.id))>0,command=resolved.units.find(a=>a.id===u.id)?.command;lastNotice={title:`${u.name} · ${moved?'移動待機':'待機'}`,text:command?`P3${command==='heal'?'隣接回復':'攻撃'}を準備 · P2反撃なし`:'通常待機 · P3なし',tail:'続けて部隊を選択できます'};}$('phaseFlash').classList.remove('visible');save();refresh();vp.focus({preventScroll:true});}
 }
 function selectUnit(u,open=false){battleCard=null;lastNotice=null;view.selected=u.id;view.dest={x:u.x,y:u.y};view.cursor={x:u.x,y:u.y};view.keyboard=false;view.action=null;view.target=null;view.menu=false;view.route=[];
  sound.play('select');view.attackError=null;if(open&&u.team==='ally'&&!u.acted)openDraft();else refresh();}
@@ -137,14 +139,15 @@ function draftMove(u,p,anchor=null){
 }
 function mapTap(clientX,clientY){
  if(locked||s.status!=='playing'||$('modal').open)return;
- const p=mapPoint(clientX,clientY);if(!E.terrain(s,p))return;view.cursor={...p};view.keyboard=false;vp.focus({preventScroll:true});
+ const p=mapPoint(clientX,clientY);if(!E.terrain(s,p))return;if(s.map.camp&&E.dist(p,s.map.camp)===0){openDeployment();return;}view.cursor={...p};view.keyboard=false;vp.focus({preventScroll:true});
  const u=E.at(s,p),a=selected();
  if(a?.team==='ally'&&!a.acted&&(!u||u.team==='enemy'||u.id===a.id)){if(draftMove(a,p))openDraft();return;}
  if(u)selectUnit(u,true);else{resetSelection();refresh();}
 }
 bindMapInput(vp,mapTap,(clientX,clientY)=>{
  if(locked||s.status!=='playing'||$('modal').open)return {pan:true};
- const p=mapPoint(clientX,clientY),pressed=E.at(s,p),before=structuredClone(view);let u=selected();
+ const p=mapPoint(clientX,clientY);if(s.map.camp&&E.dist(p,s.map.camp)===0)return {pan:true,tap:()=>openDeployment()};
+ const pressed=E.at(s,p),before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
  const destinationPress=!!(ready&&!pressed&&E.routeTo(s,u,p).length);
  let anchor=before.menu&&before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
@@ -208,7 +211,7 @@ $('minimap').onclick=ev=>{const r=ev.target.getBoundingClientRect();recenter({x:
 $('objective').onclick=()=>modal(`<h2>${s.map.title}</h2><p>${s.map.briefing}</p><p>勝利：味方が北城へ移動して制圧。${s.map.base?'敗北：敵が本陣に侵入。':''}</p><p>${campaign?'連戦':'単体マップ'} / ${s.settings.mode==='classic'?'クラシック':'カジュアル'}。砲撃・増援の確報は戦場の上端とマップ上に表示します。</p>`);
 function askEnd(){if(locked||s.status!=='playing')return;const unacted=E.alive(s,'ally').filter(a=>!a.acted);
  if(!unacted.length){runTurn();return;}
- modal(`<h2>命令を終えますか？</h2><p>未操作 ${unacted.length}部隊は、その場で待機しP3スキルを準備します。攻撃回数0の部隊は通常待機です。</p><p>Ⅱ 敵行動 → Ⅲ 待機支援 → Ⅳ 戦場イベント。構えた部隊は敵の攻撃に反撃しません。</p><div id="endConfirm"></div>`);$('endConfirm').append(button('敵フェーズへ進む',()=>{close();runTurn();},'primary wide'));
+ modal(`<h2>命令を終えますか？</h2><p>未操作 ${unacted.length}部隊は、その場で待機し、弾薬があればP3行動を準備します。弾薬0の部隊は通常待機です。</p><p>Ⅱ 敵行動 → Ⅲ 待機支援 → Ⅳ 戦場イベント。構えた部隊は敵の攻撃に反撃しません。</p><div id="endConfirm"></div>`);$('endConfirm').append(button('敵フェーズへ進む',()=>{close();runTurn();},'primary wide'));
 }
 $('endTurn').onclick=askEnd;
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -232,8 +235,8 @@ function requestStart(id,chain=false){
  if(s.metrics.commands===0&&s.turn===1&&s.status==='playing'){start(id,chain);return;}
  modal('<h2>新しい戦闘を開始しますか？</h2><p>現在の戦闘と連戦の進行は、新しい戦闘に置き換わります。</p><div id="newBattleConfirm"></div>');$('newBattleConfirm').append(button('新しい戦闘を開始',()=>start(id,chain),'primary wide'));
 }
-function start(id,chain=false,lost=[]){battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost);campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
-function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost);},'danger wide'));}
+function start(id,chain=false,lost=[],specialties={}){battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
+function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties);},'danger wide'));}
 function showMenu(){if(locked)return;modal(`<h2>戦場を選ぶ</h2><div id="maps"></div><div id="campaignStart"></div><details id="soundRoomDetails"><summary>♪ サウンドルーム（全${MUSIC_LIBRARY.length*2}曲）</summary><p class="hint">BGMがOFFでも試聴できます。曲を切り替えると短く音が切れ、選んだ曲が頭から流れます。戦場へ戻ると試聴を終了し、元のBGM設定へ戻ります。</p><div id="soundRoomList"></div><p id="soundRoomNow" role="status" aria-live="polite">曲を選んでください。</p><div class="action-row"><button id="soundRoomStop">試聴を停止</button></div></details><details id="settingsDetails"><summary>難易度・回復・スキル回数の設定</summary><div class="settings"><label>離脱の扱い<select id="mode"><option value="classic">クラシック（永久離脱）</option><option value="casual">カジュアル（次章復帰）</option></select></label><label>敵の攻撃<select id="difficulty"><option value="-2">練習 −2</option><option value="0">標準 ±0</option><option value="2">挑戦 ＋2</option></select></label><label>枯渇後の回復<select id="healing"><option value="H1">H1：半分まで＋1</option><option value="H0">H0：上限なし＋1</option><option value="H2">H2：今ターン負傷のみ＋1</option></select></label><label>スキル回数<select id="charges"><option value="">兵種ごとの初期値</option><option value="1">一律1回</option><option value="4">一律4回</option></select></label></div><p class="hint">次に開始する戦闘へ適用。現在の戦闘は下の「戦場へ戻る」で続行できます。</p></details><details><summary>遊び方・勝敗と4フェーズ</summary><p>部隊を選んで、攻撃できない空きマスをタップすると移動して待機します。攻撃できる移動先は押したまま敵へスライドして対象を選びます。敵を選ばず離すと元に戻り、部隊自身や移動できないマスのタップでも選択を取り消せます。青い部隊を押したままスライドすると、指に合わせて経路の矢印が伸びます。離すと「攻撃・待機・戻る」。そのまま敵マスまで滑らせれば移動先を保って対象選択。攻撃／待機を一度押すと実行し、戻るは消費せず取消。射程内に複数の敵がいる場合は↻で切替。その場なら部隊をタップするだけ。何もない場所や青範囲外からのドラッグは地図移動、指を地図端へ寄せると追ってスクロールします。地図内の長押しではブラウザのメニューを開きません。</p><p>Ⅰ 味方行動 → Ⅱ 敵軍 → Ⅲ 味方の待機支援 → Ⅳ 予告イベント。通常攻撃は射程が合えば反撃されます。構えた部隊はⅡで反撃しませんが、Ⅲの射撃にも反撃はありません。</p><p>動かず待機するとP3の自動攻撃／回復を準備。移動後の待機にはP3スキルなし。前衛・魔道・騎兵は通常射程、弓の待機攻撃は2〜3、シューターはHP10、通常射程2〜3、待機P3は距離1〜5の全敵に1発ずつ（発動で1消費）。祈祷・救護は上下左右の隣接味方全員を各7回復（発動1回で1消費、自分・敵・斜めは対象外）。攻撃の残回数0は通常待機、回復の残回数0は応急回復になります。対象や温存は「詳細」で指定できます。</p><p>北城に入れば勝利。本陣があるマップは敵に入られると敗北。砲撃は予告の赤枠に固定6、次のⅠで退避できます。増援は到着した次ターンから行動。出現地点の占有で到着を止められます。</p><p>森は移動コスト2・守備＋1、砦は守備＋1。射線遮蔽や属性相性は今回ありません。</p></details><details><summary>このゲーム・検証記録</summary><p>戦線指揮 / FIELD COMMAND v${RELEASE}。オリジナルの戦術試作。命中100%、必殺なし。データは data.js、数値は config.js、戦闘は engine.js。戦闘記録から検証JSONを持ち出せます。</p><p>保存はこの端末内のみ。確定済み命令・P1・勝敗状態を復元します。v0.2.0〜v0.6.0の保存も引き継ぎます。互換性のない版のみ新規開始になります。</p><p><a href="https://github.com/hane-san/SRPG" target="_blank" rel="noopener">GitHubでソースを開く</a> · <a href="docs/balance.md" target="_blank">仕様とバランス検討</a></p></details><details><summary>操作と表示速度</summary><p>戦場をクリックしてキー操作：矢印でカーソル・移動先、Enterでメニュー、Aで攻撃を実行、Wで待機を実行、Escで取消、Nで次の未行動部隊。Tabでボタンを選んでEnterでも操作できます。効果音は上の「SE」で切替。最初のタップ後に鳴り、設定はこの端末に保存します。</p><div id="speedControl"></div></details><details id="audioDetails"><summary>音楽・効果音</summary><p>各戦場に味方用／敵・支援・戦場更新用のオリジナル曲。BGMは初期OFF、効果音は初期ON。音楽と効果音は別々に切り替えられます。</p><div id="musicControl"></div><label>BGM音量<input id="musicVolume" aria-label="BGM音量" type="range" min="0" max="100" step="1"></label><p id="musicTrack"></p></details><div id="utility" class="action-row"></div>`);
  const speedButton=button('',()=>{fast=!fast;try{localStorage.setItem('field-command-fast',String(fast));}catch{}updateSpeed();});function updateSpeed(){speedButton.textContent=fast?'進行速度：高速':'進行速度：通常（行動をゆっくり表示）';speedButton.setAttribute('aria-pressed',String(fast));}updateSpeed();$('speedControl').append(speedButton);
  const musicToggle=button('',()=>{music.setEnabled(!music.enabled);updateMusic();});musicToggle.id='musicToggle';$('musicControl').append(musicToggle);function updateMusic(){musicToggle.textContent=music.enabled?'BGM：ON':'BGM：OFF';musicToggle.setAttribute('aria-pressed',String(music.enabled));$('musicTrack').textContent=`現在の曲：${buildTrack(s.map.id,s.phase).title}`;}updateMusic();$('musicVolume').value=Math.round(music.volume*100);$('musicVolume').oninput=ev=>music.setVolume(Number(ev.target.value)/100);
