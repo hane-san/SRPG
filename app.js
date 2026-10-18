@@ -72,7 +72,7 @@ function panel(){
    const hint=document.createElement('span');hint.textContent='部隊を動かすか、本城から追加出撃。';root.append(hint);
    const b=button(`出撃 ${E.reserves(s).length}隊（${s.deployedThisTurn}/${RULES.deploymentsPerTurn}）`,openDeployment,'subtle');b.disabled=!E.canDeploy(s);root.append(b);return;}
  const dest=view.dest||u,targets=u.team==='ally'&&!u.acted?attackTargets(s,u,dest):[],target=targets.find(t=>t.id===view.target);
- const head=document.createElement('div');head.className='unit-head';head.innerHTML=`<strong>${escapeHTML(u.name)}</strong><span>${escapeHTML(u.label)}${target?` → ${escapeHTML(target.name)}`:` · HP ${u.hp}/${u.maxHp}`}</span>`;root.append(head);
+ const head=document.createElement('div');head.className='unit-head';head.innerHTML=`<strong>${escapeHTML(u.name)}${view.sortie?' · 出撃準備':''}</strong><span><b class='hp-value ${u.hp<=2?'hp-critical':''}'>HP ${u.hp}/${u.maxHp}</b> · ${escapeHTML(u.label)}${target?` → ${escapeHTML(target.name)}`:''}</span>`;root.append(head);
  const pre=document.createElement('div');pre.id='actionPreview';pre.className='preview';pre.setAttribute('aria-live','polite');
  if(u.team==='enemy')pre.textContent='敵部隊：詳細で能力と方針を確認';
  else if(u.acted)pre.textContent=u.command?`P3${u.command==='heal'?'回復':'攻撃'}を準備中`:'行動済み';
