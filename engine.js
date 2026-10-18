@@ -85,7 +85,7 @@ export function routeTo(s,u,dest){
 export const supportRange=u=>u.range;
 export function waitCommand(u,dest=u){
  if(dist(u,dest)>0)return null;
- return u.skill==='heal'?'heal':u.skill==='support'&&u.charges>0?'support':null;
+ return u.charges>0&&(u.skill==='heal'||u.skill==='support')?u.skill:null;
 }
 export function damage(s,a,b,bonus=0){
  const distance=dist(a,b),power=a.type==='shooter'&&distance>=3?1:a.atk;
