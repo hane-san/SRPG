@@ -98,6 +98,7 @@ test('castle sortie validates atomically, walks from an occupied castle and figh
  assert.equal(s.deployedThisTurn,1);assert.equal(s.metrics.commands,1);
  assert.equal(E.reserves(s).length,0);assert.equal(E.at(s,s.map.camp)?.id,guard.id);
  assert.equal(reserve.hp,4);assert.equal(foe.hp,4);
- assert.equal(frames[0]?.kind,'move');assert.deepEqual(frames[0].path[0],s.map.camp);
+ assert.equal(frames[0]?.kind,'deploy');assert.deepEqual(frames[0].origin,s.map.camp);
+ assert.deepEqual(frames.find(event=>event.kind==='move')?.path[0],s.map.camp);
  assert(!E.canDeploy(s),'second sortie blocked this turn');
 });
