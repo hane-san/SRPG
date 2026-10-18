@@ -146,13 +146,13 @@ function mapTap(clientX,clientY){
 }
 bindMapInput(vp,mapTap,(clientX,clientY)=>{
  if(locked||s.status!=='playing'||$('modal').open)return {pan:true};
- const p=mapPoint(clientX,clientY),pressed=E.at(s,p);if(s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>setTimeout(openDeployment,150)};
+ const p=mapPoint(clientX,clientY),sortieOrigin=!!view.sortie&&!!s.map.camp&&E.dist(p,s.map.camp)===0,pressed=sortieOrigin?null:E.at(s,p);if(!sortieOrigin&&s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>setTimeout(openDeployment,150)};
  const before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
  const destinationPress=!!(ready&&!pressed&&E.routeTo(s,u,p).length);
  let anchor=before.menu&&before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
  if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
- else if(!ready||(!destinationPress&&pressed?.team!=='enemy'))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
+ else if(!ready||(!destinationPress&&pressed?.team!=='enemy'&&!sortieOrigin))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
  // A newly pressed destination anchors the attack gesture to that exact tile.
  // Existing explicit arrows keep their endpoint through a later enemy flick.
  if(destinationPress&&!anchor){draftMove(u,p);anchor={dest:{...view.dest},route:[...view.route]};}
