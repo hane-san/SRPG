@@ -6,6 +6,17 @@ This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nag
 
 Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/input-performance-0.7.0.md](docs/input-performance-0.7.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
+## Shared AI development contract
+- Scope work to this repository and the approved issue. The human producer decides game specifications, playtest acceptance and integration into main.
+- Read [docs/DESIGN.md](docs/DESIGN.md), [docs/DECISIONS.md](docs/DECISIONS.md) and the issue before editing. Distinguish approved, proposed, deferred, superseded and unverified items. Do not invent missing chat context; surface contradictions between approved specs, code and tests.
+- Handoff: human adoption in Chat -> Issue with acceptance criteria -> Codex or Claude Code/Sonnet work branch -> PR -> CI -> risk-based independent audit -> human playtest/approval -> main. Choose the implementation line by availability and context; model names are roles, not fixed API dependencies.
+- Never push directly to main, force-push or enable auto-merge. Fetch current main, inspect open PRs and coordinate overlapping files; preserve other contributors' work.
+- Record risk and evidence in the PR. Low-risk wording/docs changes may omit independent audit; medium-risk changes need an independent review of affected behavior; high-risk phase/save/state changes need prior technical design and deeper independent audit (Opus when available). Self-review is not independent audit. See DEVELOPMENT for routing and unavailable-review handling.
+- PASS/WARN/BLOCK are audit report terms only. GitHub required status checks are actual Actions jobs selected in Settings; an AI PASS never satisfies CI or grants merge authority.
+- Preserve save compatibility, mobile input, deployment paths and the game-specific invariants below. Record executed checks, unverified work and human playtest steps; never claim iPhone hardware evidence from browser emulation.
+- Repository name, game display name and internal save IDs are separate. Renaming, display-name migration, repository Settings and routines are separate tasks unless explicitly requested.
+- Leave an issue/PR, tested commit SHA and evidence for the next AI. Never commit credentials, private chat history or local tooling artifacts.
+
 ## Run and verify
 - Static ES modules, no build step, no runtime dependencies or CDN.
 - `npm run dev` serves repository root on port 4173.
@@ -50,7 +61,7 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `node scripts/release.mjs 0.7.0` updates version tags on every ES module edge, CSS URL, package and version.json.
 - v0.8.0 is not combat-save compatible with v0.7.0 or earlier; preserve new v0.8 saves and fail safely on older state. The P3 area-heal rule applies prospectively.
 - Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
-- Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
+- Commit and push the work branch, then open a PR. After CI, risk-based review and human approval, merge into main; Pages deploys from main / root. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
 - Do not commit test-results/, node_modules/, browser executables, credentials or personal chat context.
 
