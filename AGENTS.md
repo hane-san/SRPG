@@ -2,6 +2,8 @@
 
 This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
 
+**Current v0.8.0 rules supersede v0.7 examples below:** read [docs/hp6-campaign-design.md](docs/hp6-campaign-design.md) first. Main HP6 branch changes intentionally replace earlier shooter/healer/attrition contracts. Finale narrative is documentation only, not implemented.
+
 Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/input-performance-0.7.0.md](docs/input-performance-0.7.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
 ## Run and verify
@@ -32,10 +34,10 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 2. No enemy general-unit P3 skills, hit/miss RNG, hidden lethal events, squad attrition resources or asset reuse from Fire Emblem.
 3. P3 requires no move; no P2 counter when preparing support; no consumption if no valid target.
 4. Public commands are attack/wait only. Stationary wait arms each unit’s finite P3 attack/heal; moved wait and P1 attack never arm P3. Attack skill at zero charges waits normally and may counter. Healers keep H1/H0/H2 emergency healing. Omitted units at phase-end wait in place.
-5. Shooter (ally): HP10, normal range2–3; stationary P3 fires once at every enemy at Manhattan range1–5, no counter, one charge per activation per turn, no targets means no spend. Rain map05 cycles clear/clear/light/heavy/light; movement reduction is foot2/horse3 for light, foot3/horse4 for heavy, minimum1 on both teams. All reach/routes/AI/threats must use engine.movement without altering base stats.
-6. P3 heal affects every living wounded ally at Manhattan distance 1 (no self, enemies or diagonals), +7 each, one charge per healer activation per turn regardless of recipient count. No targets means no spend. Snapshot amounts before consuming the last charge. H1 emergency healing is +1 per eligible neighbour up to floor(HP max / 2); H0/H2 are test controls. Full-HP units are unaffected.
+5. All deployed and reserve combatants have maxHP6. Normal damage is deterministic and minimum1, basic attack2, advanced melee3, shield innate damage reduction1/2, shooter range3 deals1. P3 stationary support attacks one valid target, no counter, one supply on successful effect only. Rain map05 cycles clear/clear/light/heavy/light; movement reduction is foot2/horse3 for light, foot3/horse4 for heavy, minimum1 on both teams. All reach/routes/AI/threats must use engine.movement without altering base stats.
+6. P3 heal affects one wounded ally at Manhattan distance1 for +2 (no self/diagonal). Each deployed ally has maximum two stance supplies, replenished by one at start of ally turn near its castle. Moving prevents P3. No emergency healing at zero supply. Full-HP units are unaffected.
 7. Announce artillery at prior P4; spawned units first act at next P2.
-8. Classic deaths persist only when continuing the campaign. Retry restores the chapter-start roster. Casual restores named units at next chapter.
+8. Classic named death is permanent, but the same army slot gets a generic soldier of equal basic class/rank next chapter. Generic units lack named-only choice skills. There is no repair/penalty reward deduction for death. Retry restores chapter-start state; Casual returns named units next chapter.
 9. After selecting an ally, tapping a legal empty destination with no attack targets immediately commits move + ordinary wait. An attack-capable destination press anchors that tile: slide onto an enemy, release to the forecast, then choose Attack once. Releasing without a target restores the pre-press draft. Tapping the selected unit or an invalid destination cancels. Dragging from the unit still opens Attack / Wait / Back and allows an explicit wait in an attack-capable tile. Choices are disabled while the route finger is still held; after release, choosing Attack or Wait commits immediately; do not add a separate command/confirm step. Back/cancel/multitouch never consumes an action. Save the complete resolved P1 command before its presentation, never an intermediate visual/playing phase; finished outcomes may persist at their final phase.
 10. All tests/maps use one engine; keep settings independent (casual is not an enemy difficulty).
 
@@ -46,7 +48,7 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 
 ## Releases
 - `node scripts/release.mjs 0.7.0` updates version tags on every ES module edge, CSS URL, package and version.json.
-- Keep compatible saves when rules/schema are unchanged; 0.7.0 accepts stable 0.2.0 through 0.6.0 saves. The P3 area-heal rule applies prospectively.
+- v0.8.0 is not combat-save compatible with v0.7.0 or earlier; preserve new v0.8 saves and fail safely on older state. The P3 area-heal rule applies prospectively.
 - Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
@@ -57,7 +59,7 @@ Optional maps 04–06 are standalone only; retain the original three-chapter cam
 
 When a route is already drawn, an enemy flick must retain that endpoint and route. A secondary gesture may start at the endpoint, original selected unit or empty map. Intermediate empty cells do not edit the anchor before the final intent is known; releasing on an empty tile explicitly edits the route. Out-of-range targets disable attack and explain why; never silently choose another firing position or another target. Without an explicit route, a direct enemy selection may still suggest a legal approach. Command controls are outside the map, hidden during route editing, and show concise information with readable text (forecast/actions at least 14px); move long explanations to Details. Blue movement and the outer cyan normal-attack area must not overlap; P3 remains separately described.
 
-0.6 audit contracts: keep surviving captains in their deployment slots after a loss; emergency recruits must not collide. At chapter-two start, an empty base duty passes to a living defender, with an adjacent healer when available; never revive a named lost captain. New enemy specs may explicitly set HP/DEF; default ally class stats and shooter fragility remain intact. Keep stable enemy IDs across map revisions.
+Historical 0.6 audit contracts (superseded when in conflict with current HP6 design): keep surviving captains in their deployment slots after a loss; emergency recruits must not collide. At chapter-two start, an empty base duty passes to a living defender, with an adjacent healer when available; never revive a named lost captain. New enemy specs may explicitly set HP/DEF; default ally class stats and shooter fragility remain intact. Keep stable enemy IDs across map revisions.
 
 Battle reports must show actual observer-driven attack/counter/heal HP changes outside the map, including offscreen actions. They persist without a dismissal and yield to the next unit selection. Commands never gain a confirmation step; end-turn confirmation is needed only for unacted units. Playback trims idle/movement delays while preserving visible ordered impacts. `npm run audit:balance` records all map policies plus campaign/difficulty examples; these are examples, not optimal play or proof of human enjoyment.
 

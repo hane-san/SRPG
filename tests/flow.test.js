@@ -7,7 +7,7 @@ import {createAudio} from '../audio.js';
 import {readSave,writeSave} from '../save.js';
 
 test('continuous slide keeps its route endpoint when entering an enemy and can choose an approach',()=>{
- const s=E.createGame(),u=s.units.find(u=>u.id==='a2'),original=structuredClone(s);
+ const s=E.createGame(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const original=structuredClone(s);
  const move=slideDraft(s,u,{x:6,y:13});assert.equal(move.route.length,4);
  const aim=slideDraft(s,u,{x:6,y:12},move.dest);assert.deepEqual(aim.dest,move.dest);assert.deepEqual(aim.route,move.route);assert.equal(aim.target,'e1');
  const jump=slideDraft(s,u,{x:6,y:12});assert.deepEqual(jump.dest,{x:6,y:13});
@@ -21,8 +21,8 @@ test('presentation events separate legal movement, attack and counter HP changes
  E.act(baseline,'a',{x:3,y:3},'attack','e');assert.deepEqual(s,baseline);
  assert.deepEqual(frames.map(f=>f.event.kind),['move','hit','hit']);
  assert.deepEqual(frames[0].event.path,[{x:3,y:5},{x:3,y:4},{x:3,y:3}]);
- assert.equal(frames[1].state.units[0].hp,22);assert.equal(frames[1].state.units[1].hp,15);
- assert.equal(frames[2].event.actor,'e');assert(frames[2].event.counter);assert.equal(frames[2].state.units[0].hp,15);
+ assert.equal(frames[1].state.units[0].hp,6);assert.equal(frames[1].state.units[1].hp,4);
+ assert.equal(frames[2].event.actor,'e');assert(frames[2].event.counter);assert.equal(frames[2].state.units[0].hp,4);
 });
 test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
  for(const support of [false,true]){
@@ -54,7 +54,7 @@ test('0.5 preserves stable prior saves and all added battlefield saves',()=>{
 });
 
 test('a drawn endpoint never moves to make an out-of-range enemy attackable',()=>{
- const s=E.createGame(),u=s.units.find(u=>u.id==='a2'),draft=slideDraft(s,u,{x:6,y:14});
+ const s=E.createGame(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const draft=slideDraft(s,u,{x:6,y:14});
  const aim=slideDraft(s,u,{x:6,y:12},draft.dest,{preserve:true,route:draft.route});assert.deepEqual(aim.dest,draft.dest);assert.deepEqual(aim.route,draft.route);assert.equal(aim.target,null);assert(aim.attackError);
  const hit=slideDraft(s,u,{x:6,y:12},{x:6,y:13},{preserve:true,route:E.routeTo(s,u,{x:6,y:13})});assert.equal(hit.target,'e1');assert.equal(hit.dest.y,13);
 });
