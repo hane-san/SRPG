@@ -7,7 +7,7 @@ import {readSave,writeSave,STORAGE} from '../save.js';
 
 test('forecast HP matches committed combat, including terrain and lethal counters',()=>{
  for(const lethal of [false,true]){
-  const s=E.createGame(),u=s.units.find(u=>u.id==='a4'),t=s.units.find(u=>u.id==='e1');
+  const s=E.createGame(),u=s.units.find(u=>u.id==='a4'),t=s.units.find(u=>u.id==='e1');u.deployed=true;
   Object.assign(t,{x:8,y:17});s.map.tiles[17]=s.map.tiles[17].slice(0,7)+'f'+s.map.tiles[17].slice(8);if(lethal)u.hp=1;
   const forecast=battleForecast(s,u,t);assert.equal(forecast.terrain.def,0);assert(attackTargets(s,u).includes(t));
   E.act(s,u.id,u,'attack',t.id);assert.equal(u.hp,forecast.allyAfter);assert.equal(t.hp,forecast.enemyAfter);
