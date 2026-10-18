@@ -80,7 +80,7 @@ function panel(){
  else if(target){
   const p=battleForecast(s,u,target,dest);pre.classList.add('combat-forecast');
   const bar=(hp,max,kind)=>`<div class="hp-track ${kind}" aria-hidden="true"><i style="width:${Math.max(0,hp/max*100)}%"></i></div>`;
-  pre.innerHTML=`<div><span>自HP ${u.hp} → ${p.allyAfter}</span>${bar(p.allyAfter,u.maxHp,'ally')}<small class="${p.allyAfter===0?'fatal':''}">反撃 ${p.counter}${p.allyAfter===0?' · ⚠ 離脱':''}</small></div><div><span>敵HP ${target.hp} → ${p.enemyAfter}</span>${bar(p.enemyAfter,target.maxHp,'enemy')}<small>攻撃 ${p.damage}${p.enemyAfter===0?' · 撃破':u.type==='bow'?' · 隣接不可':u.type==='shooter'?' · P3全敵':''}</small></div>`;
+  pre.innerHTML=`<div><span>自HP ${u.hp} → ${p.allyAfter}</span>${bar(p.allyAfter,u.maxHp,'ally')}<small class="${p.allyAfter===0?'fatal':''}">反撃 ${p.counter}${p.allyAfter===0?' · ⚠ 離脱':''}</small></div><div><span>敵HP ${target.hp} → ${p.enemyAfter}</span>${bar(p.enemyAfter,target.maxHp,'enemy')}<small>攻撃 ${p.damage}${p.enemyAfter===0?' · 撃破':u.type==='bow'?' · 隣接不可':u.type==='shooter'?' · 距離3は1':''}</small></div>`;
  }
  else{const command=E.waitCommand(u,dest);pre.textContent=(s.map.base&&E.dist(u,s.map.base)===0&&E.dist(dest,u)>0?'本陣から離れます ／ ':'')+(u.type==='bow'?'弓2マス・隣接不可 ／ ':u.type==='shooter'?'遠距離3マスは1ダメージ ／ ':'')+(command==='heal'?'待機：隣接1隊を回復':command==='support'?'待機：P3攻撃を準備':'待機：P3なし');}
  root.append(pre);
