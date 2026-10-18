@@ -21,10 +21,12 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
    const before=getState(),actor=before.units.find(u=>u.id===event.actor),target=before.units.find(u=>u.id===event.target);
    view.active=event.actor;view.animation={...event,stage:'start',progress:0};
    if(event.actor!==lastActor&&!event.counter){
-    const who=actor||target;onMessage(`${who.team==='enemy'?'敵軍':'味方'} ${who.label}・${who.name} (${who.x+1},${who.y+1})`);
+    const who=event.kind==='deploy'&&actor?{...actor,...event.origin}:actor||target;onMessage(`${who.team==='enemy'?'敵軍':'味方'} ${who.label}・${who.name} (${who.x+1},${who.y+1})`);
     view.animation={...event,stage:'ready',progress:0};draw();await tween(duration(160,0,100),()=>{});lastActor=event.actor;
    }
-   if(event.kind==='move'){
+   if(event.kind==='deploy'){
+    setState(state);onMessage(`${actor.name}が本城から出撃`);draw();
+   }else if(event.kind==='move'){
     setState(state);onMessage(`${actor.name}が移動`);
     for(let i=1;i<event.path.length;i++){
      const a=event.path[i-1],b=event.path[i];if(!isFast())sound.play('step');
