@@ -26,7 +26,7 @@ test('shooter uses damage 1 only at distance three',()=>{
  assert.equal(E.damage(s,c,e),1);e.y=7;assert.equal(E.damage(s,c,e),2);
 });
 test('P1 bow and foot attack plus P2 counter reach lethal 6 without RNG',()=>{
- const s=fixture(),bow=add(s,'bow',4,7),foot=add(s,'sword',4,6),foe=add(s,'sword',4,5,'enemy');foe.ai='hold';
+ const s=fixture(),bow=add(s,'bow',4,7),foot=add(s,'sword',4,6),foe=add(s,'sword',4,5,'enemy','foe');foe.ai='hold';
  assert(cmd(s,bow,'attack',foe).ok);assert.equal(foe.hp,4);assert(cmd(s,foot,'attack',foe).ok);assert.equal(foe.hp,2);assert.equal(foot.hp,4);
  E.prepareEnemy(s);E.enemyPhase(s);assert.equal(foe.alive,false);assert.equal(foot.hp,2);
 });
