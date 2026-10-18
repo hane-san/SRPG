@@ -8,7 +8,7 @@ import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v
 import {createAudio} from './audio.js?v=0.8.0';
 import {createMusic,buildTrack,SCORES,MUSIC_LIBRARY} from './music.js?v=0.8.0-library26';
 import {createPlayback} from './playback.js?v=0.8.0';
-import {DISPLAY_NAME} from './display-name.js?v=0.8.0-rename-prep';
+import {DISPLAY_NAME} from './display-name.js?v=0.8.0-display-2fb0ebb2368b';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;
 let lastSize={w:0,h:0};
