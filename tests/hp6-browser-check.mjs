@@ -15,7 +15,8 @@ try{
    assert.equal(first.units.filter(u=>u.team==='ally'&&u.deployed).length,2);
    assert(first.units.every(u=>u.maxHp===6));
    const deploy=page.locator('#orders button').filter({hasText:'出撃'});
-   assert.equal(await deploy.count(),1);await deploy.click();
+   assert.equal(await deploy.count(),1);
+   if(map.id===0){await t.tap(first.map.camp);}else await deploy.click();
    assert(await page.locator('#deploymentList button').count()>0);
    await page.locator('#deploymentList button').first().click();
    assert(await page.locator('#deploymentList button').filter({hasText:'中央'}).count()>0);
