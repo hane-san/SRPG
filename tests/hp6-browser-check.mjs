@@ -20,6 +20,8 @@ try{
    assert(await page.locator('#deploymentList button').count()>0);
    await page.locator('#deploymentList button').first().click();
    assert(await page.locator('#deploymentList button').filter({hasText:'中央'}).count()>0);
+   const dialogDiagnostic=await page.evaluate(()=>{const d=document.querySelector('#modal'),b=[...document.querySelectorAll('#deploymentList button')].find(b=>b.textContent.includes('中央'));return {open:d.open,visible:getComputedStyle(d).display,rect:d.getBoundingClientRect().toJSON(),buttonVisible:b?.getBoundingClientRect().toJSON(),buttonDisplay:b?getComputedStyle(b).display:null,bodyHidden:document.querySelector('#modalBody')?.hidden,focused:document.activeElement?.outerHTML?.slice(0,150)};});
+   assert.equal(dialogDiagnostic.open,true,JSON.stringify(dialogDiagnostic));
    await page.locator('#deploymentList button').filter({hasText:'中央'}).click();
    const deployed=await t.state();
    assert.equal(E.alive(deployed,'ally').length,3);
