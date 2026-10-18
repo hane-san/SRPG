@@ -71,7 +71,8 @@ function paintTactics(c,s,view,selected,{moves,attacks,danger}){
  }
  if(moves.size){outline(c,new Set([...moves,...attacks]),'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
  for(const w of s.warnings)for(const p of w.cells){c.strokeStyle=w.kind==='cannon'?'#ffdfb0':'#e0b9f2';c.lineWidth=2;c.strokeRect(p.x*32+2,p.y*32+2,28,28);c.fillStyle=w.kind==='cannon'?'#b34545bb':'#79568ebb';c.fillRect(p.x*32+3,p.y*32+3,26,8);c.fillStyle='#fff2cd';c.font='bold 7px sans-serif';c.textAlign='center';c.fillText(w.kind==='cannon'?`P4 −6`:`増援T${w.turn}`,p.x*32+16,p.y*32+10);}
- for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.camp,'#6dc6db','出撃'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
+ if(s.map.camp&&s.map.tiles[s.map.camp.y]?.[s.map.camp.x]!=='c')castle(c,s.map.camp.x*32,s.map.camp.y*32);
+  for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.camp,'#6dc6db','出撃'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
  const weather=weatherAt(s);
  if(weather!=='clear'){
   c.fillStyle=weather==='heavy'?'#20395128':'#6f9fb518';c.fillRect(0,0,s.map.w*32,s.map.h*32);c.strokeStyle=weather==='heavy'?'#b7d5e66b':'#cee1eb45';c.lineWidth=1;c.beginPath();
