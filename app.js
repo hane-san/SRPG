@@ -87,7 +87,7 @@ function panel(){
  const row=document.createElement('div');row.className='command-row';
  if(u.team==='ally'&&!u.acted){
   const attack=button('攻撃',()=>commit('attack'),'attack primary');attack.id='attackOrder';attack.disabled=!target||!!view.dragging;attack.setAttribute('aria-label','攻撃');
-  const wait=button('待機',()=>commit('wait'),'primary');wait.id='waitOrder';wait.disabled=!!view.dragging;row.append(attack,wait,button('戻る',cancelDraft,'subtle'));
+  const wait=button('待機',()=>commit('wait'),'primary');wait.id='waitOrder';wait.disabled=!!view.dragging;row.append(attack,wait);if(s.map.camp&&E.dist(u,s.map.camp)<=1)row.append(button('帰還',()=>{const result=E.returnToReserve(s,u.id);if(result.ok){lastNotice={title:'帰還',text:`${u.name}は予備隊に戻りました`};resetSelection();save();refresh();}},'subtle'));row.append(button('戻る',cancelDraft,'subtle'));
   if(targets.length>1){const cycle=button('対象 ↻',()=>{const i=targets.findIndex(t=>t.id===view.target);view.target=targets[(i+1)%targets.length].id;view.attackError=null;sound.play('cursor');refresh();},'subtle');cycle.id='targetCycle';cycle.setAttribute('aria-label','次の攻撃対象');row.append(cycle);}
  }else row.append(button('解除',()=>{resetSelection();refresh();},'subtle'));
  row.append(button('詳細',()=>unitDetails(u),'subtle'));row.style.setProperty('--choices',row.childElementCount);root.append(row);
@@ -139,15 +139,15 @@ function draftMove(u,p,anchor=null){
 }
 function mapTap(clientX,clientY){
  if(locked||s.status!=='playing'||$('modal').open)return;
- const p=mapPoint(clientX,clientY);if(!E.terrain(s,p))return;if(s.map.camp&&E.dist(p,s.map.camp)===0){openDeployment();return;}view.cursor={...p};view.keyboard=false;vp.focus({preventScroll:true});
+ const p=mapPoint(clientX,clientY);if(!E.terrain(s,p))return;if(s.map.camp&&E.dist(p,s.map.camp)===0&&(!E.at(s,p)||view.selected===E.at(s,p)?.id)){openDeployment();return;}view.cursor={...p};view.keyboard=false;vp.focus({preventScroll:true});
  const u=E.at(s,p),a=selected();
  if(a?.team==='ally'&&!a.acted&&(!u||u.team==='enemy'||u.id===a.id)){if(draftMove(a,p))openDraft();return;}
  if(u)selectUnit(u,true);else{resetSelection();refresh();}
 }
 bindMapInput(vp,mapTap,(clientX,clientY)=>{
  if(locked||s.status!=='playing'||$('modal').open)return {pan:true};
- const p=mapPoint(clientX,clientY);if(s.map.camp&&E.dist(p,s.map.camp)===0)return {pan:true,tap:()=>openDeployment()};
- const pressed=E.at(s,p),before=structuredClone(view);let u=selected();
+ const p=mapPoint(clientX,clientY),pressed=E.at(s,p);if(s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>openDeployment()};
+ const before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
  const destinationPress=!!(ready&&!pressed&&E.routeTo(s,u,p).length);
  let anchor=before.menu&&before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
