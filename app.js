@@ -237,30 +237,22 @@ function requestStart(id,chain=false){
 }
 function start(id,chain=false,lost=[],specialties={}){battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
 function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties);},'danger wide'));}
+function selectSortie(u){
+ const virtual=E.sortieUnit(s,u.id);
+ if(!virtual||!E.canDeploy(s))return;
+ close();resetSelection();battleCard=null;lastNotice=null;
+ Object.assign(view,{selected:u.id,sortie:true,sortieUnit:virtual,dest:{...s.map.camp},cursor:{...s.map.camp},route:[],keyboard:false,menu:false});
+ sound.play('select');refresh();recenter({x:s.map.camp.x+.5,y:s.map.camp.y+.5});draw();vp.focus({preventScroll:true});
+}
 function openDeployment(){
  if(locked||s.status!=='playing'||s.phase!==1)return;
  resetSelection();refresh();
- const r=E.reserves(s),cells=E.deploymentCells(s),allowed=E.canDeploy(s);
- modal(`<h2>本城から出撃</h2><p>予備 ${r.length}隊／戦場 ${E.alive(s,'ally').length}/${RULES.maxDeployed}隊。1ターンの出撃は${RULES.deploymentsPerTurn}隊、城の近くの空きマスへ配置します。</p><div id="deploymentList"></div>`);
+ const r=E.reserves(s),allowed=E.canDeploy(s);
+ modal(`<h2>本城から出撃</h2><p>予備 ${r.length}隊／戦場 ${E.alive(s,'ally').length}/${RULES.maxDeployed}隊。1ターン1隊。選択すると本城から移動・攻撃できます。行動を確定するまで出撃枠は消費しません。</p><div id="deploymentList"></div>`);
  const root=$('deploymentList');
  if(!r.length){root.textContent='予備部隊はいません。';return;}
- if(!allowed){root.textContent=cells.length?'出撃上限に達しています。次の味方ターンで出撃可能です。':'本城周辺が塞がれています。';return;}
- for(const u of r){
-  const b=button(`${u.name} ／ ${u.label} HP${u.hp} ・弾薬${u.charges}`,()=>{
-   root.replaceChildren();
-   const explanation=document.createElement('p');explanation.className='hint';explanation.textContent=`${u.name}の出撃位置を選択（左右で展開方向を変えられます）`;root.append(explanation);
-   const base=s.map.camp;
-   for(const [label,valid]of [['左翼',p=>p.x<base.x],['中央',p=>p.x===base.x],['右翼',p=>p.x>base.x]]){
-    const p=cells.find(valid);if(!p)continue;
-    root.append(button(`${label}（${p.x+1},${p.y+1}）`,()=>{
-     const result=E.deploy(s,u.id,p);
-     if(!result.ok){lastNotice={title:'出撃不可',text:result.error};close();refresh();return;}
-     close();lastNotice={title:'新部隊出撃',text:`${u.name}が${label}から出撃。P1に行動できます。`};save();refresh();
-    },'subtle wide'));
-   }
-   root.append(button('別の部隊を選ぶ',openDeployment,'subtle wide'));
-  },'wide');root.append(b);
- }
+ if(!allowed){root.textContent='出撃上限、または本城周辺の空きがありません。';return;}
+ for(const u of r)root.append(button(`${u.name} ／ ${u.label} HP${u.hp} ・弾薬${u.charges}`,()=>selectSortie(u),'wide'));
 }
 function promotionMenu(){
  if(!campaign||s.status!=='victory'||s.map.id<1)return;
