@@ -50,7 +50,7 @@ test('castle resupplies one ammo per turn, and a spent unit can still counter',(
 });
 test('castle deployment: one per P1, active cap five, no bench target or premature action',()=>{
  const s=E.createGame(),r=E.reserves(s),before=E.alive(s,'ally').length;
- assert(E.canDeploy(s));assert(!E.at(s,r[0]));assert(E.deploy(s,r[0].id).ok);assert.equal(E.alive(s,'ally').length,before+1);
+ assert(E.canDeploy(s));assert(!E.alive(s).some(u=>u.id===r[0].id));assert(E.deploy(s,r[0].id).ok);assert.equal(E.alive(s,'ally').length,before+1);
  assert(!E.deploy(s,r[1].id).ok);E.endTurn(s);if(s.status==='playing'){assert(E.canDeploy(s));assert(E.deploy(s,r[1].id).ok);}
 });
 test('return to castle restores a slot but requires an unused adjacent unit',()=>{
