@@ -1,5 +1,5 @@
-import {tacticalRanges} from './ui-model.js?v=0.7.0';
-import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.7.0';
+import {tacticalRanges} from './ui-model.js?v=0.8.0';
+import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
  {'.':'#919e7b','=':'#beb792',f:'#627d68','~':'#769aab'},
@@ -18,7 +18,7 @@ function layers(canvas,s,view){
  let cache=caches.get(canvas);if(!cache){cache={terrainBuilds:0,rangeBuilds:0,boardBuilds:0};caches.set(canvas,cache);}
  const mapKey=JSON.stringify([s.map.id,s.map.w,s.map.h,s.map.tiles]),weather=weatherAt(s);
  if(cache.mapKey!==mapKey){cache.terrain=surface(s);paintTerrain(cache.terrain.getContext('2d'),s);cache.mapKey=mapKey;cache.terrainBuilds++;}
- const rangeKey=JSON.stringify([mapKey,weather,view.selected,!!view.danger,s.units.map(u=>[u.id,u.team,u.alive,u.acted,u.x,u.y,u.move,u.range,u.ai,u.type,u.skill])]);
+ const rangeKey=JSON.stringify([mapKey,weather,view.selected,!!view.danger,s.units.map(u=>[u.id,u.team,u.alive,u.acted,u.x,u.y,u.move,u.range,u.ai,u.type,u.skill,u.deployed])]);
  const selected=s.units.find(u=>u.id===view.selected);
  if(cache.rangeKey!==rangeKey){
   const movement=selected?.team==='ally'&&!selected.acted?reachable(s,selected):[];
@@ -32,7 +32,7 @@ function layers(canvas,s,view){
   }
   cache.rangeKey=rangeKey;cache.rangeBuilds++;
  }
- const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,s.warnings,s.map.goal,s.map.base,s.map.south,s.southTaken]);
+ const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,s.warnings,s.map.goal,s.map.base,s.map.camp,s.map.south,s.southTaken]);
  if(cache.boardKey!==boardKey){
   if(!cache.board||cache.board.width!==cache.terrain.width||cache.board.height!==cache.terrain.height)cache.board=surface(s);
   const c=cache.board.getContext('2d');c.clearRect(0,0,cache.board.width,cache.board.height);c.drawImage(cache.terrain,0,0);
@@ -71,7 +71,7 @@ function paintTactics(c,s,view,selected,{moves,attacks,danger}){
  }
  if(moves.size){outline(c,new Set([...moves,...attacks]),'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
  for(const w of s.warnings)for(const p of w.cells){c.strokeStyle=w.kind==='cannon'?'#ffdfb0':'#e0b9f2';c.lineWidth=2;c.strokeRect(p.x*32+2,p.y*32+2,28,28);c.fillStyle=w.kind==='cannon'?'#b34545bb':'#79568ebb';c.fillRect(p.x*32+3,p.y*32+3,26,8);c.fillStyle='#fff2cd';c.font='bold 7px sans-serif';c.textAlign='center';c.fillText(w.kind==='cannon'?`P4 −6`:`増援T${w.turn}`,p.x*32+16,p.y*32+10);}
- for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.base,'#6dc6db','本陣'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
+ for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.camp,'#6dc6db','出撃'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
  const weather=weatherAt(s);
  if(weather!=='clear'){
   c.fillStyle=weather==='heavy'?'#20395128':'#6f9fb518';c.fillRect(0,0,s.map.w*32,s.map.h*32);c.strokeStyle=weather==='heavy'?'#b7d5e66b':'#cee1eb45';c.lineWidth=1;c.beginPath();
@@ -170,7 +170,8 @@ function drawUnit(c,u){const x=u.x*32,y=u.y*32,blue=u.team==='ally',spent=blue&&
  }
  // Persistent high-contrast class badge remains readable for spent units.
  rect(0,0,10,11,'#172f35e6');c.font='bold 8px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(u.glyph,x+5,y+8);
- rect(6,29,23,3,ink);rect(7,29,21*u.hp/u.maxHp,2,u.hp/u.maxHp<.35?'#f1b16f':blue?'#b3e59d':'#ffad91');
+ // Six discrete HP pips remain legible on the map without opening combat details.
+  for(let i=0;i<6;i++)rect(4+i*4,29,3,3,i<u.hp?(u.hp<=2?'#ffbe70':blue?'#b3e59d':'#ffad91'):'#35414a');
  // The palette communicates allegiance; a dot still distinguishes spent allies.
  if(spent){rect(26,3,4,4,'#f6e6b1');rect(27,4,2,2,ink);}
 }
