@@ -22,7 +22,7 @@ test('playback feedback reports the current hit/counter/heal and skips idle enem
  const before=E.createGame(),after=structuredClone(before),actor=after.units.find(u=>u.id==='e1');
  after.log.push('a previous enemy hit');assert.equal(actionMessage(before,after,actor),null);
  actor.y--;assert(actionMessage(before,after,actor).includes('へ移動'));
- after.units[0].hp-=5;actor.hp-=2;const hit=actionMessage(before,after,actor);assert(hit.includes('26→21'));assert(hit.includes('22→20'));
+ after.units[0].hp-=5;actor.hp-=2;const hit=actionMessage(before,after,actor);assert(hit.includes('26→21'));assert(hit.includes(`${before.units.find(u=>u.id===actor.id).hp}→${actor.hp}`));
  before.units[0].hp=20;after.units[0].hp=21;assert(actionMessage(before,after,actor).includes('(+1)'));
 });
 test('action playback produces identical complete state to instantaneous resolution',()=>{

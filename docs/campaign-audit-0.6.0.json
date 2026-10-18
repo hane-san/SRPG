@@ -1,0 +1,1881 @@
+{
+  "method": "Greedy deterministic examples, not optimal play or human enjoyment",
+  "campaigns": [
+    {
+      "mode": "classic",
+      "policy": "garrison",
+      "chapters": [
+        {
+          "map": 1,
+          "policy": "garrison",
+          "healing": "H1",
+          "status": "victory",
+          "turn": 10,
+          "alive": 8,
+          "southTaken": false,
+          "reachedEast": false,
+          "firstCombatTurn": 1,
+          "combatTurns": 9,
+          "hits": 34,
+          "heals": 1,
+          "movementSteps": 221,
+          "commands": 80,
+          "supports": 1,
+          "misfires": 18,
+          "charges": 1,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a6"
+            },
+            {
+              "turn": 3,
+              "id": "a1",
+              "reason": "e4"
+            },
+            {
+              "turn": 4,
+              "id": "e2",
+              "reason": "a7"
+            },
+            {
+              "turn": 5,
+              "id": "e4",
+              "reason": "a2"
+            },
+            {
+              "turn": 5,
+              "id": "e3",
+              "reason": "a2"
+            },
+            {
+              "turn": 7,
+              "id": "e5",
+              "reason": "a6"
+            },
+            {
+              "turn": 10,
+              "id": "boss",
+              "reason": "a6"
+            }
+          ],
+          "turns": 9
+        },
+        {
+          "map": 2,
+          "policy": "garrison",
+          "healing": "H1",
+          "status": "victory",
+          "turn": 17,
+          "alive": 6,
+          "southTaken": false,
+          "reachedEast": true,
+          "firstCombatTurn": 1,
+          "combatTurns": 13,
+          "hits": 48,
+          "heals": 2,
+          "movementSteps": 251,
+          "commands": 107,
+          "supports": 5,
+          "misfires": 35,
+          "charges": 5,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "e5",
+              "reason": "a4"
+            },
+            {
+              "turn": 2,
+              "id": "a9",
+              "reason": "e1"
+            },
+            {
+              "turn": 3,
+              "id": "e6",
+              "reason": "a3"
+            },
+            {
+              "turn": 3,
+              "id": "e1",
+              "reason": "a2"
+            },
+            {
+              "turn": 4,
+              "id": "a5",
+              "reason": "e2"
+            },
+            {
+              "turn": 5,
+              "id": "reinforcement-4-0",
+              "reason": "a4"
+            },
+            {
+              "turn": 6,
+              "id": "e2",
+              "reason": "a3"
+            },
+            {
+              "turn": 6,
+              "id": "e3",
+              "reason": "a2"
+            },
+            {
+              "turn": 7,
+              "id": "southguard",
+              "reason": "a4"
+            },
+            {
+              "turn": 7,
+              "id": "e4",
+              "reason": "a7"
+            },
+            {
+              "turn": 11,
+              "id": "reinforcement-8-0",
+              "reason": "a4"
+            },
+            {
+              "turn": 16,
+              "id": "reinforcement-12-0",
+              "reason": "a6"
+            },
+            {
+              "turn": 17,
+              "id": "boss",
+              "reason": "a4"
+            }
+          ],
+          "turns": 16
+        },
+        {
+          "map": 3,
+          "policy": "garrison",
+          "healing": "H1",
+          "status": "victory",
+          "turn": 10,
+          "alive": 6,
+          "southTaken": false,
+          "reachedEast": false,
+          "firstCombatTurn": 1,
+          "combatTurns": 8,
+          "hits": 27,
+          "heals": 0,
+          "movementSteps": 238,
+          "commands": 58,
+          "supports": 0,
+          "misfires": 5,
+          "charges": 0,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a4"
+            },
+            {
+              "turn": 2,
+              "id": "e2",
+              "reason": "a6"
+            },
+            {
+              "turn": 2,
+              "id": "e3",
+              "reason": "a7"
+            },
+            {
+              "turn": 4,
+              "id": "e4",
+              "reason": "a6"
+            },
+            {
+              "turn": 6,
+              "id": "e5",
+              "reason": "a7"
+            },
+            {
+              "turn": 8,
+              "id": "reinforcement-4-0",
+              "reason": "a2"
+            },
+            {
+              "turn": 10,
+              "id": "boss",
+              "reason": "a4"
+            }
+          ],
+          "turns": 9
+        }
+      ],
+      "lost": [
+        "a1",
+        "a9",
+        "a5"
+      ]
+    },
+    {
+      "mode": "casual",
+      "policy": "garrison",
+      "chapters": [
+        {
+          "map": 1,
+          "policy": "garrison",
+          "healing": "H1",
+          "status": "victory",
+          "turn": 10,
+          "alive": 8,
+          "southTaken": false,
+          "reachedEast": false,
+          "firstCombatTurn": 1,
+          "combatTurns": 9,
+          "hits": 34,
+          "heals": 1,
+          "movementSteps": 221,
+          "commands": 80,
+          "supports": 1,
+          "misfires": 18,
+          "charges": 1,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a6"
+            },
+            {
+              "turn": 3,
+              "id": "a1",
+              "reason": "e4"
+            },
+            {
+              "turn": 4,
+              "id": "e2",
+              "reason": "a7"
+            },
+            {
+              "turn": 5,
+              "id": "e4",
+              "reason": "a2"
+            },
+            {
+              "turn": 5,
+              "id": "e3",
+              "reason": "a2"
+            },
+            {
+              "turn": 7,
+              "id": "e5",
+              "reason": "a6"
+            },
+            {
+              "turn": 10,
+              "id": "boss",
+              "reason": "a6"
+            }
+          ],
+          "turns": 9
+        },
+        {
+          "map": 2,
+          "policy": "garrison",
+          "healing": "H1",
+          "status": "victory",
+          "turn": 10,
+          "alive": 8,
+          "southTaken": false,
+          "reachedEast": true,
+          "firstCombatTurn": 1,
+          "combatTurns": 10,
+          "hits": 32,
+          "heals": 2,
+          "movementSteps": 194,
+          "commands": 80,
+          "supports": 3,
+          "misfires": 32,
+          "charges": 3,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "e5",
+              "reason": "a4"
+            },
+            {
+              "turn": 2,
+              "id": "e3",
+              "reason": "a7"
+            },
+            {
+              "turn": 2,
+              "id": "a9",
+              "reason": "e1"
+            },
+            {
+              "turn": 3,
+              "id": "e6",
+              "reason": "a3"
+            },
+            {
+              "turn": 3,
+              "id": "e2",
+              "reason": "a2"
+            },
+            {
+              "turn": 3,
+              "id": "e1",
+              "reason": "a4"
+            },
+            {
+              "turn": 5,
+              "id": "e4",
+              "reason": "a2"
+            },
+            {
+              "turn": 8,
+              "id": "reinforcement-4-0",
+              "reason": "a3"
+            },
+            {
+              "turn": 10,
+              "id": "boss",
+              "reason": "a6"
+            }
+          ],
+          "turns": 9
+        },
+        {
+          "map": 3,
+          "policy": "garrison",
+          "healing": "H1",
+          "status": "victory",
+          "turn": 8,
+          "alive": 8,
+          "southTaken": false,
+          "reachedEast": false,
+          "firstCombatTurn": 1,
+          "combatTurns": 7,
+          "hits": 32,
+          "heals": 0,
+          "movementSteps": 262,
+          "commands": 67,
+          "supports": 1,
+          "misfires": 4,
+          "charges": 1,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a4"
+            },
+            {
+              "turn": 2,
+              "id": "e2",
+              "reason": "a6"
+            },
+            {
+              "turn": 2,
+              "id": "e3",
+              "reason": "a7"
+            },
+            {
+              "turn": 4,
+              "id": "e4",
+              "reason": "a6"
+            },
+            {
+              "turn": 6,
+              "id": "e5",
+              "reason": "a3"
+            },
+            {
+              "turn": 7,
+              "id": "a9",
+              "reason": "reinforcement-4-0"
+            },
+            {
+              "turn": 8,
+              "id": "boss",
+              "reason": "a2"
+            }
+          ],
+          "turns": 7
+        }
+      ],
+      "lost": []
+    }
+  ],
+  "difficulty": [
+    {
+      "enemyAttack": -2,
+      "map": 1,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 5,
+      "alive": 9,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 5,
+      "hits": 32,
+      "heals": 0,
+      "movementSteps": 151,
+      "commands": 41,
+      "supports": 0,
+      "misfires": 1,
+      "charges": 0,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "e4",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "e2",
+          "reason": "a7"
+        },
+        {
+          "turn": 3,
+          "id": "e5",
+          "reason": "a7"
+        },
+        {
+          "turn": 4,
+          "id": "e3",
+          "reason": "a3"
+        },
+        {
+          "turn": 5,
+          "id": "boss",
+          "reason": "a2"
+        }
+      ],
+      "turns": 4
+    },
+    {
+      "enemyAttack": -2,
+      "map": 2,
+      "policy": "garrison",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 5,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 5,
+      "hits": 33,
+      "heals": 1,
+      "movementSteps": 143,
+      "commands": 39,
+      "supports": 3,
+      "misfires": 9,
+      "charges": 3,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e2"
+        },
+        {
+          "turn": 3,
+          "id": "e1",
+          "reason": "a2"
+        },
+        {
+          "turn": 3,
+          "id": "e6",
+          "reason": "a4"
+        },
+        {
+          "turn": 3,
+          "id": "e5",
+          "reason": "a9"
+        },
+        {
+          "turn": 4,
+          "id": "e2",
+          "reason": "a4"
+        },
+        {
+          "turn": 5,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "turns": 4
+    },
+    {
+      "enemyAttack": -2,
+      "map": 3,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 7,
+      "alive": 9,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 6,
+      "hits": 34,
+      "heals": 0,
+      "movementSteps": 243,
+      "commands": 56,
+      "supports": 2,
+      "misfires": 0,
+      "charges": 2,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "e2",
+          "reason": "a1"
+        },
+        {
+          "turn": 2,
+          "id": "e3",
+          "reason": "a6"
+        },
+        {
+          "turn": 4,
+          "id": "e4",
+          "reason": "a7"
+        },
+        {
+          "turn": 6,
+          "id": "e5",
+          "reason": "a3"
+        },
+        {
+          "turn": 6,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "turns": 6
+    },
+    {
+      "enemyAttack": -2,
+      "map": 4,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 14,
+      "alive": 11,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 13,
+      "hits": 75,
+      "heals": 1,
+      "movementSteps": 576,
+      "commands": 145,
+      "supports": 3,
+      "misfires": 11,
+      "charges": 3,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "extra-3-0-2",
+          "reason": "a2"
+        },
+        {
+          "turn": 2,
+          "id": "extra-3-0-0",
+          "reason": "a9"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-0-3",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-0-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-1-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-1-2",
+          "reason": "a2"
+        },
+        {
+          "turn": 5,
+          "id": "extra-3-1-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "extra-3-2-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 6,
+          "id": "extra-3-1-1",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 9,
+          "id": "extra-3-2-2",
+          "reason": "a2"
+        },
+        {
+          "turn": 10,
+          "id": "extra-3-2-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 11,
+          "id": "extra-3-2-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 13,
+          "id": "boss",
+          "reason": "aux-shield"
+        }
+      ],
+      "turns": 13
+    },
+    {
+      "enemyAttack": -2,
+      "map": 5,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 13,
+      "alive": 9,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 13,
+      "hits": 72,
+      "heals": 0,
+      "movementSteps": 390,
+      "commands": 130,
+      "supports": 4,
+      "misfires": 4,
+      "charges": 4,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-4-0-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 1,
+          "id": "extra-4-0-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 1,
+          "id": "extra-4-0-2",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-1-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-1-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-1-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 4,
+          "id": "extra-4-2-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 6,
+          "id": "extra-4-1-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 7,
+          "id": "a7",
+          "reason": "extra-4-2-0"
+        },
+        {
+          "turn": 8,
+          "id": "extra-4-2-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "extra-4-2-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 10,
+          "id": "extra-4-2-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 12,
+          "id": "a2",
+          "reason": "boss"
+        },
+        {
+          "turn": 13,
+          "id": "boss",
+          "reason": "a3"
+        }
+      ],
+      "turns": 12
+    },
+    {
+      "enemyAttack": -2,
+      "map": 6,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 14,
+      "alive": 12,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 14,
+      "hits": 84,
+      "heals": 4,
+      "movementSteps": 688,
+      "commands": 167,
+      "supports": 4,
+      "misfires": 4,
+      "charges": 4,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-5-0-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 1,
+          "id": "extra-5-0-1",
+          "reason": "aux-horse"
+        },
+        {
+          "turn": 1,
+          "id": "extra-5-0-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "extra-5-0-0",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 2,
+          "id": "extra-5-1-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-1-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-1-1",
+          "reason": "a7"
+        },
+        {
+          "turn": 5,
+          "id": "extra-5-2-3",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 5,
+          "id": "extra-5-2-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 5,
+          "id": "extra-5-1-0",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 7,
+          "id": "reinforcement-4-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 7,
+          "id": "a6",
+          "reason": "reinforcement-4-1"
+        },
+        {
+          "turn": 8,
+          "id": "reinforcement-4-1",
+          "reason": "a2"
+        },
+        {
+          "turn": 10,
+          "id": "reinforcement-8-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 10,
+          "id": "reinforcement-8-1",
+          "reason": "a2"
+        },
+        {
+          "turn": 12,
+          "id": "tower-west",
+          "reason": "aux-horse"
+        },
+        {
+          "turn": 14,
+          "id": "boss",
+          "reason": "a1"
+        }
+      ],
+      "turns": 13
+    },
+    {
+      "enemyAttack": 0,
+      "map": 1,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 10,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 9,
+      "hits": 34,
+      "heals": 1,
+      "movementSteps": 221,
+      "commands": 80,
+      "supports": 1,
+      "misfires": 18,
+      "charges": 1,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a6"
+        },
+        {
+          "turn": 3,
+          "id": "a1",
+          "reason": "e4"
+        },
+        {
+          "turn": 4,
+          "id": "e2",
+          "reason": "a7"
+        },
+        {
+          "turn": 5,
+          "id": "e4",
+          "reason": "a2"
+        },
+        {
+          "turn": 5,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 7,
+          "id": "e5",
+          "reason": "a6"
+        },
+        {
+          "turn": 10,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "turns": 9
+    },
+    {
+      "enemyAttack": 0,
+      "map": 2,
+      "policy": "garrison",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 10,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 10,
+      "hits": 32,
+      "heals": 2,
+      "movementSteps": 194,
+      "commands": 80,
+      "supports": 3,
+      "misfires": 32,
+      "charges": 3,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "e5",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "e3",
+          "reason": "a7"
+        },
+        {
+          "turn": 2,
+          "id": "a9",
+          "reason": "e1"
+        },
+        {
+          "turn": 3,
+          "id": "e6",
+          "reason": "a3"
+        },
+        {
+          "turn": 3,
+          "id": "e2",
+          "reason": "a2"
+        },
+        {
+          "turn": 3,
+          "id": "e1",
+          "reason": "a4"
+        },
+        {
+          "turn": 5,
+          "id": "e4",
+          "reason": "a2"
+        },
+        {
+          "turn": 8,
+          "id": "reinforcement-4-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 10,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "turns": 9
+    },
+    {
+      "enemyAttack": 0,
+      "map": 3,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 8,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 7,
+      "hits": 32,
+      "heals": 0,
+      "movementSteps": 262,
+      "commands": 67,
+      "supports": 1,
+      "misfires": 4,
+      "charges": 1,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "e2",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "e3",
+          "reason": "a7"
+        },
+        {
+          "turn": 4,
+          "id": "e4",
+          "reason": "a6"
+        },
+        {
+          "turn": 6,
+          "id": "e5",
+          "reason": "a3"
+        },
+        {
+          "turn": 7,
+          "id": "a9",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 8,
+          "id": "boss",
+          "reason": "a2"
+        }
+      ],
+      "turns": 7
+    },
+    {
+      "enemyAttack": 0,
+      "map": 4,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 18,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 17,
+      "hits": 73,
+      "heals": 1,
+      "movementSteps": 678,
+      "commands": 178,
+      "supports": 6,
+      "misfires": 17,
+      "charges": 6,
+      "deaths": [
+        {
+          "turn": 4,
+          "id": "extra-3-0-3",
+          "reason": "a3"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-0-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 5,
+          "id": "extra-3-0-1",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 5,
+          "id": "extra-3-0-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 5,
+          "id": "extra-3-1-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 7,
+          "id": "extra-3-2-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "extra-3-1-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "a1",
+          "reason": "extra-3-1-1"
+        },
+        {
+          "turn": 9,
+          "id": "extra-3-1-2",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 10,
+          "id": "extra-3-1-1",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 10,
+          "id": "extra-3-2-2",
+          "reason": "a7"
+        },
+        {
+          "turn": 13,
+          "id": "extra-3-2-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 13,
+          "id": "a2",
+          "reason": "extra-3-2-1"
+        },
+        {
+          "turn": 15,
+          "id": "extra-3-2-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 17,
+          "id": "aux-shield",
+          "reason": "boss"
+        },
+        {
+          "turn": 18,
+          "id": "boss",
+          "reason": "aux-bow"
+        }
+      ],
+      "turns": 17
+    },
+    {
+      "enemyAttack": 0,
+      "map": 5,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 19,
+      "alive": 9,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 15,
+      "hits": 67,
+      "heals": 5,
+      "movementSteps": 461,
+      "commands": 184,
+      "supports": 8,
+      "misfires": 23,
+      "charges": 8,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-4-0-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 1,
+          "id": "extra-4-0-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 1,
+          "id": "extra-4-0-2",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-1-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-1-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 4,
+          "id": "a2",
+          "reason": "extra-4-2-3"
+        },
+        {
+          "turn": 5,
+          "id": "extra-4-2-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 7,
+          "id": "extra-4-1-0",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 7,
+          "id": "extra-4-1-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 11,
+          "id": "extra-4-2-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 14,
+          "id": "extra-4-2-1",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 14,
+          "id": "a1",
+          "reason": "extra-4-2-0"
+        },
+        {
+          "turn": 16,
+          "id": "extra-4-2-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 19,
+          "id": "boss",
+          "reason": "aux-bow"
+        }
+      ],
+      "turns": 18
+    },
+    {
+      "enemyAttack": 0,
+      "map": 6,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 20,
+      "alive": 9,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 19,
+      "hits": 93,
+      "heals": 2,
+      "movementSteps": 810,
+      "commands": 202,
+      "supports": 3,
+      "misfires": 12,
+      "charges": 3,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-5-0-3",
+          "reason": "aux-horse"
+        },
+        {
+          "turn": 1,
+          "id": "extra-5-0-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "extra-5-0-1",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "a6",
+          "reason": "extra-5-1-2"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-0-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-1-1",
+          "reason": "aux-horse"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-1-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 5,
+          "id": "aux-horse",
+          "reason": "extra-5-2-3"
+        },
+        {
+          "turn": 6,
+          "id": "reinforcement-4-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-1-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 8,
+          "id": "extra-5-2-0",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 8,
+          "id": "tower-west",
+          "reason": "a7"
+        },
+        {
+          "turn": 9,
+          "id": "extra-5-2-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 9,
+          "id": "a7",
+          "reason": "reinforcement-4-1"
+        },
+        {
+          "turn": 10,
+          "id": "extra-5-1-3",
+          "reason": "a4"
+        },
+        {
+          "turn": 11,
+          "id": "reinforcement-8-0",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 11,
+          "id": "aux-bow",
+          "reason": "reinforcement-8-1"
+        },
+        {
+          "turn": 12,
+          "id": "reinforcement-4-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 14,
+          "id": "extra-5-2-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 15,
+          "id": "reinforcement-8-1",
+          "reason": "a5"
+        },
+        {
+          "turn": 16,
+          "id": "extra-5-2-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 20,
+          "id": "boss",
+          "reason": "a2"
+        }
+      ],
+      "turns": 19
+    },
+    {
+      "enemyAttack": 2,
+      "map": 1,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 12,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 11,
+      "hits": 24,
+      "heals": 0,
+      "movementSteps": 298,
+      "commands": 100,
+      "supports": 1,
+      "misfires": 18,
+      "charges": 1,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "e4",
+          "reason": "a6"
+        },
+        {
+          "turn": 4,
+          "id": "e2",
+          "reason": "a6"
+        },
+        {
+          "turn": 6,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 8,
+          "id": "a2",
+          "reason": "e5"
+        },
+        {
+          "turn": 9,
+          "id": "e5",
+          "reason": "a1"
+        },
+        {
+          "turn": 12,
+          "id": "boss",
+          "reason": "a4"
+        }
+      ],
+      "turns": 11
+    },
+    {
+      "enemyAttack": 2,
+      "map": 2,
+      "policy": "garrison",
+      "healing": "H1",
+      "status": "defeat",
+      "turn": 6,
+      "alive": 5,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 6,
+      "hits": 23,
+      "heals": 1,
+      "movementSteps": 212,
+      "commands": 44,
+      "supports": 4,
+      "misfires": 5,
+      "charges": 4,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "a5",
+          "reason": "e2"
+        },
+        {
+          "turn": 2,
+          "id": "a9",
+          "reason": "e5"
+        },
+        {
+          "turn": 3,
+          "id": "e3",
+          "reason": "a6"
+        },
+        {
+          "turn": 3,
+          "id": "e6",
+          "reason": "a3"
+        },
+        {
+          "turn": 3,
+          "id": "e5",
+          "reason": "a1"
+        },
+        {
+          "turn": 4,
+          "id": "a1",
+          "reason": "e2"
+        },
+        {
+          "turn": 6,
+          "id": "e1",
+          "reason": "a3"
+        },
+        {
+          "turn": 6,
+          "id": "a3",
+          "reason": "e2"
+        }
+      ],
+      "turns": 5
+    },
+    {
+      "enemyAttack": 2,
+      "map": 3,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "victory",
+      "turn": 10,
+      "alive": 8,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 9,
+      "hits": 26,
+      "heals": 1,
+      "movementSteps": 276,
+      "commands": 83,
+      "supports": 2,
+      "misfires": 12,
+      "charges": 2,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "e2",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "e3",
+          "reason": "a7"
+        },
+        {
+          "turn": 4,
+          "id": "e4",
+          "reason": "a6"
+        },
+        {
+          "turn": 6,
+          "id": "a9",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 7,
+          "id": "reinforcement-4-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 7,
+          "id": "e5",
+          "reason": "a2"
+        },
+        {
+          "turn": 10,
+          "id": "boss",
+          "reason": "a4"
+        }
+      ],
+      "turns": 9
+    },
+    {
+      "enemyAttack": 2,
+      "map": 4,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "timeout",
+      "turn": 36,
+      "alive": 9,
+      "southTaken": false,
+      "reachedEast": false,
+      "firstCombatTurn": 1,
+      "combatTurns": 17,
+      "hits": 51,
+      "heals": 5,
+      "movementSteps": 763,
+      "commands": 337,
+      "supports": 6,
+      "misfires": 169,
+      "charges": 6,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "extra-3-0-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 3,
+          "id": "a9",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-0-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-0-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 6,
+          "id": "extra-3-0-1",
+          "reason": "a2"
+        },
+        {
+          "turn": 6,
+          "id": "extra-3-1-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 7,
+          "id": "extra-3-2-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 11,
+          "id": "extra-3-1-1",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 11,
+          "id": "extra-3-1-2",
+          "reason": "a2"
+        },
+        {
+          "turn": 14,
+          "id": "extra-3-1-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 15,
+          "id": "extra-3-2-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 18,
+          "id": "extra-3-2-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 19,
+          "id": "aux-shield",
+          "reason": "extra-3-2-1"
+        }
+      ],
+      "turns": 35
+    },
+    {
+      "enemyAttack": 2,
+      "map": 5,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "timeout",
+      "turn": 36,
+      "alive": 5,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 19,
+      "hits": 51,
+      "heals": 7,
+      "movementSteps": 687,
+      "commands": 237,
+      "supports": 7,
+      "misfires": 41,
+      "charges": 6,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "extra-4-0-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 2,
+          "id": "aux-bow",
+          "reason": "extra-4-0-2"
+        },
+        {
+          "turn": 2,
+          "id": "a7",
+          "reason": "extra-4-1-1"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-0-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 7,
+          "id": "extra-4-1-3",
+          "reason": "a4"
+        },
+        {
+          "turn": 7,
+          "id": "a4",
+          "reason": "extra-4-0-2"
+        },
+        {
+          "turn": 7,
+          "id": "a9",
+          "reason": "extra-4-2-3"
+        },
+        {
+          "turn": 8,
+          "id": "extra-4-2-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 10,
+          "id": "extra-4-0-2",
+          "reason": "a3"
+        },
+        {
+          "turn": 13,
+          "id": "extra-4-1-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 20,
+          "id": "a3",
+          "reason": "extra-4-2-2"
+        },
+        {
+          "turn": 24,
+          "id": "aux-shield",
+          "reason": "extra-4-2-2"
+        },
+        {
+          "turn": 26,
+          "id": "extra-4-2-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 29,
+          "id": "extra-4-2-1",
+          "reason": "a6"
+        }
+      ],
+      "turns": 35
+    },
+    {
+      "enemyAttack": 2,
+      "map": 6,
+      "policy": "advance",
+      "healing": "H1",
+      "status": "timeout",
+      "turn": 36,
+      "alive": 5,
+      "southTaken": false,
+      "reachedEast": true,
+      "firstCombatTurn": 1,
+      "combatTurns": 19,
+      "hits": 71,
+      "heals": 6,
+      "movementSteps": 987,
+      "commands": 252,
+      "supports": 7,
+      "misfires": 58,
+      "charges": 7,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-5-0-3",
+          "reason": "aux-horse"
+        },
+        {
+          "turn": 2,
+          "id": "extra-5-0-2",
+          "reason": "a9"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-1-2",
+          "reason": "a6"
+        },
+        {
+          "turn": 3,
+          "id": "extra-5-0-1",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 5,
+          "id": "a9",
+          "reason": "extra-5-0-0"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-0-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-1-1",
+          "reason": "a7"
+        },
+        {
+          "turn": 6,
+          "id": "a7",
+          "reason": "extra-5-1-3"
+        },
+        {
+          "turn": 6,
+          "id": "a6",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 7,
+          "id": "extra-5-1-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "aux-horse",
+          "reason": "extra-5-2-3"
+        },
+        {
+          "turn": 8,
+          "id": "reinforcement-4-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 10,
+          "id": "a1",
+          "reason": "extra-5-1-3"
+        },
+        {
+          "turn": 11,
+          "id": "reinforcement-8-0",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 12,
+          "id": "a2",
+          "reason": "extra-5-1-3"
+        },
+        {
+          "turn": 13,
+          "id": "extra-5-1-3",
+          "reason": "a3"
+        },
+        {
+          "turn": 14,
+          "id": "aux-shield",
+          "reason": "reinforcement-8-1"
+        },
+        {
+          "turn": 15,
+          "id": "extra-5-2-3",
+          "reason": "a4"
+        },
+        {
+          "turn": 16,
+          "id": "reinforcement-8-1",
+          "reason": "aux-bow"
+        },
+        {
+          "turn": 16,
+          "id": "a3",
+          "reason": "extra-5-2-0"
+        },
+        {
+          "turn": 17,
+          "id": "reinforcement-4-1",
+          "reason": "a4"
+        },
+        {
+          "turn": 18,
+          "id": "extra-5-2-0",
+          "reason": "aux-bow"
+        }
+      ],
+      "turns": 35
+    }
+  ]
+}

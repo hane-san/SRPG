@@ -19,6 +19,6 @@ export async function setup(browser,width=390,height=844,options={}){
  const tap=async p=>{const a=await point(p);await page.touchscreen.tap(a.x,a.y);};
  const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map((p,i)=>({...p,id:i+1,radiusX:2,radiusY:2,force:1}))});
  async function slide(from,to,{end=true,steps=8}={}){const a=await point(from),z=await point(to);await touch('touchStart',[a]);for(let i=1;i<=steps;i++)await touch('touchMove',[{x:a.x+(z.x-a.x)*i/steps,y:a.y+(z.y-a.y)*i/steps}]);if(end)await touch('touchEnd',[]);}
- async function endTurn(){const turn=(await state()).turn;await page.locator('#endTurn').click();await page.locator('#endConfirm button').click();await page.waitForFunction(t=>!window.srpgDebug.busy()&&(window.srpgDebug.snapshot().turn===t||window.srpgDebug.snapshot().status!=='playing'),turn+1);}
+ async function endTurn(){const turn=(await state()).turn;await page.locator('#endTurn').click();if(await page.locator('#endConfirm button').count())await page.locator('#endConfirm button').click();await page.waitForFunction(t=>!window.srpgDebug.busy()&&(window.srpgDebug.snapshot().turn===t||window.srpgDebug.snapshot().status!=='playing'),turn+1);}
  return {context,page,cdp,errors,state,draft,reset,settled,select,camera,point,tap,touch,slide,endTurn};
 }

@@ -1,8 +1,10 @@
-import {CLASSES} from './config.js?v=0.5.2';
+import {CLASSES} from './config.js?v=0.6.0';
 const row = (w,h) => Array.from({length:h},()=>Array(w).fill('.'));
 function path(g,x,y0,y1,t='='){for(let y=y0;y<=y1;y++)g[y][x]=t;}
 function patch(g,x,y,w,h,t){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)g[j][i]=t;}
-const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵'}[type],type,x,y,ai});
+// Line troops fall to 2–3 coordinated hits; captains remain a distinct final obstacle.
+const ENEMY_LINE={shield:{hp:18,def:5},sword:{hp:16,def:3},bow:{hp:14,def:2},mage:{hp:14,def:2},horse:{hp:18,def:3}};
+export const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵'}[type],type,x,y,ai,...ENEMY_LINE[type],...(id==='boss'?{name:'守将',hp:22,def:5}:{} )});
 function makeMap(id){
  const w=[12,16,14][id],h=[20,30,26][id],g=row(w,h),cx=Math.floor(w/2);
  path(g,cx,1,h-2);
@@ -16,24 +18,24 @@ function makeMap(id){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
    path(g,13,1,28);path(g,7,1,28);for(let x=7;x<=13;x++)g[2][x]='=';
-   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,9,'skirmish'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',7,4,'defend'),enemy('e5','sword',7,24,'raid'),enemy('e6','bow',6,26,'raid'),enemy('boss','shield',8,1,'hold'),enemy('southguard','shield',7,28,'hold')];
+   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,9,'skirmish'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',7,4,'defend'),enemy('e5','sword',7,25,'raid'),enemy('e6','bow',6,27,'raid'),enemy('boss','shield',8,1,'hold'),enemy('southguard','shield',7,28,'hold')];
    spawns=[{x:7,y:27}];
  } else {
    patch(g,0,13,w,2,'~');patch(g,4,13,2,2,'+');patch(g,10,13,2,2,'+');path(g,10,2,23);g[13][10]=g[14][10]='+';
-   cannon={x:7,y:2};spawns=[{x:3,y:24},{x:11,y:21}];g[18][6]='c';
+   cannon={x:7,y:2};spawns=[{x:3,y:21}];g[18][6]='c';
    enemies=[enemy('e1','sword',7,18),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,10),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',7,5,'defend'),enemy('boss','shield',7,1,'hold')];
  }
  const goal={x:id===1?8:cx,y:1};g[goal.y][goal.x]='c';if(base)g[base.y][base.x]='c';if(south)g[south.y][south.x]='c';
- return {id,w,h,maxWaves:id===2?2:null,tiles:g.map(r=>r.join('')),goal,base,south,spawns,cannon,enemies,
+ return {id,w,h,maxWaves:id===2?2:id===1?3:null,tiles:g.map(r=>r.join('')),goal,base,south,spawns,cannon,enemies,
   title:['01 霧河の渡し','02 二つの戦線','03 灰城の砲火'][id],
   subtitle:['正面突破 / 12 × 20','南北挟撃・東側機動 / 16 × 30','予告増援・城砲撃 / 14 × 26'][id],
   briefing:[
    '北の城を制圧。中央の橋で盾と弓を連携させるか、東の細橋へ騎兵を送るか。自動回復は移動したターンには使えません。',
-   '中央の青砦を守り、北城を制圧。南城からT4・8・12…に増援。南城を制圧すれば停止。西で遊撃隊を引きつけ、東道から北を狙う手もあります。',
-   '北城を制圧。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。増援はT4・T8のP4に各2隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
+   '中央の青砦を守り、北城を制圧。本陣の守備役と隣接の回復役を残す配置。南城からT4・8・12に各1隊、制圧で停止。西の主力と東の騎兵を分け、北城を狙う。',
+   '北城を制圧。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
   ][id]};
 }
-// Optional battlefields; the original three-chapter campaign stays unchanged.
+// Optional battlefields; only the original three chapters belong to the campaign.
 function extraMap(id){
  const w=[12,16,14][id-3],h=[40,36,44][id-3],g=row(w,h),cx=Math.floor(w/2);
  path(g,cx,1,h-2);path(g,2,2,h-3);path(g,w-3,2,h-3);
@@ -51,11 +53,13 @@ function extraMap(id){
   cannon={x:cx,y:2};spawns=[{x:2,y:20},{x:w-3,y:9}];
  }
  g[goal.y][goal.x]='c';
- const types=['shield','bow','sword','mage','horse'];let enemies=[];
- for(const [rank,y]of [h-12,h-21,5].entries())for(let lane=0;lane<4;lane++){
-  const x=[2,cx-2,cx+2,w-3][lane];g[y][x]='=';
-  enemies.push(enemy(`extra-${id}-${rank}-${lane}`,types[(rank+lane)%types.length],x,y,rank===0?'defend':rank===1?'advance':'defend'));
- }
+ // Each front has a purpose: screen, ranged cover, flank, then a guarded approach.
+ const formations={
+  3:[['shield',6,29,'advance'],['bow',6,27,'defend'],['sword',2,28,'defend'],['horse',9,27,'advance'],['shield',6,19,'defend'],['mage',5,18,'defend'],['bow',2,19,'defend'],['horse',9,18,'advance'],['sword',6,7,'advance'],['mage',9,6,'defend'],['bow',2,6,'defend'],['shield',6,4,'defend']],
+  4:[['sword',5,26,'advance'],['bow',5,24,'defend'],['shield',10,26,'defend'],['horse',12,24,'advance'],['shield',5,17,'defend'],['mage',4,16,'defend'],['bow',11,17,'defend'],['sword',12,15,'advance'],['shield',5,7,'defend'],['bow',4,5,'defend'],['mage',11,6,'defend'],['horse',12,4,'advance']],
+  5:[['shield',7,32,'defend'],['mage',6,31,'defend'],['sword',2,33,'advance'],['bow',11,32,'defend'],['shield',7,24,'defend'],['bow',6,23,'defend'],['horse',2,23,'advance'],['mage',11,22,'defend'],['sword',7,10,'advance'],['shield',2,9,'defend'],['mage',11,8,'defend'],['horse',7,6,'advance']]
+ };
+ const enemies=formations[id].map(([type,x,y,ai],i)=>{g[y][x]='=';return enemy(`extra-${id}-${Math.floor(i/4)}-${i%4}`,type,x,y,ai);});
  enemies.push(enemy('boss','shield',cx,1,'hold'));
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
  // More troops without introducing a new class, resource or campaign roster.
@@ -76,9 +80,17 @@ export const ROSTER=[
  {id:'a7',name:'フィン',type:'horse'}, {id:'a8',name:'テオ',type:'medic'}, {id:'a9',name:'ニコ',type:'shooter'},
 ];
 export function unit(spec,team,options={}){
- const c=CLASSES[spec.type];return {...c,...spec,team,maxHp:c.hp,hp:c.hp,
-  atk:c.atk+(team==='enemy'?(options.enemyAttack||0):0),charges:options.charges??c.charges,
+ const c=CLASSES[spec.type],hp=spec.hp??c.hp;return {...c,...spec,team,maxHp:hp,hp,
+  atk:(spec.atk??c.atk)+(team==='enemy'?(options.enemyAttack||0):0),charges:options.charges??c.charges,
   alive:true,acted:false,command:null,spend:true,focus:null,guard:0};
 }
-export function positions(id){if(id>=3){const m=MAPS[id],x=Math.floor(m.w/2)-2,y=m.h-6;return [[x,y],[x+1,y],[x-1,y+1],[x+2,y+1],[x,y+2],[x+2,y-1],[x+3,y],[x+1,y+2],[x-2,y],[x+3,y+2],[x-2,y+2],[x+1,y+3],[x+4,y+1]];}const x=[5,7,6][id],y=[16,17,22][id];return [[x,y],[x+1,y],[x-1,y+1],[x+(id===1?1:2),y+1],[x,y+2],[x+2,y-1],[x+3,y],[x+1,y+2],[x-1,y+2]];}
-
+export function positions(id){
+ const deployments={
+  1:[[7,16],[8,16],[6,17],[8,17],[7,17],[13,17],[13,18],[8,18],[6,18]],
+  3:[[6,34],[5,34],[5,35],[7,35],[6,35],[2,33],[9,33],[7,36],[4,35],[9,35],[2,35]],
+  4:[[5,29],[11,29],[5,30],[11,30],[5,31],[12,28],[4,28],[11,31],[4,30],[12,30],[12,29]],
+  5:[[7,37],[6,37],[6,38],[8,38],[7,38],[2,36],[11,36],[7,39],[5,38],[11,38],[2,38],[8,37],[8,39]]
+ };
+ if(deployments[id])return deployments[id].map(p=>[...p]);
+ const x=[5,7,6][id],y=[16,17,22][id];return [[x,y],[x+1,y],[x-1,y+1],[x+2,y+1],[x,y+2],[x+2,y-1],[x+3,y],[x+1,y+2],[x-1,y+2]];
+}

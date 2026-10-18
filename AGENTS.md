@@ -2,7 +2,7 @@
 
 This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
 
-Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/commands-0.5.2.md](docs/commands-0.5.2.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
+Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/tempo-balance-music-0.6.0.md](docs/tempo-balance-music-0.6.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
 ## Run and verify
 - Static ES modules, no build step, no runtime dependencies or CDN.
@@ -21,6 +21,7 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `ui-model.js`: forecast/target/slide/next-ready helpers; delegate rule calculations to engine.
 - `playback.js`: tile interpolation and ordered hit/counter/heal presentation; never resolve rules here.
 - `audio.js`: original Web Audio cues, gesture unlock, persistent mute; audio failure cannot block play.
+- `music.js`: twelve original scores with melody/harmony/bass, Web Audio lookahead scheduling, independent persistent music preference/volume. Initial music OFF, effects ON. P1 uses ally score; P2–P4 share a hostile score without restarting between those phases. No borrowed melodies or samples. Pause in background; require a gesture to unlock.
 - `assets/`: temporary original knight app icon and exported PNGs; `npm run icons` uses optional sharp.
 - `ui-input.js`: single pointer gesture tracking; a drag that returns to its origin is still a drag.
 - `save.js`: optional local storage, validation, P1/finished-state restore.
@@ -44,8 +45,8 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 13. Animate movement along adjacent route tiles, then first strike, then a legal counter as separate engine observations. Present enemies sequentially. Playback speed/reduced motion/sound must not change results or enable input mid-command. Sound starts only after a user gesture and has persistent mute.
 
 ## Releases
-- `node scripts/release.mjs 0.5.2` updates version tags on every ES module edge, CSS URL, package and version.json.
-- Keep compatible saves when rules/schema are unchanged; 0.5.2 accepts stable 0.2.0 through 0.5.1 saves. The P3 area-heal rule applies prospectively.
+- `node scripts/release.mjs 0.6.0` updates version tags on every ES module edge, CSS URL, package and version.json.
+- Keep compatible saves when rules/schema are unchanged; 0.6.0 accepts stable 0.2.0 through 0.5.2 saves. The P3 area-heal rule applies prospectively.
 - Sync and inspect remote changes before publishing; never force-push or overwrite another tool’s changes.
 - Commit main and push; Pages deploys from main / root after its one-time activation. No service worker.
 - Include playtest findings with actual observations; never claim iOS hardware testing from Chromium emulation.
@@ -55,3 +56,7 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 Optional maps 04–06 are standalone only; retain the original three-chapter campaign. Map controls start collapsed. Command controls must never overlap the map viewport or movement/attack ranges. Keep the dock height stable during all draft and command states.
 
 When a route is already drawn, an enemy flick must retain that endpoint and route. A secondary gesture may start at the endpoint, original selected unit or empty map. Intermediate empty cells do not edit the anchor before the final intent is known; releasing on an empty tile explicitly edits the route. Out-of-range targets disable attack and explain why; never silently choose another firing position or another target. Without an explicit route, a direct enemy selection may still suggest a legal approach. Command controls are outside the map, hidden during route editing, and show concise information with readable text (forecast/actions at least 14px); move long explanations to Details. Blue movement and the outer cyan normal-attack area must not overlap; P3 remains separately described.
+
+0.6 audit contracts: keep surviving captains in their deployment slots after a loss; emergency recruits must not collide. At chapter-two start, an empty base duty passes to a living defender, with an adjacent healer when available; never revive a named lost captain. New enemy specs may explicitly set HP/DEF; default ally class stats and shooter fragility remain intact. Keep stable enemy IDs across map revisions.
+
+Battle reports must show actual observer-driven attack/counter/heal HP changes outside the map, including offscreen actions. They persist without a dismissal and yield to the next unit selection. Commands never gain a confirmation step; end-turn confirmation is needed only for unacted units. Playback trims idle/movement delays while preserving visible ordered impacts. `npm run audit:balance` records all map policies plus campaign/difficulty examples; these are examples, not optimal play or proof of human enjoyment.
