@@ -6,7 +6,7 @@ import {bindMapInput} from './ui-input.js?v=0.8.0';
 import {readSave,writeSave} from './save.js?v=0.8.0';
 import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.8.0';
 import {createAudio} from './audio.js?v=0.8.0';
-import {createMusic,buildTrack,SCORES,MUSIC_LIBRARY} from './music.js?v=0.8.0-library26';
+import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;
@@ -276,30 +276,36 @@ function promotionMenu(){
   section.append(row);root.append(section);
  }
 }
-function showMenu(){if(locked)return;modal(`<h2>戦場を選ぶ</h2><div id="maps"></div><div id="campaignStart"></div><details id="soundRoomDetails"><summary>♪ サウンドルーム（全${MUSIC_LIBRARY.length*2}曲）</summary><p class="hint">BGMがOFFでも試聴できます。曲を切り替えると短く音が切れ、選んだ曲が頭から流れます。戦場へ戻ると試聴を終了し、元のBGM設定へ戻ります。</p><div id="soundRoomList"></div><p id="soundRoomNow" role="status" aria-live="polite">曲を選んでください。</p><div class="action-row"><button id="soundRoomStop">試聴を停止</button></div></details><details id="settingsDetails"><summary>難易度・補給の設定</summary><div class="settings"><label>離脱の扱い<select id="mode"><option value="classic">クラシック（永久離脱）</option><option value="casual">カジュアル（次章復帰）</option></select></label><label>敵の攻撃<select id="difficulty"><option value="-1">練習 −1</option><option value="0">標準 ±0</option><option value="1">挑戦 ＋1</option></select></label></div><p class="hint">次に開始する戦闘へ適用。現在の戦闘は下の「戦場へ戻る」で続行できます。</p></details><details><summary>遊び方・勝敗と4フェーズ</summary><p>部隊を選んで、攻撃できない空きマスをタップすると移動して待機します。攻撃できる移動先は押したまま敵へスライドして対象を選びます。敵を選ばず離すと元に戻り、部隊自身や移動できないマスのタップでも選択を取り消せます。青い部隊を押したままスライドすると、指に合わせて経路の矢印が伸びます。離すと「攻撃・待機・戻る」。そのまま敵マスまで滑らせれば移動先を保って対象選択。攻撃／待機を一度押すと実行し、戻るは消費せず取消。射程内に複数の敵がいる場合は↻で切替。その場なら部隊をタップするだけ。何もない場所や青範囲外からのドラッグは地図移動、指を地図端へ寄せると追ってスクロールします。地図内の長押しではブラウザのメニューを開きません。</p><p>Ⅰ 味方行動 → Ⅱ 敵軍 → Ⅲ 味方の待機支援 → Ⅳ 予告イベント。通常攻撃は射程が合えば反撃されます。構えた部隊はⅡで反撃しませんが、Ⅲの射撃にも反撃はありません。</p><p>HPは全員6。下級職は基本威力2、上級近接職は3、上級重装の軽減2（最低ダメージ1）。その場で待機するとP2反撃を放棄し、P3に敵1隊へ攻撃、または味方1隊を2回復。弾薬は最大2、効果があったときだけ1消費。本城から1マス以内でターンごとに1補給。弾薬0では通常待機。弓は射程2、シューターは射程3で威力1。</p><p>北城に入れば勝利。本陣があるマップは敵に入られると敗北。砲撃は予告の赤枠に固定6、次のⅠで退避できます。増援は到着した次ターンから行動。出現地点の占有で到着を止められます。</p><p>森は移動コスト2。地形によるダメージ軽減はなし。重装兵の固有軽減のみ適用（最低1）。</p></details><details><summary>このゲーム・検証記録</summary><p>戦線指揮 / FIELD COMMAND v${RELEASE}。オリジナルの戦術試作。命中100%、必殺なし。データは data.js、数値は config.js、戦闘は engine.js。戦闘記録から検証JSONを持ち出せます。</p><p>保存はこの端末内のみ。v0.8のHP6化はルール変更のため、旧戦闘データからの自動復元をしません。新規開始が必要です。</p><p><a href="https://github.com/hane-san/SRPG" target="_blank" rel="noopener">GitHubでソースを開く</a> · <a href="docs/balance.md" target="_blank">仕様とバランス検討</a></p></details><details><summary>操作と表示速度</summary><p>戦場をクリックしてキー操作：矢印でカーソル・移動先、Enterでメニュー、Aで攻撃を実行、Wで待機を実行、Escで取消、Nで次の未行動部隊。Tabでボタンを選んでEnterでも操作できます。効果音は上の「SE」で切替。最初のタップ後に鳴り、設定はこの端末に保存します。</p><div id="speedControl"></div></details><details id="audioDetails"><summary>音楽・効果音</summary><p>各戦場に味方用／敵・支援・戦場更新用のオリジナル曲。BGMは初期OFF、効果音は初期ON。音楽と効果音は別々に切り替えられます。</p><div id="musicControl"></div><label>BGM音量<input id="musicVolume" aria-label="BGM音量" type="range" min="0" max="100" step="1"></label><p id="musicTrack"></p></details><div id="utility" class="action-row"></div>`);
+function showMenu(){if(locked)return;modal(`<h2>戦場を選ぶ</h2><div id="maps"></div><div id="campaignStart"></div><details id="soundRoomDetails"><summary>♪ サウンドルーム（全${MUSIC_LIBRARY.length*2}曲）</summary><p class="hint">BGMがOFFでも試聴できます。曲を切り替えると短く音が切れ、選んだ曲が頭から流れます。戦場へ戻ると試聴を終了し、元のBGM設定へ戻ります。</p><p class="hint">曲ごとの固定番号です。例：『マップ03・味方 No.37／敵 No.42』と指定できます。番号は今後追加しても変更しません。</p><div id="soundRoomMapAssignments" class="sound-room-map-assignments"></div><div id="soundRoomList"></div><p id="soundRoomNow" role="status" aria-live="polite">曲を選んでください。</p><div class="action-row"><button id="soundRoomStop">試聴を停止</button></div></details><details id="settingsDetails"><summary>難易度・補給の設定</summary><div class="settings"><label>離脱の扱い<select id="mode"><option value="classic">クラシック（永久離脱）</option><option value="casual">カジュアル（次章復帰）</option></select></label><label>敵の攻撃<select id="difficulty"><option value="-1">練習 −1</option><option value="0">標準 ±0</option><option value="1">挑戦 ＋1</option></select></label></div><p class="hint">次に開始する戦闘へ適用。現在の戦闘は下の「戦場へ戻る」で続行できます。</p></details><details><summary>遊び方・勝敗と4フェーズ</summary><p>部隊を選んで、攻撃できない空きマスをタップすると移動して待機します。攻撃できる移動先は押したまま敵へスライドして対象を選びます。敵を選ばず離すと元に戻り、部隊自身や移動できないマスのタップでも選択を取り消せます。青い部隊を押したままスライドすると、指に合わせて経路の矢印が伸びます。離すと「攻撃・待機・戻る」。そのまま敵マスまで滑らせれば移動先を保って対象選択。攻撃／待機を一度押すと実行し、戻るは消費せず取消。射程内に複数の敵がいる場合は↻で切替。その場なら部隊をタップするだけ。何もない場所や青範囲外からのドラッグは地図移動、指を地図端へ寄せると追ってスクロールします。地図内の長押しではブラウザのメニューを開きません。</p><p>Ⅰ 味方行動 → Ⅱ 敵軍 → Ⅲ 味方の待機支援 → Ⅳ 予告イベント。通常攻撃は射程が合えば反撃されます。構えた部隊はⅡで反撃しませんが、Ⅲの射撃にも反撃はありません。</p><p>HPは全員6。下級職は基本威力2、上級近接職は3、上級重装の軽減2（最低ダメージ1）。その場で待機するとP2反撃を放棄し、P3に敵1隊へ攻撃、または味方1隊を2回復。弾薬は最大2、効果があったときだけ1消費。本城から1マス以内でターンごとに1補給。弾薬0では通常待機。弓は射程2、シューターは射程3で威力1。</p><p>北城に入れば勝利。本陣があるマップは敵に入られると敗北。砲撃は予告の赤枠に固定6、次のⅠで退避できます。増援は到着した次ターンから行動。出現地点の占有で到着を止められます。</p><p>森は移動コスト2。地形によるダメージ軽減はなし。重装兵の固有軽減のみ適用（最低1）。</p></details><details><summary>このゲーム・検証記録</summary><p>戦線指揮 / FIELD COMMAND v${RELEASE}。オリジナルの戦術試作。命中100%、必殺なし。データは data.js、数値は config.js、戦闘は engine.js。戦闘記録から検証JSONを持ち出せます。</p><p>保存はこの端末内のみ。v0.8のHP6化はルール変更のため、旧戦闘データからの自動復元をしません。新規開始が必要です。</p><p><a href="https://github.com/hane-san/SRPG" target="_blank" rel="noopener">GitHubでソースを開く</a> · <a href="docs/balance.md" target="_blank">仕様とバランス検討</a></p></details><details><summary>操作と表示速度</summary><p>戦場をクリックしてキー操作：矢印でカーソル・移動先、Enterでメニュー、Aで攻撃を実行、Wで待機を実行、Escで取消、Nで次の未行動部隊。Tabでボタンを選んでEnterでも操作できます。効果音は上の「SE」で切替。最初のタップ後に鳴り、設定はこの端末に保存します。</p><div id="speedControl"></div></details><details id="audioDetails"><summary>音楽・効果音</summary><p>各戦場に味方用／敵・支援・戦場更新用のオリジナル曲。BGMは初期OFF、効果音は初期ON。音楽と効果音は別々に切り替えられます。</p><div id="musicControl"></div><label>BGM音量<input id="musicVolume" aria-label="BGM音量" type="range" min="0" max="100" step="1"></label><p id="musicTrack"></p></details><div id="utility" class="action-row"></div>`);
  const speedButton=button('',()=>{fast=!fast;try{localStorage.setItem('field-command-fast',String(fast));}catch{}updateSpeed();});function updateSpeed(){speedButton.textContent=fast?'進行速度：高速':'進行速度：通常（行動をゆっくり表示）';speedButton.setAttribute('aria-pressed',String(fast));}updateSpeed();$('speedControl').append(speedButton);
- const musicToggle=button('',()=>{music.setEnabled(!music.enabled);updateMusic();});musicToggle.id='musicToggle';$('musicControl').append(musicToggle);function updateMusic(){musicToggle.textContent=music.enabled?'BGM：ON':'BGM：OFF';musicToggle.setAttribute('aria-pressed',String(music.enabled));$('musicTrack').textContent=`現在の曲：${buildTrack(s.map.id,s.phase).title}`;}updateMusic();$('musicVolume').value=Math.round(music.volume*100);$('musicVolume').oninput=ev=>music.setVolume(Number(ev.target.value)/100);
+ const musicToggle=button('',()=>{music.setEnabled(!music.enabled);updateMusic();});musicToggle.id='musicToggle';$('musicControl').append(musicToggle);function updateMusic(){musicToggle.textContent=music.enabled?'BGM：ON':'BGM：OFF';musicToggle.setAttribute('aria-pressed',String(music.enabled));$('musicTrack').textContent=`現在の曲：No.${String(assignedTrackNumber(s.map.id,s.phase)).padStart(2,'0')} ${trackByNumber(assignedTrackNumber(s.map.id,s.phase)).title}`;}updateMusic();$('musicVolume').value=Math.round(music.volume*100);$('musicVolume').oninput=ev=>music.setVolume(Number(ev.target.value)/100);
+ const assigned=$('soundRoomMapAssignments');
+ for(const map of MAPS){
+  const line=document.createElement('div');line.className='sound-room-map-line';
+  line.textContent=`${String(map.id+1).padStart(2,'0')} ${map.title}：味方 No.${String(assignedTrackNumber(map.id,1)).padStart(2,'0')} ／ 敵 No.${String(assignedTrackNumber(map.id,2)).padStart(2,'0')}`;
+  assigned.append(line);
+ }
  const roomButtons=[];
  function updateRoom(){
   const active=music.snapshot().preview;
-  for(const {control,key,title} of roomButtons){const selected=active===key;control.setAttribute('aria-pressed',String(selected));control.textContent=`${selected?'■ 再生中':'▶'} ${title}`;}
-  $('soundRoomNow').textContent=active?`試聴中：${music.snapshot().title}（BGM設定には影響しません）`:'曲を選んでください。';
+  for(const {control,key,title,number} of roomButtons){const selected=active===key;control.setAttribute('aria-pressed',String(selected));control.textContent=`${selected?'■ 再生中':'▶'} No.${String(number).padStart(2,'0')} ${title}`;}
+  $('soundRoomNow').textContent=active?`試聴中：No.${String(roomButtons.find(b=>b.key===active)?.number).padStart(2,'0')} ${music.snapshot().title}（BGM設定には影響しません）`:'曲を選んでください。';
   $('soundRoomStop').disabled=!active;
  }
  for(const [mapId,score] of MUSIC_LIBRARY.entries()){
-  if(mapId===0||mapId===SCORES.length){
+  if(mapId===0||mapId===SCORES.length||mapId===SCORES.length+BONUS_SCORES.length){
    const section=document.createElement('h3');section.className='sound-room-section';
-   section.textContent=mapId===0?'実装済みマップ｜12曲':'追加候補｜14曲（マップ未割当）';
+   section.textContent=mapId===0?'現行マップ曲｜No.01–12':mapId===SCORES.length?'既存の追加候補｜No.13–26':'新曲・哀愁と勇壮｜No.27–42';
    $('soundRoomList').append(section);
   }
   const card=document.createElement('div');card.className='sound-room-card';
-  const heading=document.createElement('strong');heading.textContent=`${String(mapId+1).padStart(2,'0')} · ${score.name}`;card.append(heading);
+  const heading=document.createElement('strong');heading.textContent=score.name;card.append(heading);
   if(score.mood){const mood=document.createElement('p');mood.className='sound-room-mood';mood.textContent=score.mood;card.append(mood);}
   const row=document.createElement('div');row.className='sound-room-actions';
   for(const phase of [1,2]){
-   const title=buildTrack(mapId,phase).title,key=`${mapId}:${phase===1?'ally':'hostile'}`;
+   const title=buildTrack(mapId,phase).title,key=`${mapId}:${phase===1?'ally':'hostile'}`,number=trackNumber(mapId,phase);
    const control=button('',()=>{if(music.snapshot().preview===key)music.stopPreview();else music.playPreview(mapId,phase);updateRoom();});
-   control.setAttribute('aria-label',`${score.name}・${phase===1?'味方':'敵'}：${title}`);row.append(control);roomButtons.push({control,key,title});
+   control.setAttribute('aria-label',`No.${String(number).padStart(2,'0')} ${score.name}・${phase===1?'味方':'敵'}：${title}`);row.append(control);roomButtons.push({control,key,title,number});
   }
   card.append(row);$('soundRoomList').append(card);
  }
