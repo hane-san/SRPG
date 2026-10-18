@@ -18,7 +18,8 @@ export function createGame(mapId=0,opts={},lost=[],progress={}){
  const allies=specs.map((r,i)=>{
   const missing=lost.includes(r.id)&&settings.mode==='classic';
   const spec=missing?{...r,id:`general-${r.id}`,name:`補充兵 ${i+1}`,named:false}:r;
-  return unit({...spec,x:pos[i][0],y:pos[i][1],rank:mapId>=2?'advanced':'lower',specialty:missing?null:specialties[r.id]||null,deployed:i<2},'ally',settings);
+  const spawn=i<2?pos[i+1]:pos[i];
+  return unit({...spec,x:spawn[0],y:spawn[1],rank:mapId>=2?'advanced':'lower',specialty:missing?null:specialties[r.id]||null,deployed:i<2},'ally',settings);
  });
  const s={version:2,map,settings,units:[...allies,...map.enemies.map(e=>unit(e,'enemy',settings))],
   turn:1,phase:1,status:'playing',lost:[...lost],specialties:{...specialties},deployedThisTurn:0,
