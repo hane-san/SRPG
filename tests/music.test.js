@@ -79,7 +79,7 @@ test('seven contrasting sound-room-only themes provide fourteen complete origina
  assert.equal(MUSIC_LIBRARY.length,21);
  assert.deepEqual(MUSIC_LIBRARY.slice(0,6),SCORES);
  const titles=new Set(),notes=new Set(),moods=new Set(),tempos=new Set();
- for(let map=6;map<MUSIC_LIBRARY.length;map++){
+ for(let map=6;map<SCORES.length+BONUS_SCORES.length;map++){
   const score=MUSIC_LIBRARY[map];
   assert(score.mood&&score.name&&!moods.has(score.mood));
   moods.add(score.mood);
