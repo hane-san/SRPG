@@ -7,7 +7,7 @@ import {RULES} from '../config.js';
 test('garrison/roster placement retains every named slot and active unit location',()=>{
  for(const m of MAPS){
   const pos=positions(m.id),s=E.createGame(m.id),live=E.alive(s,'ally');
-  assert.equal(live.length,2);assert.deepEqual(live.map(u=>[u.x,u.y]),pos.slice(0,2));
+  assert.equal(live.length,2);assert.deepEqual(live.map(u=>[u.x,u.y]),pos.slice(1,3));
   assert.equal(s.map.camp.x,m.base?.x??pos[0][0]);
   assert.equal(s.map.camp.y,m.base?.y??pos[0][1]);
   assert.equal(new Set(E.alive(s).map(E.key)).size,E.alive(s).length);
