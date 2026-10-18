@@ -42,7 +42,7 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
      if(actor&&!ranged)view.motion={id:actor.id,x:actor.x+dx/length*.23*p,y:actor.y+dy/length*.23*p};
      else if(actor)view.projectile={from:actor,to:target,progress:p,heal,type:actor.type};draw();
     });
-    setState(state);onCombat(before,state,event,'impact');view.projectile=null;sound.play(heal?'heal':'hit');
+    setState(state);onCombat(before,state,event,'impact');view.projectile=null;sound.play(heal?'heal':'hit',event.amount,!state.units.find(u=>u.id===target.id)?.alive);
     if(!state.units.find(u=>u.id===target.id)?.alive)view.ghost={unit:target,alpha:1};
     await tween(duration(380,isReduced()?35:20,220),p=>{
      view.animation={...event,stage:'impact',progress:p};view.flash={id:target.id,amount:1-p,heal};view.effect={x:target.x,y:target.y,text:`${heal?'+':'−'}${event.amount}`,progress:p,heal};
