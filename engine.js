@@ -170,9 +170,10 @@ export function distanceField(s,goal,team){const costs=new Map([[key(goal),0]]),
 export function supportPhase(s,observe=()=>{}){
  if(s.status!=='playing')return;s.phase=3;log(s,'味方待機支援');
  for(const u of alive(s,'ally'))if(['support','heal'].includes(u.command)){
+  if(u.supportTurn===s.turn)continue;
   if(u.charges<=0||!u.spend){s.metrics.misfires++;continue;}
   const target=supportTarget(s,u);if(!target){s.metrics.misfires++;log(s,`${u.name}：対象なし・弾薬温存`);continue;}
-  charge(s,u);
+  charge(s,u);u.supportTurn=s.turn;
   if(u.skill==='support')strike(s,u,target,0,false,observe);
   else{const n=healAmount({...s}, {...u,charges:1},target);target.hp+=n;
    log(s,`${u.name} → ${target.name} 回復＋${n}`);observe(s,u,{kind:'heal',actor:u.id,target:target.id,amount:n});}
