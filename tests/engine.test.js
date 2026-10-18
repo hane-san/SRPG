@@ -82,3 +82,22 @@ test('four phases preserve terrain movement, weather and finite turn reset',()=>
  for(let i=0;i<5&&s.status==='playing';i++){assert.equal(s.phase,1);E.endTurn(s);assert.equal(s.phase,1);}
  assert(['clear','light','heavy'].includes(E.weatherAt(s)));
 });
+
+test('castle sortie validates atomically, walks from an occupied castle and fights',()=>{
+ const s=fixture(),guard=add(s,'shield',2,17),reserve=add(s,'sword',0,0,'ally','reserve'),foe=add(s,'sword',4,17,'enemy','foe');
+ reserve.deployed=false;
+ const original=structuredClone(s),source=E.sortieUnit(s,reserve.id);
+ assert.deepEqual({x:source.x,y:source.y},{x:2,y:17});
+ assert(!E.act(s,reserve.id,{x:3,y:17},'wait').ok,'reserves cannot act without sortie');
+ assert(!E.deployAndAct(s,reserve.id,{x:3,y:17},'attack','missing').ok);
+ assert.deepEqual(s,original,'invalid target must not spend a sortie');
+ assert(!E.deployAndAct(s,reserve.id,s.map.camp,'wait').ok);
+ assert.deepEqual(s,original,'occupied castle cannot be an endpoint');
+ const frames=[];
+ assert(E.deployAndAct(s,reserve.id,{x:3,y:17},'attack',foe.id,(_,__,event)=>frames.push(event)).ok);
+ assert.equal(s.deployedThisTurn,1);assert.equal(s.metrics.commands,1);
+ assert.equal(E.reserves(s).length,0);assert.equal(E.at(s,s.map.camp)?.id,guard.id);
+ assert.equal(reserve.hp,4);assert.equal(foe.hp,4);
+ assert.equal(frames[0]?.kind,'move');assert.deepEqual(frames[0].path[0],s.map.camp);
+ assert(!E.canDeploy(s),'second sortie blocked this turn');
+});
