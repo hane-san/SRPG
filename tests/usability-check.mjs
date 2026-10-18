@@ -11,7 +11,7 @@ try{
  await t.reset();await t.slide({x:6,y:16},{x:6,y:12});const expected=await t.state();act(expected,'a2',{x:6,y:13},'attack','e1');await startTrace();await page.locator('#attackOrder').click();await t.settled();const allyTrace=await stopTrace();
  assert.deepEqual(await t.state(),expected);assert(allyTrace.some(f=>f.animation?.kind==='move'&&f.motion&&!Number.isInteger(f.motion.y)),'unit passes between tiles');
  const hp=(f,id)=>f.hp.find(u=>u[0]===id)[1];
- const attackIndex=allyTrace.findIndex(f=>f.animation?.kind==='hit'&&f.animation.actor==='a2'&&f.animation.stage==='impact'&&hp(f,'a2')===22&&hp(f,'e1')===15);
+ const attackIndex=allyTrace.findIndex(f=>f.animation?.kind==='hit'&&f.animation.actor==='a2'&&f.animation.stage==='impact'&&hp(f,'a2')===22&&hp(f,'e1')===8);
  const counterIndex=allyTrace.findIndex(f=>f.animation?.kind==='hit'&&f.animation.actor==='e1'&&f.animation.counter&&f.animation.stage==='impact'&&hp(f,'a2')===15);
  assert(attackIndex>=0&&counterIndex>attackIndex,'first hit HP appears before the counter HP');assert(allyTrace.every(f=>f.savedPhase===1));results.push('normal-speed ally movement interpolates tile by tile; attack and counter animate and change HP separately');
  const enemies=createGame();enemies.units=enemies.units.filter(u=>['a1','a2','e1','e4'].includes(u.id));for(const u of enemies.units.filter(u=>u.team==='ally'))u.acted=true;

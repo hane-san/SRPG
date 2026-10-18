@@ -49,7 +49,7 @@ Chromiumの画面サイズ・タッチ模擬はSafari/iOS実機テストでは�
 | `data.js` / `config.js` | 地形、配置、編成、数値と説明 |
 | `ui-model.js` | 攻撃候補・残HP予測・連続スライド・未行動の巡回。ルールはengineに委譲 |
 | `app.js` / `ui-input.js` | 画面、明示確認、キー・タッチ、表示用の行動再生 |
-| `playback.js` / `audio.js` | 移動・交互攻撃の描画補間、効果音とユーザー操作による音の解禁 |
+| `playback.js` / `audio.js` / `music.js` | 移動・交互攻撃の描画補間、効果音とユーザー操作による音の解禁 |
 | `render.js` / `style.css` | オリジナル描画、範囲、カメラに干渉しないウィンドウ |
 | `save.js` | 安定状態だけの保存、互換性と入れ子データの検証 |
 | `assets/` | 仮アイコンの原画と配信用PNG |
@@ -79,8 +79,8 @@ npm run icons
 
 1. 変更理由と実際の観測、残る問題を `docs/` に記録。完了した項目をroadmapへ反映。
 2. `node scripts/release.mjs X.Y.Z` で全ES moduleの参照とCSS、version.jsonを更新。
-3. `npm run check`。ルール・数値変更はsimulationも比較。UI変更はブラウザ4スクリプトも実行。
-4. 保存互換性を `save.js` で明示。現行0.4.0は0.2.0・0.3.0の安定保存を引き継ぐ。
+3. `npm run check`。ルール・数値変更はsimulationも比較。UI変更は `npm run test:browser` で全スイートを実行。
+4. 保存互換性を `save.js` で明示。現行0.6.0は0.2.0〜0.5.2の安定保存を引き継ぐ。
 5. `git diff --check` と差分確認。ソース・検証文書をコミットしてmainへpush。
 6. GitHub ActionsとPagesの結果を確認。公開後も版番号と主要操作を確認して記録。
 

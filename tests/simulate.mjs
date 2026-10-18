@@ -2,7 +2,8 @@
 import * as E from '../engine.js';
 import {RELEASE} from '../config.js';
 import {writeFileSync} from 'node:fs';
-export function play(mapId,policy='advance',opts={},maxTurns=35){const s=E.createGame(mapId,opts);let reachedEast=false;
+export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[]){const s=E.createGame(mapId,opts,lost);let reachedEast=false,firstCombatTurn=null,hits=0,heals=0,movementSteps=0;const combatTurns=new Set(),garrison=s.map.base?E.alive(s,'ally').filter(u=>E.dist(u,s.map.base)===0||u.skill==='heal'&&E.dist(u,s.map.base)===1).map(u=>u.id):[];
+ const observe=(state,_actor,event)=>{if(event?.kind==='hit'){firstCombatTurn??=state.turn;combatTurns.add(state.turn);hits++;}else if(event?.kind==='heal')heals++;else if(event?.kind==='move')movementSteps+=event.path.length-1;};
  while(s.status==='playing'&&s.turn<=maxTurns){
   const enemies=E.alive(s,'enemy');
   const enemyReach=enemies.map(e=>({e,positions:E.reachable(s,e,e.ai==='hold'?0:E.movement(s,e),{threat:true})}));
@@ -10,7 +11,8 @@ export function play(mapId,policy='advance',opts={},maxTurns=35){const s=E.creat
   // Fighters first, healers after movement to recover them. Bow before melee where possible.
   const allies=E.alive(s,'ally').sort((a,b)=>Number(['healer','medic'].includes(a.type))-Number(['healer','medic'].includes(b.type))||Number(b.type==='bow')-Number(a.type==='bow')||a.id.localeCompare(b.id));
   for(const u of allies){if(!u.alive||s.status!=='playing')continue;
-   if(policy==='hold'){E.act(s,u.id,u,'wait');continue;}
+   if(policy==='garrison'&&mapId===1&&garrison.includes(u.id)){E.act(s,u.id,u,'wait',undefined,observe);continue;}
+   if(policy==='hold'){E.act(s,u.id,u,'wait',undefined,observe);continue;}
    let goal=s.map.goal;
    if(policy==='east'&&mapId===1&&['horse','sword'].includes(u.type)&&u.y>3)goal={x:13,y:Math.max(2,u.y-5)};
    if(policy==='south'&&mapId===1&&!s.southTaken)goal=s.map.south;
@@ -27,16 +29,16 @@ export function play(mapId,policy='advance',opts={},maxTurns=35){const s=E.creat
     for(const t of E.alive(s,'enemy'))if(E.inRange({...u,...p},t)){
      const pr=E.prediction(s,u,t,p);choices.push({p,a:'attack',t,score:score+pr.damage*1.5+(pr.damage>=t.hp?24:0)-pr.counter*1.3});
     }
-    if(!moved&&['heal','support'].includes(u.skill)){const t=E.supportTarget(s,u);if(t){const benefit=u.skill==='heal'?E.healAmount(s,u,t)*2+8:E.damage(s,u,t)*1.5+(E.damage(s,u,t)>=t.hp?24:0);if(u.skill==='heal'||u.charges>0)choices.push({p,a:'wait',score:score+benefit});}}
+    if(!moved&&['heal','support'].includes(u.skill)){const ts=E.supportTargets(s,u);if(ts.length){const benefit=ts.reduce((sum,t)=>sum+(u.skill==='heal'?E.healAmount(s,u,t)*2+8:E.damage(s,u,t)*1.5+(E.damage(s,u,t)>=t.hp?24:0)),0);if(u.skill==='heal'||u.charges>0)choices.push({p,a:'wait',score:score+benefit});}}
    }
    choices.sort((a,b)=>b.score-a.score||a.p.cost-b.p.cost||a.p.y-b.p.y||a.p.x-b.p.x);
-   for(const c of choices)if(E.act(s,u.id,c.p,c.a,c.t?.id).ok)break;
+   for(const c of choices)if(E.act(s,u.id,c.p,c.a,c.t?.id,observe).ok)break;
    if(u.x>=12)reachedEast=true;
   }
-  E.endTurn(s);
+  if(E.prepareEnemy(s)){E.enemyPhase(s,observe);E.supportPhase(s,observe);E.eventPhase(s,observe);E.nextTurn(s);}
  }
- const result={map:mapId+1,policy,healing:s.settings.healing,status:s.status==='playing'?'timeout':s.status,turn:s.turn,alive:E.alive(s,'ally').length,southTaken:s.southTaken,reachedEast,...s.metrics};
+ const result={map:mapId+1,policy,healing:s.settings.healing,status:s.status==='playing'?'timeout':s.status,turn:s.turn,alive:E.alive(s,'ally').length,southTaken:s.southTaken,reachedEast,firstCombatTurn,combatTurns:combatTurns.size,hits,heals,movementSteps,...s.metrics};
  return {s,result};
 }
-if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===1?['east','south']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
+if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===1?['east','south','garrison']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
 

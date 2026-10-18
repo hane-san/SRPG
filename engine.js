@@ -1,5 +1,5 @@
-import {RULES,TERRAINS} from './config.js?v=0.5.2';
-import {MAPS,ROSTER,unit,positions} from './data.js?v=0.5.2';
+import {RULES,TERRAINS} from './config.js?v=0.6.0';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.6.0';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
@@ -12,11 +12,25 @@ export const inRange=(a,b,r=a.range)=>dist(a,b)>=r[0]&&dist(a,b)<=r[1];
 export function log(s,text){s.log.push(`T${s.turn} P${s.phase} · ${text}`);if(s.log.length>250)s.log.shift();}
 export function createGame(mapId=0,opts={},lost=[]){
  const map=structuredClone(MAPS[mapId]);const settings={mode:'classic',healing:'H1',enemyAttack:0,...opts};
- const pos=positions(mapId);const allies=[...ROSTER,...(map.extraAllies||[])].filter(r=>!lost.includes(r.id)).map((r,i)=>unit({...r,x:pos[i][0],y:pos[i][1]},'ally',settings));
+ const pos=positions(mapId);const allies=[...ROSTER,...(map.extraAllies||[])].map((r,i)=>unit({...r,x:pos[i][0],y:pos[i][1]},'ally',settings)).filter(r=>!lost.includes(r.id));
  // Emergency recruits avoid a campaign softlock without restoring named dead captains.
- for(let i=allies.length;i<4;i++)allies.push(unit({id:`reserve-${mapId}-${i}`,name:`予備隊${i+1}`,type:i===3?'healer':'shield',x:pos[i][0],y:pos[i][1]},'ally',settings));
+ for(let i=allies.length;i<4;i++){const p=pos.find(([x,y])=>!allies.some(u=>u.x===x&&u.y===y));allies.push(unit({id:`reserve-${mapId}-${i}`,name:`予備隊${i+1}`,type:i===3?'healer':'shield',x:p[0],y:p[1]},'ally',settings));}
+ // A fallen captain leaves a gap, not a silent reassignment of every specialist.
+ // Carry the base duty with a living defender and, if available, an adjacent healer.
+ const deploymentNotes=[];
+ if(map.base){
+  if(!allies.some(u=>dist(u,map.base)===0)){
+   const defender=[...allies].sort((a,b)=>b.def-a.def||b.maxHp-a.maxHp||a.id.localeCompare(b.id))[0];
+   if(defender){Object.assign(defender,map.base);deploymentNotes.push(`${defender.name}が本陣の守備配置を引き継ぎます`);}
+  }
+  if(!allies.some(u=>u.skill==='heal'&&dist(u,map.base)===1)){
+   const healer=allies.filter(u=>u.skill==='heal'&&dist(u,map.base)>0).sort((a,b)=>dist(a,map.base)-dist(b,map.base))[0];
+   const slot=[[0,1],[-1,0],[1,0],[0,-1]].map(([dx,dy])=>({x:map.base.x+dx,y:map.base.y+dy})).find(p=>Number.isFinite(TERRAINS[map.tiles[p.y]?.[p.x]]?.cost)&&!allies.some(u=>dist(u,p)===0)&&!map.enemies.some(u=>dist(u,p)===0));
+   if(healer&&slot){Object.assign(healer,slot);deploymentNotes.push(`${healer.name}が本陣の隣接回復を担当します`);}
+  }
+ }
  const s={version:1,map,settings,units:[...allies,...map.enemies.map(e=>unit(e,'enemy',settings))],turn:1,phase:1,status:'playing',lost:[...lost],log:[],warnings:[],southTaken:false,metrics:{commands:0,supports:0,misfires:0,charges:0,deaths:[],turns:0},events:[]};
- log(s,map.briefing);return s;
+ log(s,map.briefing);for(const text of deploymentNotes)log(s,text);return s;
 }
 // Dijkstra uses four neighbours. Friends may be crossed; endpoints must be empty.
 function movementField(s,u,budget=movement(s,u),{threat=false}={}){
@@ -140,7 +154,7 @@ export function supportPhase(s,observe=()=>{}){if(s.status!=='playing')return;s.
   s.metrics.supports++;checkOutcome(s);observe(s,u,{kind:'settled',actor:u.id});
  }
 }
-function spawn(s,cells){for(let i=0;i<cells.length;i++){const p=cells[i];if(at(s,p)){log(s,`増援地点(${p.x+1},${p.y+1})占有・到着中止`);continue;}s.units.push(unit({id:`reinforcement-${s.turn}-${i}`,name:'増援隊',type:i%2?'sword':'horse',ai:s.map.base?'raid':'advance',...p},'enemy',s.settings));}log(s,'増援到着。行動は次ターンP2から');}
+function spawn(s,cells){for(let i=0;i<cells.length;i++){const p=cells[i];if(at(s,p)){log(s,`増援地点(${p.x+1},${p.y+1})占有・到着中止`);continue;}s.units.push(unit({...enemySpec(`reinforcement-${s.turn}-${i}`,i%2?'sword':'horse',p.x,p.y,s.map.base?'raid':'advance'),name:'増援隊'},'enemy',s.settings));}log(s,'増援到着。行動は次ターンP2から');}
 export function eventPhase(s,observe=noop){if(s.status!=='playing')return;s.phase=4;log(s,'戦場更新');
  for(const w of s.warnings.filter(w=>w.turn===s.turn)){
   if(w.kind==='cannon'){log(s,`予告砲撃：各${RULES.barrageDamage}ダメージ`);for(const u of alive(s))if(w.cells.some(p=>dist(u,p)===0)){hurt(s,u,RULES.barrageDamage,'砲撃');observe(s,u,{kind:'hit',actor:null,target:u.id,amount:RULES.barrageDamage});}}

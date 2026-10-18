@@ -11,8 +11,8 @@ try{
   // Full-speed animation is covered separately by usability/readability checks.
   await page.evaluate(()=>localStorage.setItem('field-command-fast','true'));
   for(let map=0;map<MAPS.length;map++){
-   await t.reset(createGame(map));await t.select('a1');await page.getByRole('button',{name:'戻る',exact:true}).click();
-   const u=(await t.state()).units.find(u=>u.id==='a1'),camera=await t.camera();
+   const acting=map===1?'a2':'a1';await t.reset(createGame(map));await t.select(acting);await page.getByRole('button',{name:'戻る',exact:true}).click();
+   const u=(await t.state()).units.find(u=>u.id===acting),camera=await t.camera();
    await t.slide(u,{x:u.x,y:u.y-1});assert.deepEqual(await t.camera(),camera);
    assert.deepEqual(await page.locator('.command-row button').allTextContents(),['攻撃','待機','戻る','詳細']);assert.equal(await page.locator('#confirmOrder').count(),0);
    await page.getByRole('button',{name:'詳細',exact:true}).click();assert.deepEqual(await t.camera(),camera);await page.locator('#closeModal').click();assert.deepEqual(await t.camera(),camera);
