@@ -7,7 +7,7 @@ export const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 export const key=p=>`${p.x},${p.y}`;
 export const alive=(s,team)=>s.units.filter(u=>u.alive&&u.deployed!==false&&(!team||u.team===team));
 export const reserves=s=>s.units.filter(u=>u.team==='ally'&&u.alive&&u.deployed===false);
-export const at=(s,p)=>s.units.find(u=>u.alive&&u.x===p.x&&u.y===p.y);
+export const at=(s,p)=>s.units.find(u=>u.alive&&u.deployed!==false&&u.x===p.x&&u.y===p.y);
 export const terrain=(s,p)=>TERRAINS[s.map.tiles[p.y]?.[p.x]];
 export const inRange=(a,b,r=a.range)=>dist(a,b)>=r[0]&&dist(a,b)<=r[1];
 export function log(s,text){s.log.push(`T${s.turn} P${s.phase} · ${text}`);if(s.log.length>250)s.log.shift();}
