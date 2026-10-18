@@ -1,7 +1,15 @@
 # SRPG改名・表示名移行の事前監査と手順
 
-2026-10-18。対象は **hane-san/SRPGだけ**。基準main：`a42c97106ba945f4124bc1b2c7cdb89653c942f0`、v0.8.0。
+2026-10-18。対象は **hane-san/SRPGだけ**。初期監査の基準main：`a42c97106ba945f4124bc1b2c7cdb89653c942f0`、v0.8.0。
 対応：[Issue #12](https://github.com/hane-san/SRPG/issues/12)。今回、GitHubの改名・表示名切替・main統合・Settings操作は行わない。
+
+## 基盤統合後の現在地（2026-10-18追記）
+
+- 人間が基盤PR #11をマージ。最新main `31b6cd8c999ace1a188914378c161ee2e3e18fdb` を本準備ブランチへ通常のmergeで取り込み、共通契約・テンプレート・既存の記録を保持した。
+- 人間が設定した [main-protection](https://github.com/hane-san/SRPG/rules/25345531) をAPIで確認。対象はmainのみ、Active、PR必須・承認人数0、GitHub Actionsの `rules` / `browser` 必須・最新mainへの追随あり、削除・force push禁止、bypassなし。
+- 統合済みmainの [CI](https://github.com/hane-san/SRPG/actions/runs/39132794478) と [Pages配信](https://github.com/hane-san/SRPG/actions/runs/39132794170) は成功。準備PR自体の最新SHA・再検証結果はPR本文に記録する。
+- 失敗CIでマージが止まる実地テスト、独立レビュー、人間の試遊、iPhone実機、実Renameは未実施。設定確認をこれらの完了と扱わない。
+- 両作品の準備は並行して進めるが、本PRの差分・検証・独立レビューはSRPGだけを対象とする。[独立レビューへの引継ぎ](rename-review-handoff.md)。
 Koitototsukuruの改名準備は、SRPGの移行を確認してから別タスクで扱う。
 
 ## 新旧の対応と現在地
@@ -46,7 +54,7 @@ GitHubリポジトリの旧URLの転送と、旧Pagesのプロジェクトサイ
 | サービスワーカー | 登録コード・配布ファイルなし | 新たなキャッシュ層は追加しない。既存ブラウザ/ホーム画面のキャッシュは別途確認 |
 
 他の外部URLは主に過去のGitHub証拠・設計研究リンク。改名準備で削除しない。
-GitHubのhomepageは未設定。mainのprotectedはfalseで、品質ゲート設定もまだ別途必要。
+初期監査時のGitHubのhomepageは未設定、mainのprotectedはfalseだった。基盤統合後の保護設定は上の追記を参照。
 旧公開URLのroot / manifest / version.json / Apple touch iconは実HTTPで200を確認し、titleとmanifestは上表の旧名、versionは0.8.0だった。新URLの実公開は未確認。
 
 ### 保存と設定の固定キー
@@ -91,7 +99,7 @@ READMEの説明見出しは、そのPRで人間向けに編集する。歴史資
 
 ### 改名前
 
-1. 基盤PR #11は本監査時点で未マージ。先に運用資料・main保護を確認する。#7（出撃/SE/HP）と#9（42曲化）も未マージでapp.js / index.html / README等が重なる。担当を調整し、後から統合する側で表示正本の参照を保持する。
+1. 基盤PR #11は統合済みで、main保護もAPIで適用を確認した。本準備ブランチにも最新mainを取り込んだ。#7（出撃/SE/HP）と#9（42曲化）は未マージでapp.js / index.html / README等が重なる。担当を調整し、後から統合する側で表示正本の参照を保持する。
 2. この準備PRを、CI・独立レビュー・人間確認後にmainへ統合。今回はmedium。自己検証だけを独立監査と数えない。改名操作の許可とは別。
 3. 旧PagesのURL、main SHA、release、起動、続きからの復元、音量・進行速度、既存ホーム画面の状態を記録。ブラウザデータを消さない。
 4. 必要な環境では5キーの復旧可能なバックアップを安全なローカル場所へ取る。PCの開発者ツールやiPhoneのWeb Inspectorが使える場合はキーごとの値を控え、公開Issue/PRに進捗や個人データを貼らない。既存UIに復元機能があるとは扱わない。
