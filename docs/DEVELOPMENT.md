@@ -80,10 +80,12 @@ npm run icons
 1. 変更理由と実際の観測、残る問題を `docs/` に記録。完了した項目をroadmapへ反映。
 2. `node scripts/release.mjs X.Y.Z` で全ES moduleの参照とCSS、version.jsonを更新。
 3. `npm run check`。ルール・数値変更はsimulationも比較。UI変更は `npm run test:browser` で全スイートを実行。
-4. 保存互換性を `save.js` で明示。現行0.6.0は0.2.0〜0.5.2の安定保存を引き継ぐ。
+4. 保存互換性を `save.js` で明示。現行0.7.0は0.2.0〜0.6.0の安定保存を引き継ぐ。
 5. `git diff --check` と差分確認。ソース・検証文書をコミットしてmainへpush。
 6. GitHub ActionsとPagesの結果を確認。公開後も版番号と主要操作を確認して記録。
 
 GitHub接続ツールだけの環境でも同じファイルを取得・編集できる。
 テストを実行できない場合は、その制約と実行できた範囲を明記する。
 別ツールへ渡すためにトークンをコードや文書へ保存しない。
+
+描画キャッシュは `render.js` の内部。演出とルール解決を分けたまま、能力・天候・盤面編集の更新をキーへ含める。`tests/tap-performance-check.mjs` は2タップ移動・取消・敵へのスライド・演出失敗復帰と、6マップの再利用／無効化を検証する。将来のマップ追加は `tests/audit.test.js` の配置・地形・連結検査も通す。

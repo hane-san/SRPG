@@ -1,0 +1,823 @@
+{
+  "release": "0.7.0",
+  "base": "69c72318d3cf3aabc011807311cdf3ba054fa848",
+  "rules": {
+    "tests": 58,
+    "pass": 58,
+    "fail": 0
+  },
+  "simulation": {
+    "scenarios": 21,
+    "exactlyMatches": "docs/simulation-results-0.6.0.json"
+  },
+  "browser": {
+    "maps": [
+      {
+        "label": "iphone",
+        "map": 1,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "iphone",
+        "map": 2,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "iphone",
+        "map": 3,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "iphone",
+        "map": 4,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "iphone",
+        "map": 5,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "iphone",
+        "map": 6,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "android",
+        "map": 1,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "android",
+        "map": 2,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "android",
+        "map": 3,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "android",
+        "map": 4,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "android",
+        "map": 5,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "android",
+        "map": 6,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "small",
+        "map": 1,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "small",
+        "map": 2,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "small",
+        "map": 3,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "small",
+        "map": 4,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "small",
+        "map": 5,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "small",
+        "map": 6,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "landscape",
+        "map": 1,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "landscape",
+        "map": 2,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "landscape",
+        "map": 3,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "landscape",
+        "map": 4,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "landscape",
+        "map": 5,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      },
+      {
+        "label": "landscape",
+        "map": 6,
+        "turn": 5,
+        "cameraStable": true,
+        "errors": 0
+      }
+    ],
+    "touch": {
+      "results": [
+        "press unselected ally, slide live arrow, release for direct choices and details, return without action",
+        "single continuous slide reaches enemy while preserving approach arrow; one attack choice executes exactly once",
+        "one wait choice commits movement, disables P3 after moving and persists on reload",
+        "pointer cancellation and second finger on map or command dock restore the entire pre-press draft",
+        "700ms real long press suppresses context menu, text selection, page scrolling and native touch gestures",
+        "holding a route at the viewport edge scrolls the map under the finger without a browser gesture",
+        "empty-space drags use game-controlled panning and never issue commands",
+        "stationary quick wait still prepares finite P3 support",
+        "quick wait preserves P3 area healing and finite charges without a single-target selector"
+      ],
+      "errors": []
+    },
+    "dock": [
+      {
+        "width": 390,
+        "height": 844,
+        "warning": false,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "warning": true,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 88,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 360,
+        "height": 740,
+        "warning": false,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 360,
+        "height": 740,
+        "warning": true,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 80.5,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "warning": false,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "warning": true,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 70.5,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "multipleTargets": true,
+        "lethalWarningVisible": true,
+        "enemyDetails": true,
+        "errors": []
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "warning": false,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "warning": true,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 1363,
+        "height": 936,
+        "warning": false,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      },
+      {
+        "width": 1363,
+        "height": 936,
+        "warning": true,
+        "cameraStable": true,
+        "outsideMap": true,
+        "legible": true,
+        "buttons": [
+          {
+            "text": "攻撃",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "待機",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "戻る",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          },
+          {
+            "text": "詳細",
+            "w": 165,
+            "h": 44,
+            "onScreen": true
+          }
+        ],
+        "errors": []
+      }
+    ],
+    "usability": {
+      "results": [
+        "normal-speed ally movement interpolates tile by tile; attack and counter animate and change HP separately",
+        "enemies move and fight one at a time, completing counters before the next enemy moves; partial phases never save",
+        "Web Audio unlocks after a gesture; step/attack cues schedule, and mute persists with no sounds after reload",
+        "keyboard route, menu, Escape and direct W choice match the touch flow",
+        "reloading during presentation restores the complete committed command, never a visual intermediate state",
+        "stable v0.2 and v0.3 saves migrate to v0.4",
+        "battle switching still confirms discarding progress while ordinary orders execute directly",
+        "retry retains prior-chapter losses and restores this chapter’s losses",
+        "casual campaign restores withdrawn captains at the next chapter",
+        "fast playback preference persists independently of campaign and sound",
+        "corrupt saves reset safely without blocking the menu or sound initialization"
+      ],
+      "traceSamples": {
+        "ally": 194,
+        "enemy": 577,
+        "moveOrder": [
+          "e1",
+          "e4"
+        ]
+      },
+      "errors": []
+    },
+    "readability": {
+      "results": [
+        "idle instructions have no buttons and tool expansion leaves camera unchanged",
+        "command dock avoids origin, destination and target at phone size",
+        "archer shows range warning and an observable directional flight before impact",
+        "four recipients get full +7 from the last charge; one spend and stable reload",
+        "shooter presents each P3 victim separately and spends the last charge once",
+        "rain forecast, cavalry current movement and rendered heavy-rain field agree"
+      ],
+      "flightSamples": 32,
+      "errors": []
+    },
+    "destinations": {
+      "results": [
+        "initial camera centering cannot override navigation after startup",
+        "a second flick crossing another empty tile retains the complete drawn route and attacks from its endpoint",
+        "out-of-range target does not reroute or spend an action",
+        "a second flick beginning on the original unit also preserves the chosen endpoint",
+        "layered impact cue has finite samples, clipping headroom and a short tail"
+      ],
+      "popup": {
+        "location": "outside-map",
+        "destination": "5,13",
+        "onScreen": true,
+        "outsideMap": true
+      },
+      "sound": {
+        "peak": 0.31171679496765137,
+        "tail": 0
+      },
+      "errors": []
+    },
+    "music": {
+      "results": [
+        "one attack click executes move/attack/counter, with a persistent HP report and no dismissal",
+        "next selection immediately replaces the result without an extra confirmation",
+        "ending a fully ordered turn advances directly; unacted units remain the only end-turn warning",
+        "music defaults off, starts on a gesture and stays independent of effects and volume",
+        "P2-P4 retain the hostile score, P1 resumes its own track and every map changes the live score",
+        "background visibility suspends music, cancels its queue and resumes the current scene",
+        "preferences survive reload, autoplay remains locked and muting cancels queued notes",
+        "all twelve complete scores render finite, non-silent, distinct waveforms with clipping headroom"
+      ],
+      "waves": [
+        {
+          "map": 1,
+          "phase": 1,
+          "title": "川霧を越えて",
+          "seconds": 58.775510204081634,
+          "peak": 0.19305038452148438,
+          "rms": 0.05701559322971447,
+          "signature": 1091813945
+        },
+        {
+          "map": 1,
+          "phase": 2,
+          "title": "霧中の足音",
+          "seconds": 53.333333333333336,
+          "peak": 0.1957288533449173,
+          "rms": 0.05794707012796075,
+          "signature": 799070308
+        },
+        {
+          "map": 2,
+          "phase": 1,
+          "title": "守り継ぐ旗",
+          "seconds": 66.20689655172414,
+          "peak": 0.19787120819091797,
+          "rms": 0.05021084391271905,
+          "signature": 941786656
+        },
+        {
+          "map": 2,
+          "phase": 2,
+          "title": "挟撃の鼓動",
+          "seconds": 61.935483870967744,
+          "peak": 0.19288936257362366,
+          "rms": 0.051016967925636106,
+          "signature": 545390506
+        },
+        {
+          "map": 3,
+          "phase": 1,
+          "title": "灰を裂く光",
+          "seconds": 68.57142857142857,
+          "peak": 0.1993802785873413,
+          "rms": 0.051781242314560216,
+          "signature": 573512711
+        },
+        {
+          "map": 3,
+          "phase": 2,
+          "title": "城壁の残響",
+          "seconds": 64,
+          "peak": 0.18915271759033203,
+          "rms": 0.05144029755147949,
+          "signature": 2223399471
+        },
+        {
+          "map": 4,
+          "phase": 1,
+          "title": "三つの橋の旅路",
+          "seconds": 53.333333333333336,
+          "peak": 0.19248592853546143,
+          "rms": 0.056175756898928876,
+          "signature": 2147462850
+        },
+        {
+          "map": 4,
+          "phase": 2,
+          "title": "流れを塞ぐ槍",
+          "seconds": 48.813559322033896,
+          "peak": 0.19628804922103882,
+          "rms": 0.05709762458838275,
+          "signature": 2805668658
+        },
+        {
+          "map": 5,
+          "phase": 1,
+          "title": "木洩れ雨の回廊",
+          "seconds": 65.45454545454545,
+          "peak": 0.18248921632766724,
+          "rms": 0.03766068481121337,
+          "signature": 1160190101
+        },
+        {
+          "map": 5,
+          "phase": 2,
+          "title": "雨幕の追跡",
+          "seconds": 56.470588235294116,
+          "peak": 0.1785314381122589,
+          "rms": 0.038875950403409236,
+          "signature": 3743149479
+        },
+        {
+          "map": 6,
+          "phase": 1,
+          "title": "暁の城塞へ",
+          "seconds": 62.950819672131146,
+          "peak": 0.19422759115695953,
+          "rms": 0.051303692773032025,
+          "signature": 694561930
+        },
+        {
+          "map": 6,
+          "phase": 2,
+          "title": "最後の防壁",
+          "seconds": 59.07692307692308,
+          "peak": 0.19380277395248413,
+          "rms": 0.05126420040351683,
+          "signature": 1291122632
+        }
+      ],
+      "errors": []
+    },
+    "tapPerformance": {
+      "results": [
+        "select then tap a non-attacking empty cell commits one animated move/wait and saves the complete result",
+        "releasing an attack-capable destination without an enemy restores the pre-press draft",
+        "hold the destination and slide onto its enemy, retaining the exact endpoint; one attack choice executes",
+        "tapping the selected unit or an invalid destination cancels without consuming a command",
+        "canceling a destination press or adding a second finger restores the entire draft",
+        "an attack-capable destination still allows explicit wait through the unit-origin drag menu",
+        "a later animation drawing failure still finalizes the resolved state and releases the input lock",
+        "720 frames across six maps reuse terrain, movement, attack, weather and danger layers; stat/weather/terrain edits invalidate them"
+      ],
+      "performanceRows": [
+        {
+          "map": 1,
+          "frames": 120,
+          "meanMs": 0.2691666666728755,
+          "p95Ms": 0.40000000037252903,
+          "steady": {
+            "terrainBuilds": 1,
+            "rangeBuilds": 1,
+            "boardBuilds": 1
+          }
+        },
+        {
+          "map": 2,
+          "frames": 120,
+          "meanMs": 0.28666666665424906,
+          "p95Ms": 0.40000000037252903,
+          "steady": {
+            "terrainBuilds": 1,
+            "rangeBuilds": 1,
+            "boardBuilds": 1
+          }
+        },
+        {
+          "map": 3,
+          "frames": 120,
+          "meanMs": 0.3050000000124176,
+          "p95Ms": 0.6999999992549419,
+          "steady": {
+            "terrainBuilds": 1,
+            "rangeBuilds": 1,
+            "boardBuilds": 1
+          }
+        },
+        {
+          "map": 4,
+          "frames": 120,
+          "meanMs": 0.4525000000062088,
+          "p95Ms": 0.6999999992549419,
+          "steady": {
+            "terrainBuilds": 1,
+            "rangeBuilds": 1,
+            "boardBuilds": 1
+          }
+        },
+        {
+          "map": 5,
+          "frames": 120,
+          "meanMs": 0.4200000000031044,
+          "p95Ms": 0.599999999627471,
+          "steady": {
+            "terrainBuilds": 1,
+            "rangeBuilds": 1,
+            "boardBuilds": 1
+          }
+        },
+        {
+          "map": 6,
+          "frames": 120,
+          "meanMs": 0.4950000000031044,
+          "p95Ms": 0.599999999627471,
+          "steady": {
+            "terrainBuilds": 1,
+            "rangeBuilds": 1,
+            "boardBuilds": 1
+          }
+        }
+      ],
+      "errors": []
+    }
+  },
+  "limitations": [
+    "Chromium touch emulation; no physical iOS/Android test",
+    "Renderer timing is a local API-call comparison, not whole-app FPS"
+  ]
+}

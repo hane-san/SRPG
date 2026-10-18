@@ -1,10 +1,15 @@
 // Only presentation lives here; all rules have already resolved synchronously.
 export function tween(duration,update){
  if(!duration||document.hidden){update(1);return Promise.resolve();}
- return new Promise(resolve=>{
+ return new Promise((resolve,reject)=>{
   const start=performance.now();let frame,timer;
-  const step=()=>{cancelAnimationFrame(frame);clearTimeout(timer);const p=document.hidden?1:Math.min(1,(performance.now()-start)/duration);update(p);
-   if(p===1){resolve();return;}frame=requestAnimationFrame(step);timer=setTimeout(step,90);};step();
+  const cleanup=()=>{cancelAnimationFrame(frame);clearTimeout(timer);};
+  const step=()=>{
+   cleanup();
+   try{const p=document.hidden?1:Math.min(1,(performance.now()-start)/duration);update(p);
+    if(p===1){resolve();return;}frame=requestAnimationFrame(step);timer=setTimeout(step,90);
+   }catch(error){cleanup();reject(error);}
+  };step();
  });
 }
 export function createPlayback({getState,setState,view,draw,sound,isFast,isReduced,onMessage=()=>{},onCombat=()=>{}}){

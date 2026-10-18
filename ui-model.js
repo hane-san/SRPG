@@ -1,4 +1,4 @@
-import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo} from './engine.js?v=0.6.0';
+import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo,key} from './engine.js?v=0.7.0';
 
 export const attackTargets=(s,u,dest=u)=>alive(s,'enemy').filter(t=>inRange({...u,...dest},t));
 export function battleForecast(s,u,target,dest=u){
@@ -39,9 +39,11 @@ export function slideDraft(s,u,p,current=u,{preserve=false,route:chosenRoute=nul
 
 // Movement/normal-attack regions share the exact legal movement field.
 export function tacticalRanges(s,u,cells=reachable(s,u)){
- const moves=new Set(cells.map(p=>`${p.x},${p.y}`)),attacks=new Set();
- for(const p of cells)for(let dy=-u.range[1];dy<=u.range[1];dy++)for(let dx=-u.range[1];dx<=u.range[1];dx++){
-  const t={x:p.x+dx,y:p.y+dy},k=`${t.x},${t.y}`;if(terrain(s,t)&&inRange({...u,...p},t)&&!moves.has(k)&&at(s,t)?.team!=='ally')attacks.add(k);
- }
+ const moves=new Set(cells.map(key)),attacks=new Set(),friends=new Set(alive(s,'ally').map(key));
+ // Clip loops to map bounds even for future long-range abilities or bad old data.
+ for(const p of cells)for(let y=Math.max(0,p.y-u.range[1]);y<=Math.min(s.map.h-1,p.y+u.range[1]);y++)
+  for(let x=Math.max(0,p.x-u.range[1]);x<=Math.min(s.map.w-1,p.x+u.range[1]);x++){
+   const t={x,y},k=key(t);if(terrain(s,t)&&inRange({...u,...p},t)&&!moves.has(k)&&!friends.has(k))attacks.add(k);
+  }
  return {moves,attacks};
 }

@@ -1,5 +1,5 @@
-import {tacticalRanges} from './ui-model.js?v=0.6.0';
-import {alive,at,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.6.0';
+import {tacticalRanges} from './ui-model.js?v=0.7.0';
+import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.7.0';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
  {'.':'#919e7b','=':'#beb792',f:'#627d68','~':'#769aab'},
@@ -9,16 +9,39 @@ const PALETTES=[
  {'.':'#6e8e7b','=':'#a99c7d',f:'#3e655c','#':'#667879','~':'#668c9d'},
  {'.':'#a5a077','=':'#cfb28e',f:'#687c61','~':'#8c92b0',c:'#a39588'}
 ];
-export function render(canvas,s,view){
- const palette={...COLORS,...PALETTES[s.map.id]};
- const tile=view.tile,ratio=Math.min(devicePixelRatio||1,2);const width=Math.round(s.map.w*tile*ratio),height=Math.round(s.map.h*tile*ratio);if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;canvas.style.width=`${s.map.w*tile}px`;canvas.style.height=`${s.map.h*tile}px`;
- const c=canvas.getContext('2d');c.setTransform(ratio*tile/32,0,0,ratio*tile/32,0,0);c.imageSmoothingEnabled=false;
- const selected=s.units.find(u=>u.id===view.selected),movement=selected?.team==='ally'&&!selected.acted?reachable(s,selected):[];
- const {moves,attacks}=movement.length?tacticalRanges(s,selected,movement):{moves:new Set(),attacks:new Set()},danger=new Set();
- if(view.danger||selected?.team==='enemy')for(const e of selected?.team==='enemy'?[selected]:alive(s,'enemy')){
-  const poss=reachable(s,e,e.ai==='hold'?0:moveBudget(s,e),{threat:true});
-  for(const p of poss)for(let dy=-e.range[1];dy<=e.range[1];dy++)for(let dx=-e.range[1];dx<=e.range[1];dx++){const t={x:p.x+dx,y:p.y+dy};if(terrain(s,t)&&inRange({...e,...p},t))danger.add(key(t));}
+// Bounded per-canvas surfaces: terrain and tactical background, in map pixels.
+// Keys include mutable map/unit data so future in-place editing cannot leave stale ranges.
+const caches=new WeakMap();
+export function renderStats(canvas){const c=caches.get(canvas);return c?{terrainBuilds:c.terrainBuilds,rangeBuilds:c.rangeBuilds,boardBuilds:c.boardBuilds}:null;}
+function surface(s){const c=document.createElement('canvas');c.width=s.map.w*32;c.height=s.map.h*32;return c;}
+function layers(canvas,s,view){
+ let cache=caches.get(canvas);if(!cache){cache={terrainBuilds:0,rangeBuilds:0,boardBuilds:0};caches.set(canvas,cache);}
+ const mapKey=JSON.stringify([s.map.id,s.map.w,s.map.h,s.map.tiles]),weather=weatherAt(s);
+ if(cache.mapKey!==mapKey){cache.terrain=surface(s);paintTerrain(cache.terrain.getContext('2d'),s);cache.mapKey=mapKey;cache.terrainBuilds++;}
+ const rangeKey=JSON.stringify([mapKey,weather,view.selected,!!view.danger,s.units.map(u=>[u.id,u.team,u.alive,u.acted,u.x,u.y,u.move,u.range,u.ai,u.type,u.skill])]);
+ const selected=s.units.find(u=>u.id===view.selected);
+ if(cache.rangeKey!==rangeKey){
+  const movement=selected?.team==='ally'&&!selected.acted?reachable(s,selected):[];
+  Object.assign(cache,movement.length?tacticalRanges(s,selected,movement):{moves:new Set(),attacks:new Set()});cache.danger=new Set();
+  if(view.danger||selected?.team==='enemy')for(const e of selected?.team==='enemy'?[selected]:alive(s,'enemy')){
+   for(const p of reachable(s,e,e.ai==='hold'?0:moveBudget(s,e),{threat:true}))
+    for(let y=Math.max(0,p.y-e.range[1]);y<=Math.min(s.map.h-1,p.y+e.range[1]);y++)
+     for(let x=Math.max(0,p.x-e.range[1]);x<=Math.min(s.map.w-1,p.x+e.range[1]);x++){
+     const t={x,y};if(terrain(s,t)&&inRange({...e,...p},t))cache.danger.add(key(t));
+    }
+  }
+  cache.rangeKey=rangeKey;cache.rangeBuilds++;
  }
+ const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,s.warnings,s.map.goal,s.map.base,s.map.south,s.southTaken]);
+ if(cache.boardKey!==boardKey){
+  if(!cache.board||cache.board.width!==cache.terrain.width||cache.board.height!==cache.terrain.height)cache.board=surface(s);
+  const c=cache.board.getContext('2d');c.clearRect(0,0,cache.board.width,cache.board.height);c.drawImage(cache.terrain,0,0);
+  paintTactics(c,s,view,selected,cache);cache.boardKey=boardKey;cache.boardBuilds++;
+ }
+ return cache;
+}
+function paintTerrain(c,s){
+ const palette={...COLORS,...PALETTES[s.map.id]};
  for(let y=0;y<s.map.h;y++)for(let x=0;x<s.map.w;x++){
   const t=s.map.tiles[y][x],px=x*32,py=y*32,n=(x*73+y*127)%19;c.fillStyle=palette[t];c.fillRect(px,py,32,32);
   // Small deterministic stipple, never randomises between frames.
@@ -29,6 +52,11 @@ export function render(canvas,s,view){
   if(t==='#'){c.fillStyle='#98a297';c.fillRect(px+3,py+5,22,20);c.fillStyle='#596b64';c.fillRect(px+7,py+16,20,12);}
   if(t==='c')castle(c,px,py);
   if(t==='v'){c.fillStyle='#e0c58f';c.fillRect(px+7,py+14,19,13);c.fillStyle='#8f614d';c.beginPath();c.moveTo(px+4,py+14);c.lineTo(px+16,py+4);c.lineTo(px+29,py+14);c.fill();c.fillStyle='#524e45';c.fillRect(px+15,py+21,4,6);}
+ }
+}
+function paintTactics(c,s,view,selected,{moves,attacks,danger}){
+ for(let y=0;y<s.map.h;y++)for(let x=0;x<s.map.w;x++){
+  const t=s.map.tiles[y][x],px=x*32,py=y*32;
   if(danger.has(`${x},${y}`)){c.fillStyle='#b4445548';c.fillRect(px,py,32,32);}
   if(moves.has(`${x},${y}`)){
    c.fillStyle='#306acbd4';c.fillRect(px,py,32,32);c.strokeStyle='#c1ddff48';c.lineWidth=.5;c.strokeRect(px+.5,py+.5,31,31);
@@ -49,6 +77,14 @@ export function render(canvas,s,view){
   c.fillStyle=weather==='heavy'?'#20395128':'#6f9fb518';c.fillRect(0,0,s.map.w*32,s.map.h*32);c.strokeStyle=weather==='heavy'?'#b7d5e66b':'#cee1eb45';c.lineWidth=1;c.beginPath();
   for(let y=0;y<s.map.h*32;y+=weather==='heavy'?15:31)for(let x=0;x<s.map.w*32;x+=29){const dx=(y*7)%23;c.moveTo(x+dx,y);c.lineTo(x+dx-3,y+8);}c.stroke();
  }
+}
+export function render(canvas,s,view){
+ const tile=view.tile,ratio=Math.min(devicePixelRatio||1,2),width=Math.round(s.map.w*tile*ratio),height=Math.round(s.map.h*tile*ratio);
+ if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;
+ canvas.style.width=`${s.map.w*tile}px`;canvas.style.height=`${s.map.h*tile}px`;
+ const c=canvas.getContext('2d');c.setTransform(ratio*tile/32,0,0,ratio*tile/32,0,0);c.imageSmoothingEnabled=false;
+ c.drawImage(layers(canvas,s,view).board,0,0);
+ const selected=s.units.find(u=>u.id===view.selected);
  if(view.route?.length>1)drawRoute(c,view.route);
  for(const u of alive(s)){
   const motion=view.motion?.id===u.id?view.motion:null;

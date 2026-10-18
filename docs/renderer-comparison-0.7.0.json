@@ -1,0 +1,50 @@
+[
+  {
+    "map": 1,
+    "beforeMs": 3.16,
+    "afterMs": 0.28099999999627473,
+    "ratio": 11.245551601572572,
+    "differentChannels": 1002,
+    "totalChannels": 983040
+  },
+  {
+    "map": 2,
+    "beforeMs": 4.710999999996274,
+    "afterMs": 0.285,
+    "ratio": 16.529824561390438,
+    "differentChannels": 846,
+    "totalChannels": 1966080
+  },
+  {
+    "map": 3,
+    "beforeMs": 3.3519999999925494,
+    "afterMs": 0.265,
+    "ratio": 12.64905660374547,
+    "differentChannels": 720,
+    "totalChannels": 1490944
+  },
+  {
+    "map": 4,
+    "beforeMs": 5.065,
+    "afterMs": 0.38200000001117584,
+    "ratio": 13.25916230327701,
+    "differentChannels": 2076,
+    "totalChannels": 1966080
+  },
+  {
+    "map": 5,
+    "beforeMs": 5.481000000014901,
+    "afterMs": 0.6330000000074506,
+    "ratio": 8.658767772433473,
+    "differentChannels": 1217,
+    "totalChannels": 2359296
+  },
+  {
+    "map": 6,
+    "beforeMs": 7.94800000000745,
+    "afterMs": 0.4480000000074506,
+    "ratio": 17.74107142829301,
+    "differentChannels": 2160,
+    "totalChannels": 2523136
+  }
+]

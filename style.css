@@ -156,3 +156,52 @@ dialog{background:#f5f0e2ed}dialog::backdrop{background:#071b2359;backdrop-filte
 .report-tail{font-size:12px;line-height:20px;color:#bdd6e3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.report-note{align-self:center;font-size:14px;line-height:1.6}
 #musicVolume{min-height:44px;accent-color:#276e89;width:100%}
 @media(prefers-reduced-motion:reduce){.hp-track i{transition:none}}
+
+/* Charcoal / warm ivory / muted brass: interface distinct from team colours. */
+:root{--ink:#eee9e2;--paper:#27252c;--muted:#c4bbc6;--line:#69616c;--gold:#d5b886;color-scheme:dark}
+body{background:#18171d}
+button,select{background:#38333e;color:var(--ink);border-color:var(--line)}
+.primary{background:#d3bb91;color:#27232b;border-color:#e5cfa9}
+.subtle{background:transparent}
+#battleHeader{background:#27232e;color:#f2ebe2}
+.turn-status span{color:#d9c39f;border-color:#736575}
+#battleHeader .mission-link{color:#d9d1dc}
+#menuBtn,#soundBtn{color:#eee6dc;border-color:#746778}
+#soundBtn[aria-pressed=true]{background:#514454;color:#fff2df}
+.map-wrap{background:#29252d;border-bottom-color:#9c8769}
+#mapViewport{scrollbar-color:#9b8c9c #29252d}
+.map-tools{background:#29232ee8;color:#f3eade}
+.map-tools button{background:#49404d;color:#fff1e0;border-color:#847287}
+button[aria-pressed=true]{background:#66516c;color:#fff4e2}
+#orders{background:#27212de6;color:#f5eee5;border-color:#c3a9828c;outline-color:#18141ecc;box-shadow:0 4px 14px #17121d40;backdrop-filter:none;-webkit-backdrop-filter:none}
+#orders.idle{background:#27212dd9;color:#f5eee5;height:auto;min-height:36px}
+#orders .unit-name small,#orders .hp small,#orders .battle-forecast small{color:#d5c8d6}
+#orders .hp{color:#f0d5a8}
+#orders .unit-head button,#orders .subtle{background:#eee3f012;color:#f5eee5;border-color:#d3c0d449}
+#orders .preview{background:#140f1a33;border-color:#c9aa78;color:#f5eee5}
+#orders .hint{color:#ddd0de}
+#orders .command-row button{background:#66556c;color:#fff6ea;border-color:#ba9ebd88}
+#orders .command-row .attack{background:#d3bb91;color:#27232b;border-color:#e5cfa9}
+#orders .command-row .subtle{background:#eee3f012;border-color:#d3c0d455}
+#phaseFlash{background:#27212de6;color:#f0d5a8;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:#b69d79}
+#orders.idle:has(.idle-tip){max-width:calc(100% - 16px)}
+footer{background:#27232e}
+dialog{background:#2b2532f5;color:var(--ink);border-color:#a38aab}
+dialog::backdrop{background:#18121c66;backdrop-filter:none}
+#closeModal{background:#39303f;box-shadow:0 -7px 14px #2b253288}
+.map-card{background:#ffffff08;border-color:#756379}
+.map-card.active{border-left-color:#d4b88a}
+.map-card small,.hint,.eyebrow{color:#c8bacd}
+a{color:#e4c8f0}
+#modalBody .log-line,details{border-color:#65526d}
+
+#commandDock{background:#292330;border-color:#8a748e;color:#f5eee5}
+#commandDock #orders{background:#292330eb}
+#commandDock #orders .unit-head span,#commandHint,#commandDock #orders.idle,.report-tail{color:#d5c8d6}
+#commandDock #orders .preview,.report-title{color:#f5eee5}
+#commandDock #orders .command-row .attack{background:#d3bb91;color:#27232b;border-color:#e5cfa9}
+#toolsToggle{background:#29232ee0;color:#f5eee5;border-color:#a591ab}
+#orders .unit-head{background:none}
+#commandDock #orders .command-row button{font-size:14px}
+.hp-track{background:#17111e}.hp-track.ally i{background:#ddd1ed}.hp-track.enemy i{background:#e3bf85}
+#musicVolume{accent-color:#b79ac4}

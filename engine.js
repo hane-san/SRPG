@@ -1,12 +1,12 @@
-import {RULES,TERRAINS} from './config.js?v=0.6.0';
-import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.6.0';
+import {RULES,TERRAINS} from './config.js?v=0.7.0';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.7.0';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
 export const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 export const key=p=>`${p.x},${p.y}`;
 export const alive=(s,team)=>s.units.filter(u=>u.alive&&(!team||u.team===team));
-export const at=(s,p)=>alive(s).find(u=>u.x===p.x&&u.y===p.y);
+export const at=(s,p)=>s.units.find(u=>u.alive&&u.x===p.x&&u.y===p.y);
 export const terrain=(s,p)=>TERRAINS[s.map.tiles[p.y]?.[p.x]];
 export const inRange=(a,b,r=a.range)=>dist(a,b)>=r[0]&&dist(a,b)<=r[1];
 export function log(s,text){s.log.push(`T${s.turn} P${s.phase} · ${text}`);if(s.log.length>250)s.log.shift();}
@@ -34,11 +34,12 @@ export function createGame(mapId=0,opts={},lost=[]){
 }
 // Dijkstra uses four neighbours. Friends may be crossed; endpoints must be empty.
 function movementField(s,u,budget=movement(s,u),{threat=false}={}){
+ const occupied=new Map(alive(s).map(a=>[key(a),a]));
  const costs=new Map([[key(u),0]]),parents=new Map(),todo=[{x:u.x,y:u.y,c:0}];
  while(todo.length){todo.sort((a,b)=>a.c-b.c);const p=todo.shift();if(p.c!==costs.get(key(p)))continue;
   for(const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]){
    const n={x:p.x+dx,y:p.y+dy},t=terrain(s,n);if(!t)continue;
-   const occ=at(s,n);if(occ&&occ.team!==u.team&&!threat)continue;
+   const occ=occupied.get(key(n));if(occ&&occ.team!==u.team&&!threat)continue;
    const c=p.c+t.cost;if(c>budget||c>=(costs.get(key(n))??Infinity))continue;
    costs.set(key(n),c);parents.set(key(n),{x:p.x,y:p.y});todo.push({...n,c});
   }
