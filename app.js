@@ -247,9 +247,18 @@ function openDeployment(){
  if(!allowed){root.textContent=cells.length?'出撃上限に達しています。次の味方ターンで出撃可能です。':'本城周辺が塞がれています。';return;}
  for(const u of r){
   const b=button(`${u.name} ／ ${u.label} HP${u.hp} ・弾薬${u.charges}`,()=>{
-   const result=E.deploy(s,u.id);
-   if(!result.ok){lastNotice={title:'出撃不可',text:result.error};close();refresh();return;}
-   close();lastNotice={title:'新部隊出撃',text:`${u.name}が本城付近に到着。P1に行動できます。`};save();refresh();
+   root.replaceChildren();
+   const explanation=document.createElement('p');explanation.className='hint';explanation.textContent=`${u.name}の出撃位置を選択（左右で展開方向を変えられます）`;root.append(explanation);
+   const base=s.map.camp;
+   for(const [label,valid]of [['左翼',p=>p.x<base.x],['中央',p=>p.x===base.x],['右翼',p=>p.x>base.x]]){
+    const p=cells.find(valid);if(!p)continue;
+    root.append(button(`${label}（${p.x+1},${p.y+1}）`,()=>{
+     const result=E.deploy(s,u.id,p);
+     if(!result.ok){lastNotice={title:'出撃不可',text:result.error};close();refresh();return;}
+     close();lastNotice={title:'新部隊出撃',text:`${u.name}が${label}から出撃。P1に行動できます。`};save();refresh();
+    },'subtle wide'));
+   }
+   root.append(button('別の部隊を選ぶ',openDeployment,'subtle wide'));
   },'wide');root.append(b);
  }
 }
