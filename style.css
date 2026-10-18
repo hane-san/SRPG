@@ -221,3 +221,8 @@ a{color:#e4c8f0}
 
 .sound-room-section{font-size:13px;letter-spacing:.025em;color:#e6c793;margin:12px 0 0}
 .sound-room-mood{margin:0 0 9px;font-size:12px;line-height:1.45;color:#cfc1d2}
+
+/* Numbered music catalogue: clear mobile map/phase references. */
+.sound-room-map-assignments{display:grid;gap:3px;margin:6px 0 14px;padding:10px;border:1px solid #65526d;border-radius:8px;background:#ffffff08}
+.sound-room-map-line{font-size:12px;line-height:1.5;color:#e8d8c4;font-variant-numeric:tabular-nums}
+.sound-room-actions button{text-align:left}
