@@ -7,7 +7,7 @@ import {createAudio} from '../audio.js';
 import {readSave,writeSave} from '../save.js';
 
 test('continuous slide keeps its route endpoint when entering an enemy and can choose an approach',()=>{
- const s=E.createGame(),u=s.units.find(u=>u.id==='a2'),original=structuredClone(s);
+ const s=E.createGame(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const original=structuredClone(s);
  const move=slideDraft(s,u,{x:6,y:13});assert.equal(move.route.length,4);
  const aim=slideDraft(s,u,{x:6,y:12},move.dest);assert.deepEqual(aim.dest,move.dest);assert.deepEqual(aim.route,move.route);assert.equal(aim.target,'e1');
  const jump=slideDraft(s,u,{x:6,y:12});assert.deepEqual(jump.dest,{x:6,y:13});
@@ -54,7 +54,7 @@ test('0.5 preserves stable prior saves and all added battlefield saves',()=>{
 });
 
 test('a drawn endpoint never moves to make an out-of-range enemy attackable',()=>{
- const s=E.createGame(),u=s.units.find(u=>u.id==='a2'),draft=slideDraft(s,u,{x:6,y:14});
+ const s=E.createGame(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const draft=slideDraft(s,u,{x:6,y:14});
  const aim=slideDraft(s,u,{x:6,y:12},draft.dest,{preserve:true,route:draft.route});assert.deepEqual(aim.dest,draft.dest);assert.deepEqual(aim.route,draft.route);assert.equal(aim.target,null);assert(aim.attackError);
  const hit=slideDraft(s,u,{x:6,y:12},{x:6,y:13},{preserve:true,route:E.routeTo(s,u,{x:6,y:13})});assert.equal(hit.target,'e1');assert.equal(hit.dest.y,13);
 });
