@@ -8,7 +8,8 @@
 - 人間が基盤PR #11をマージ。最新main `31b6cd8c999ace1a188914378c161ee2e3e18fdb` を本準備ブランチへ通常のmergeで取り込み、共通契約・テンプレート・既存の記録を保持した。
 - 人間が設定した [main-protection](https://github.com/hane-san/SRPG/rules/25345531) をAPIで確認。対象はmainのみ、Active、PR必須・承認人数0、GitHub Actionsの `rules` / `browser` 必須・最新mainへの追随あり、削除・force push禁止、bypassなし。
 - 統合済みmainの [CI](https://github.com/hane-san/SRPG/actions/runs/39132794478) と [Pages配信](https://github.com/hane-san/SRPG/actions/runs/39132794170) は成功。準備PR自体の最新SHA・再検証結果はPR本文に記録する。
-- 失敗CIでマージが止まる実地テスト、独立レビュー、人間の試遊、iPhone実機、実Renameは未実施。設定確認をこれらの完了と扱わない。
+- 失敗CIの実地テストは [検証専用PR #14](https://github.com/hane-san/SRPG/pull/14) で実施。最新mainが直接の親・競合なし・draftでないPRで、rules=failure / browser=successとGitHubのmergeable_state=blockedを確認し、PRを閉じた。mainのSHAは不変で、マージ操作は試みていない。
+- 独立レビュー、人間の試遊、iPhone実機、実Renameは未実施。品質ゲートの検証をこれらの完了と扱わない。
 - 両作品の準備は並行して進めるが、本PRの差分・検証・独立レビューはSRPGだけを対象とする。[独立レビューへの引継ぎ](rename-review-handoff.md)。
 Koitototsukuruの改名準備は、SRPGの移行を確認してから別タスクで扱う。
 

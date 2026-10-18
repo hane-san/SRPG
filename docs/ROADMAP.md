@@ -5,7 +5,7 @@
 ## 開発運用の導入・残作業
 
 - 共通AI開発契約、Issue/PRテンプレート、仕様・検証への索引は [Issue #10](https://github.com/hane-san/SRPG/issues/10) / PR #11でmainへ導入済み。統合後CI・Pagesも成功。
-- 人間がmainのRulesetへ必須チェックを設定し、APIで適用を確認済み。失敗CIで統合が制限される実地テストは未実施。[現在地・根拠](rename-preparation.md#基盤統合後の現在地2026-10-18追記)。
+- 人間がmainのRulesetへ必須チェックを設定し、APIで適用を確認済み。失敗CIの実地テストは検証専用PR #14でrules=failure / browser=success時のblockedを確認後に閉じ、mainは不変。[現在地・根拠](rename-preparation.md#基盤統合後の現在地2026-10-18追記)。
 - 改名準備PR #13へ最新mainを取り込み、検証結果はPR本文へ記録する。[独立レビュー](rename-review-handoff.md)と人間確認を終えてから統合する。実Renameと表示名切替は別工程。
 - Codex/SonnetのIssue受渡しと独立監査を試行し、試遊・監査対象SHAを記録する。夜間Routineは未設定。
 - ゲーム改善の進行中PRは #7（出撃・SE・HP表示）、#9（42曲化）。この運用導入では取り込まない。

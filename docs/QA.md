@@ -36,6 +36,8 @@
 
 ## 人間の試遊・未検証
 
+- main保護の実地確認（2026-10-18）：[検証専用PR #14](https://github.com/hane-san/SRPG/pull/14) / [CI](https://github.com/hane-san/SRPG/actions/runs/39177205008) で、最新mainが直接の親・競合なし・draftでないPRのrules=failure / browser=success時にGitHubがblockedになることを確認。意図的なNodeテストの失敗をログでも確認し、PRを閉じた。マージを試みずmain SHA不変。独立コード監査・実機試遊の代わりにはしない。
+
 - iPhone Safari実機：縦横画面、城からの出撃、攻撃/待機/取消、HP6、再読込と保存、背景復帰と音の解禁。Chromiumのモバイル画面模擬とは分ける。
 - HP6再調整後の3章連戦、初期2隊・一般兵編成の難度と楽しさ。
 - 公開版、ホーム画面追加、実機性能と出音。今回の文書整備で検証済みにしない。
