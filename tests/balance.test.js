@@ -19,7 +19,7 @@ test('dead names are replaced, not shifted or revived; replacement inherits uppe
   const s=E.createGame(2,{},lost),positionsById=positions(2);
   for(const [i,r] of ROSTER.entries()){
    const u=s.units.find(u=>u.id===(lost.includes(r.id)?'general-'+r.id:r.id));
-   assert(u);assert.deepEqual([u.x,u.y],positionsById[i]);assert.equal(u.rank,'advanced');
+   assert(u);assert.deepEqual([u.x,u.y],positionsById[i<2?i+1:i]);assert.equal(u.rank,'advanced');
    assert.equal(u.named,!lost.includes(r.id));assert.equal(u.maxHp,6);
   }
   assert.equal(s.units.filter(u=>u.team==='ally').length,9);
