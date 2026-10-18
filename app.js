@@ -239,7 +239,7 @@ function start(id,chain=false,lost=[],specialties={}){battleCard=null;lastNotice
 function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties);},'danger wide'));}
 function openDeployment(){
  if(locked||s.status!=='playing'||s.phase!==1)return;
- resetSelection();
+ resetSelection();refresh();
  const r=E.reserves(s),cells=E.deploymentCells(s),allowed=E.canDeploy(s);
  modal(`<h2>本城から出撃</h2><p>予備 ${r.length}隊／戦場 ${E.alive(s,'ally').length}/${RULES.maxDeployed}隊。1ターンの出撃は${RULES.deploymentsPerTurn}隊、城の近くの空きマスへ配置します。</p><div id="deploymentList"></div>`);
  const root=$('deploymentList');
