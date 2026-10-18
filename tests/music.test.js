@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {SCORES,buildTrack,createMusic,scheduleNote,MUSIC_TRANSITION} from '../music.js';
+import {SCORES,BONUS_SCORES,MUSIC_LIBRARY,buildTrack,createMusic,scheduleNote,MUSIC_TRANSITION} from '../music.js';
 test('six maps have twelve distinct complete scores; P2-P4 share one uninterrupted score',()=>{
  const signatures=new Set();for(let map=0;map<SCORES.length;map++){
   const ally=buildTrack(map,1),enemy=buildTrack(map,2);assert.notEqual(ally.title,enemy.title);assert.deepEqual(enemy,buildTrack(map,3));assert.deepEqual(enemy,buildTrack(map,4));
@@ -70,4 +70,38 @@ test('phase changes fade out, leave silence and start at normal bus volume; prev
   music.stopPreview();assert.equal(music.snapshot().scene,'1:ally');
   assert.equal(music.snapshot().starts,regular+2);
  }finally{music?.destroy();if(old===undefined)delete globalThis.AudioContext;else globalThis.AudioContext=old;}
+});
+
+test('seven contrasting sound-room-only themes provide fourteen complete original companion tracks',()=>{
+ assert.equal(SCORES.length,6);
+ assert.equal(BONUS_SCORES.length,7);
+ assert.equal(MUSIC_LIBRARY.length,13);
+ assert.deepEqual(MUSIC_LIBRARY.slice(0,6),SCORES);
+ const titles=new Set(),notes=new Set(),moods=new Set(),tempos=new Set();
+ for(let map=6;map<MUSIC_LIBRARY.length;map++){
+  const score=MUSIC_LIBRARY[map];
+  assert(score.mood&&score.name&&!moods.has(score.mood));
+  moods.add(score.mood);
+  for(const phase of [1,2]){
+   const side=phase===1?'ally':'hostile',p=score[side],track=buildTrack(map,phase);
+   assert(!titles.has(track.title));titles.add(track.title);
+   assert(p.rhythm.length===8&&Math.abs(p.rhythm.reduce((a,b)=>a+b,0)-score.meter*2)<1e-9);
+   assert.equal(track.mapId,map);
+   assert(track.seconds>38&&track.seconds<85,track.title);
+   assert(track.events.length>230,track.title);
+   assert(track.events.every(e=>Number.isFinite(e.midi)&&e.midi>=24&&e.midi<=96&&e.beat>=0&&e.beat<track.beats&&e.duration>0&&e.velocity>0&&e.velocity<.5),track.title);
+   assert(new Set(track.events.map(e=>e.voice)).size>=4);
+   const sig=JSON.stringify(track.events.map(e=>[e.beat,e.midi,e.voice,e.velocity]));
+   assert(!notes.has(sig),track.title);notes.add(sig);tempos.add(track.bpm);
+   assert.deepEqual(track,buildTrack(map,phase===1?1:4));
+  }
+ }
+ assert.equal(titles.size,14);
+ assert(tempos.size>=11);
+ const store={getItem(){return null;},setItem(){}},music=createMusic(store);
+ music.setScene(0,1);assert.equal(music.enabled,false);
+ assert(music.playPreview(12,2));assert.equal(music.snapshot().preview,'12:hostile');
+ music.stopPreview();assert.equal(music.snapshot().preview,null);
+ assert.equal(music.playPreview(13,1),false);
+ music.destroy();
 });

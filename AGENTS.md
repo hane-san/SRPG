@@ -21,7 +21,7 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `ui-model.js`: forecast/target/slide/next-ready helpers; delegate rule calculations to engine.
 - `playback.js`: tile interpolation and ordered hit/counter/heal presentation; never resolve rules here.
 - `audio.js`: original Web Audio cues, gesture unlock, persistent mute; audio failure cannot block play.
-- `music.js`: twelve original scores with melody/harmony/bass, Web Audio lookahead scheduling, independent persistent music preference/volume. Initial music OFF, effects ON. P1 uses ally score; P2–P4 share a hostile score without restarting between those phases. No borrowed melodies or samples. Pause in background; require a gesture to unlock.
+- `music.js`: twelve original scores for six maps plus fourteen unassigned sound-room candidate tracks, with melody/harmony/bass, Web Audio lookahead scheduling, independent persistent music preference/volume. Initial music OFF, effects ON. P1 uses ally score; P2–P4 share a hostile score without restarting between those phases. No borrowed melodies or samples. Pause in background; require a gesture to unlock.
 - `assets/`: temporary original knight app icon and exported PNGs; `npm run icons` uses optional sharp.
 - `ui-input.js`: single pointer gesture tracking; a drag that returns to its origin is still a drag.
 - `save.js`: optional local storage, validation, P1/finished-state restore.

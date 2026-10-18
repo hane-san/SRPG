@@ -9,21 +9,1327 @@ export const SCORES=[
  {name:'雨森',root:62,meter:3,lead:'harp',arp:'flute',ally:{title:'木洩れ雨の回廊',bpm:88,scale:minor,chords:[0,3,5,2,0,5,3,4],melody:[[4,2,3,0,1,3,2,0],[5,3,4,2,0,2,1,-1],[3,5,6,4,2,3,1,2],[4,3,1,2,0,-1,1,0]]},hostile:{title:'雨幕の追跡',bpm:102,scale:minor,chords:[0,5,0,4,3,1,4,0],melody:[[0,2,1,3,2,4,3,1],[2,4,3,5,4,2,1,0],[3,2,5,4,6,3,2,1],[4,3,2,0,1,-1,1,0]]}},
  {name:'暁城',root:60,meter:4,lead:'horn',arp:'harp',ally:{title:'暁の城塞へ',bpm:122,scale:major,chords:[0,5,3,4,0,2,3,4],melody:[[0,4,3,5,7,6,4,2],[3,5,4,6,7,5,4,3],[5,7,9,7,6,4,5,3],[4,6,7,5,4,2,1,0]]},hostile:{title:'最後の防壁',bpm:130,scale:minor,chords:[0,4,5,3,0,1,4,0],melody:[[7,4,5,3,4,2,3,0],[5,3,4,2,3,1,2,-1],[3,6,5,7,4,5,2,3],[4,3,1,2,0,-1,1,0]]}}
 ];
+// Seven independent sound-room-only theme pairs. They are not assigned to campaign maps.
+// Same synth voices as the original scores; optional articulation, pulse and density vary by scene.
+export const BONUS_SCORES=[
+ {
+  "name": "旅立ちの行軍",
+  "mood": "序盤｜弾む足取りと、まだ明るい冒険心",
+  "root": 60,
+  "meter": 4,
+  "lead": "flute",
+  "arp": "harp",
+  "ally": {
+   "title": "朝風に旗を掲げて",
+   "bpm": 114,
+   "scale": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    11
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    1,
+    0.5,
+    0.5,
+    1,
+    2,
+    2
+   ],
+   "chords": [
+    0,
+    4,
+    3,
+    5,
+    0,
+    3,
+    4,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     2,
+     4,
+     4,
+     5,
+     6,
+     5,
+     4
+    ],
+    [
+     2,
+     3,
+     4,
+     6,
+     5,
+     4,
+     2,
+     1
+    ],
+    [
+     4,
+     5,
+     7,
+     6,
+     4,
+     3,
+     5,
+     4
+    ],
+    [
+     5,
+     4,
+     2,
+     3,
+     4,
+     2,
+     1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    2,
+    4,
+    7,
+    4,
+    2,
+    3,
+    4
+   ],
+   "drumEvery": 2,
+   "leadVel": 0.33,
+   "arpVel": 0.095
+  },
+  "hostile": {
+   "title": "丘の向こうの先遣隊",
+   "bpm": 122,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    0.75,
+    0.25,
+    1,
+    1,
+    1,
+    0.5,
+    1.5,
+    2
+   ],
+   "chords": [
+    0,
+    5,
+    3,
+    4,
+    2,
+    5,
+    4,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     1,
+     3,
+     2,
+     4,
+     3,
+     2,
+     0
+    ],
+    [
+     3,
+     4,
+     5,
+     4,
+     2,
+     3,
+     1,
+     0
+    ],
+    [
+     4,
+     5,
+     6,
+     4,
+     5,
+     3,
+     2,
+     1
+    ],
+    [
+     3,
+     2,
+     0,
+     1,
+     2,
+     1,
+     0,
+     -1
+    ]
+   ],
+   "arpPattern": [
+    0,
+    4,
+    2,
+    5,
+    0,
+    3,
+    2,
+    4
+   ],
+   "leadVel": 0.32,
+   "drumVel": 0.16
+  }
+ },
+ {
+  "name": "鋼旗の行軍",
+  "mood": "中盤｜隊列の重みと勢いが増す進軍",
+  "root": 57,
+  "meter": 4,
+  "lead": "horn",
+  "arp": "strings",
+  "ally": {
+   "title": "鋼の隊列、前へ",
+   "bpm": 130,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "rhythm": [
+    0.75,
+    0.25,
+    1,
+    1,
+    1,
+    0.5,
+    1.5,
+    2
+   ],
+   "chords": [
+    0,
+    3,
+    4,
+    5,
+    0,
+    4,
+    3,
+    4
+   ],
+   "melody": [
+    [
+     0,
+     0,
+     4,
+     3,
+     5,
+     4,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     7,
+     6,
+     5,
+     3,
+     4,
+     5
+    ],
+    [
+     7,
+     7,
+     6,
+     4,
+     5,
+     6,
+     4,
+     3
+    ],
+    [
+     4,
+     2,
+     3,
+     5,
+     4,
+     2,
+     1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    4,
+    2,
+    4,
+    0,
+    5,
+    3,
+    4
+   ],
+   "leadVel": 0.34,
+   "bassVel": 0.26,
+   "drumEvery": 1,
+   "drumVel": 0.15
+  },
+  "hostile": {
+   "title": "軍靴は地を裂く",
+   "bpm": 138,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    1,
+    0.5,
+    0.5,
+    1,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    4,
+    5,
+    3,
+    0,
+    2,
+    4,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     0,
+     1,
+     3,
+     2,
+     1,
+     3,
+     4
+    ],
+    [
+     5,
+     4,
+     3,
+     2,
+     4,
+     5,
+     4,
+     2
+    ],
+    [
+     3,
+     5,
+     6,
+     5,
+     3,
+     4,
+     2,
+     1
+    ],
+    [
+     4,
+     3,
+     2,
+     1,
+     0,
+     1,
+     0,
+     -1
+    ]
+   ],
+   "arpPattern": [
+    0,
+    2,
+    0,
+    4,
+    2,
+    5,
+    2,
+    4
+   ],
+   "bassVel": 0.28,
+   "drumVel": 0.19
+  }
+ },
+ {
+  "name": "終章への行軍",
+  "mood": "終盤｜疾走する勇気、その奥に残る別れの痛み",
+  "root": 62,
+  "meter": 4,
+  "lead": "strings",
+  "arp": "harp",
+  "ally": {
+   "title": "別れを抱いて進め",
+   "bpm": 148,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    0.5,
+    1.5,
+    0.5,
+    0.5,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    5,
+    3,
+    4,
+    2,
+    5,
+    4,
+    0
+   ],
+   "melody": [
+    [
+     7,
+     6,
+     4,
+     3,
+     5,
+     4,
+     2,
+     1
+    ],
+    [
+     2,
+     4,
+     5,
+     7,
+     6,
+     5,
+     4,
+     2
+    ],
+    [
+     3,
+     5,
+     7,
+     9,
+     7,
+     6,
+     5,
+     4
+    ],
+    [
+     6,
+     5,
+     3,
+     2,
+     4,
+     2,
+     1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    4,
+    2,
+    6,
+    5,
+    2,
+    4,
+    2
+   ],
+   "padVel": 0.092,
+   "leadVel": 0.34,
+   "bassVel": 0.25,
+   "drumEvery": 1,
+   "drumVel": 0.14
+  },
+  "hostile": {
+   "title": "涙の残る戦野",
+   "bpm": 152,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    11
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    0.5,
+    1.5,
+    0.5,
+    0.5,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    3,
+    5,
+    4,
+    0,
+    5,
+    2,
+    4
+   ],
+   "melody": [
+    [
+     4,
+     3,
+     1,
+     0,
+     2,
+     3,
+     2,
+     1
+    ],
+    [
+     3,
+     5,
+     4,
+     3,
+     1,
+     2,
+     0,
+     -1
+    ],
+    [
+     5,
+     7,
+     6,
+     5,
+     3,
+     4,
+     2,
+     1
+    ],
+    [
+     4,
+     3,
+     2,
+     0,
+     1,
+     0,
+     -1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    2,
+    4,
+    7,
+    5,
+    3,
+    2,
+    4
+   ],
+   "padVel": 0.095,
+   "drumVel": 0.15
+  }
+ },
+ {
+  "name": "白嵐の行軍",
+  "mood": "吹雪｜冷えた空気、かすかな足音、遠い稜線",
+  "root": 64,
+  "meter": 3,
+  "lead": "flute",
+  "arp": "strings",
+  "ally": {
+   "title": "白夜に残す足跡",
+   "bpm": 104,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    1,
+    0.5,
+    1,
+    0.5,
+    0.5,
+    0.5,
+    1,
+    1
+   ],
+   "chords": [
+    0,
+    5,
+    3,
+    2,
+    0,
+    4,
+    5,
+    0
+   ],
+   "melody": [
+    [
+     7,
+     6,
+     4,
+     3,
+     2,
+     1,
+     2,
+     0
+    ],
+    [
+     5,
+     4,
+     2,
+     3,
+     4,
+     2,
+     1,
+     0
+    ],
+    [
+     7,
+     9,
+     7,
+     5,
+     4,
+     3,
+     2,
+     1
+    ],
+    [
+     4,
+     3,
+     1,
+     2,
+     0,
+     1,
+     -1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    4,
+    2,
+    5,
+    3,
+    4,
+    2,
+    0
+   ],
+   "arpVel": 0.065,
+   "padVel": 0.092,
+   "bassVel": 0.16,
+   "drumEvery": 4,
+   "drumVel": 0.065,
+   "leadArticulation": 0.82
+  },
+  "hostile": {
+   "title": "凍てつく追跡者",
+   "bpm": 116,
+   "scale": [
+    0,
+    1,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    1,
+    0.5,
+    1,
+    0.5,
+    0.5,
+    0.5,
+    1,
+    1
+   ],
+   "chords": [
+    0,
+    1,
+    5,
+    4,
+    0,
+    2,
+    1,
+    0
+   ],
+   "melody": [
+    [
+     4,
+     3,
+     2,
+     1,
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     5,
+     4,
+     3,
+     1,
+     2,
+     1,
+     0,
+     -1
+    ],
+    [
+     6,
+     5,
+     3,
+     4,
+     2,
+     1,
+     0,
+     1
+    ],
+    [
+     3,
+     2,
+     1,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    3,
+    2,
+    4,
+    0,
+    5,
+    2,
+    3
+   ],
+   "arpVel": 0.07,
+   "padVel": 0.09,
+   "bassVel": 0.18,
+   "drumEvery": 2,
+   "drumVel": 0.1
+  }
+ },
+ {
+  "name": "熱砂の行軍",
+  "mood": "砂漠｜灼けた地面、乾いた拍動、揺れる視界",
+  "root": 55,
+  "meter": 4,
+  "lead": "flute",
+  "arp": "harp",
+  "ally": {
+   "title": "陽炎を越える隊商",
+   "bpm": 124,
+   "scale": [
+    0,
+    1,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    0.75,
+    0.25,
+    0.5,
+    0.5,
+    1.5,
+    0.5,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    1,
+    4,
+    3,
+    0,
+    5,
+    1,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     1,
+     3,
+     4,
+     5,
+     3,
+     2,
+     1
+    ],
+    [
+     3,
+     4,
+     6,
+     5,
+     4,
+     3,
+     1,
+     0
+    ],
+    [
+     5,
+     7,
+     6,
+     4,
+     3,
+     5,
+     4,
+     2
+    ],
+    [
+     4,
+     3,
+     1,
+     2,
+     3,
+     1,
+     0,
+     -1
+    ]
+   ],
+   "arpPattern": [
+    0,
+    3,
+    0,
+    4,
+    2,
+    5,
+    2,
+    4
+   ],
+   "leadArticulation": 0.78,
+   "padVel": 0.055,
+   "bassVel": 0.23,
+   "drumEvery": 1,
+   "drumVel": 0.12
+  },
+  "hostile": {
+   "title": "砂塵に潜む刃",
+   "bpm": 136,
+   "scale": [
+    0,
+    1,
+    4,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    0.75,
+    0.25,
+    0.5,
+    0.5,
+    1.5,
+    0.5,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    1,
+    3,
+    4,
+    0,
+    5,
+    1,
+    0
+   ],
+   "melody": [
+    [
+     1,
+     0,
+     3,
+     2,
+     4,
+     3,
+     2,
+     0
+    ],
+    [
+     3,
+     4,
+     5,
+     6,
+     5,
+     3,
+     2,
+     1
+    ],
+    [
+     4,
+     3,
+     1,
+     0,
+     1,
+     3,
+     2,
+     0
+    ],
+    [
+     5,
+     4,
+     3,
+     1,
+     2,
+     1,
+     0,
+     -1
+    ]
+   ],
+   "arpPattern": [
+    0,
+    4,
+    1,
+    5,
+    0,
+    3,
+    1,
+    4
+   ],
+   "leadArticulation": 0.75,
+   "padVel": 0.058,
+   "bassVel": 0.25,
+   "drumVel": 0.2
+  }
+ },
+ {
+  "name": "聖域の行軍",
+  "mood": "神殿｜速い分散和音に、長く響く荘厳な主旋律",
+  "root": 60,
+  "meter": 4,
+  "lead": "horn",
+  "arp": "harp",
+  "ally": {
+   "title": "聖域の石階を登る",
+   "bpm": 132,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    11
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2
+   ],
+   "chords": [
+    0,
+    5,
+    3,
+    4,
+    0,
+    2,
+    5,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     4,
+     7,
+     6,
+     5,
+     4,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     7,
+     9,
+     7,
+     5,
+     4,
+     3
+    ],
+    [
+     7,
+     6,
+     5,
+     4,
+     7,
+     6,
+     4,
+     2
+    ],
+    [
+     3,
+     5,
+     4,
+     2,
+     1,
+     2,
+     0,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    2,
+    4,
+    7,
+    4,
+    2,
+    5,
+    7
+   ],
+   "leadArticulation": 0.98,
+   "padVel": 0.12,
+   "arpVel": 0.1,
+   "drumEvery": 4,
+   "drumVel": 0.08
+  },
+  "hostile": {
+   "title": "祭壇を守る影",
+   "bpm": 140,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    11
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2
+   ],
+   "chords": [
+    0,
+    1,
+    4,
+    5,
+    0,
+    2,
+    4,
+    0
+   ],
+   "melody": [
+    [
+     7,
+     6,
+     4,
+     3,
+     5,
+     4,
+     2,
+     1
+    ],
+    [
+     5,
+     4,
+     3,
+     1,
+     4,
+     3,
+     1,
+     0
+    ],
+    [
+     3,
+     5,
+     7,
+     6,
+     4,
+     5,
+     3,
+     2
+    ],
+    [
+     4,
+     3,
+     2,
+     1,
+     0,
+     -1,
+     1,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    5,
+    4,
+    7,
+    5,
+    3,
+    2,
+    4
+   ],
+   "leadArticulation": 0.98,
+   "padVel": 0.13,
+   "arpVel": 0.09,
+   "drumEvery": 2,
+   "drumVel": 0.12
+  }
+ },
+ {
+  "name": "籠城の行軍",
+  "mood": "要塞防衛｜迫る敵影、崩せない守備線、絶えない緊張",
+  "root": 53,
+  "meter": 4,
+  "lead": "strings",
+  "arp": "strings",
+  "ally": {
+   "title": "城門、なお立つ",
+   "bpm": 142,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    1,
+    0.5,
+    0.5,
+    1,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    4,
+    0,
+    5,
+    3,
+    4,
+    2,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     0,
+     2,
+     3,
+     2,
+     0,
+     1,
+     2
+    ],
+    [
+     3,
+     4,
+     3,
+     2,
+     5,
+     4,
+     3,
+     1
+    ],
+    [
+     2,
+     2,
+     4,
+     5,
+     4,
+     3,
+     2,
+     0
+    ],
+    [
+     5,
+     4,
+     3,
+     1,
+     2,
+     1,
+     0,
+     0
+    ]
+   ],
+   "arpPattern": [
+    0,
+    4,
+    0,
+    2,
+    0,
+    4,
+    0,
+    5
+   ],
+   "leadVel": 0.34,
+   "bassVel": 0.29,
+   "drumEvery": 1,
+   "drumVel": 0.2
+  },
+  "hostile": {
+   "title": "包囲網の圧迫",
+   "bpm": 154,
+   "scale": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "rhythm": [
+    0.5,
+    0.5,
+    1,
+    0.5,
+    0.5,
+    1,
+    1,
+    3
+   ],
+   "chords": [
+    0,
+    1,
+    4,
+    0,
+    5,
+    3,
+    4,
+    0
+   ],
+   "melody": [
+    [
+     0,
+     1,
+     0,
+     2,
+     1,
+     3,
+     2,
+     1
+    ],
+    [
+     3,
+     4,
+     2,
+     4,
+     3,
+     5,
+     4,
+     2
+    ],
+    [
+     4,
+     5,
+     3,
+     5,
+     4,
+     6,
+     5,
+     3
+    ],
+    [
+     5,
+     3,
+     4,
+     2,
+     1,
+     2,
+     0,
+     -1
+    ]
+   ],
+   "arpPattern": [
+    0,
+    2,
+    0,
+    4,
+    0,
+    5,
+    3,
+    4
+   ],
+   "leadVel": 0.35,
+   "bassVel": 0.3,
+   "drumVel": 0.21
+  }
+ }
+];
+export const MUSIC_LIBRARY=[...SCORES,...BONUS_SCORES];
 const degree=(root,scale,n)=>root+12*Math.floor(n/7)+scale[((n%7)+7)%7];
 export function buildTrack(mapId,phase=1){
- const score=SCORES[mapId]||SCORES[0],side=phase===1?'ally':'hostile',part=score[side],bar=score.meter,length=bar*32;
- const rhythm=bar===3?[.5,.5,.5,.5,1,.5,.5,2]:[1,.5,.5,1,1,1,1,2],events=[];
+ const score=MUSIC_LIBRARY[mapId]||SCORES[0],side=phase===1?'ally':'hostile',part=score[side],bar=score.meter,length=bar*32;
+ const rhythm=part.rhythm||(bar===3?[.5,.5,.5,.5,1,.5,.5,2]:[1,.5,.5,1,1,1,1,2]),events=[];
  const push=(beat,duration,n,voice,velocity,pan=0)=>events.push({beat,duration,midi:degree(score.root,part.scale,n),voice,velocity,pan});
  for(let pass=0;pass<4;pass++)for(let phrase=0;phrase<4;phrase++){
   let beat=pass*bar*8+phrase*bar*2;
-  for(const [i,n]of part.melody[phrase].entries()){push(beat,rhythm[i]*.9,n+(pass===2&&phrase===2?7:0),score.lead,.32,0);if(pass%2===1&&i%2===0)push(beat+.08,Math.min(rhythm[i],.8),n-7,'flute',.07,.3);beat+=rhythm[i];}
+  for(const [i,n]of part.melody[phrase].entries()){push(beat,rhythm[i]*(part.leadArticulation??.9),n+(pass===2&&phrase===2?7:0),score.lead,part.leadVel??.32,0);if(pass%2===1&&i%2===0)push(beat+.08,Math.min(rhythm[i],.8),n-7,'flute',.07,.3);beat+=rhythm[i];}
  }
  for(let i=0;i<32;i++){
   const beat=i*bar,chord=part.chords[i%8];
-  for(const n of [chord-7,chord-5,chord-3])push(beat,bar*.94,n,'pad',.075,-.18);
-  push(beat,bar*.65,chord-14,'bass',.24,0);if(side==='hostile'||bar===4)push(beat+bar/2,.7,chord-10,'bass',.14,0);
-  for(let j=0;j<bar*2;j++)push(beat+j/2,.35,chord+[0,2,4,2,0,4,2,4][j%8],score.arp,.09,.22);
-  if(side==='hostile'||i%2===0)events.push({beat,duration:.12,midi:38,voice:'drum',velocity:side==='hostile'?.18:.10,pan:0});
+  for(const n of [chord-7,chord-5,chord-3])push(beat,bar*.94,n,'pad',part.padVel??.075,-.18);
+  push(beat,bar*.65,chord-14,'bass',part.bassVel??.24,0);if(side==='hostile'||bar===4)push(beat+bar/2,.7,chord-10,'bass',part.offbeatBassVel??.14,0);
+  for(let j=0;j<bar*2;j++)push(beat+j/2,.35,chord+(part.arpPattern||[0,2,4,2,0,4,2,4])[j%8],score.arp,part.arpVel??.09,.22);
+  if(i%(part.drumEvery??(side==='hostile'?1:2))===0)events.push({beat,duration:.12,midi:38,voice:'drum',velocity:part.drumVel??(side==='hostile'?.18:.10),pan:0});
  }
  events.sort((a,b)=>a.beat-b.beat);
  return {mapId,side,title:part.title,bpm:part.bpm,beats:length,seconds:length*60/part.bpm,events};
@@ -102,7 +1408,7 @@ export function createMusic(storage){
  }
  function setVolume(value){volume=Math.max(0,Math.min(1,Number(value)||0));try{storage?.setItem('field-command-music-volume',String(volume));}catch{}if(master&&context)master.gain.setTargetAtTime(volume*.34,context.currentTime,.03);}
  function playPreview(mapId,phase=1){
-  if(!Number.isInteger(mapId)||mapId<0||mapId>=SCORES.length)return false;
+  if(!Number.isInteger(mapId)||mapId<0||mapId>=MUSIC_LIBRARY.length)return false;
   preview={mapId,phase:phase===1?1:2};unlock();return true;
  }
  function stopPreview(){

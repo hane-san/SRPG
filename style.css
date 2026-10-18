@@ -214,3 +214,6 @@ a{color:#e4c8f0}
 .sound-room-actions button{font-size:12px;line-height:1.35;min-height:48px;text-align:left;overflow-wrap:anywhere}
 .sound-room-actions button[aria-pressed=true]{background:#79617f;border-color:#d5b886;color:#fff7e9}
 #soundRoomNow{font-size:13px;line-height:1.5;color:#e6d5bf;min-height:20px}
+
+.sound-room-section{font-size:13px;letter-spacing:.025em;color:#e6c793;margin:12px 0 0}
+.sound-room-mood{margin:0 0 9px;font-size:12px;line-height:1.45;color:#cfc1d2}
