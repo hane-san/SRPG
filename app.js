@@ -24,6 +24,7 @@ if(stored){s=stored.state;campaign=stored.campaign;settings=s.settings;}else s=E
 function save(state=s){try{writeSave(localStorage,RELEASE,state,campaign);}catch{}}
 function modal(html,canClose=true){music.stopPreview();$('modalBody').innerHTML=html;$('closeModal').hidden=!canClose;if(!$('modal').open)$('modal').showModal();$('modal').scrollTop=0;}
 function close(){music.stopPreview();$('modal').close();}
+$('modal').addEventListener('cancel',()=>music.stopPreview());
 $('modal').addEventListener('close',()=>music.stopPreview());
 $('closeModal').onclick=close;
 function button(text,fn,cls=''){const b=document.createElement('button');b.textContent=text;if(cls)b.className=cls;b.onclick=ev=>{sound.unlock();fn(ev);};return b;}
