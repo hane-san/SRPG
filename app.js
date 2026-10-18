@@ -6,7 +6,7 @@ import {bindMapInput} from './ui-input.js?v=0.7.0';
 import {readSave,writeSave} from './save.js?v=0.7.0';
 import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.7.0';
 import {createAudio} from './audio.js?v=0.7.0';
-import {createMusic,buildTrack} from './music.js?v=0.7.0';
+import {createMusic,buildTrack} from './music.js?v=0.7.0-bgm-fix';
 import {createPlayback} from './playback.js?v=0.7.0';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;

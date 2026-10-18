@@ -29,6 +29,7 @@ export function buildTrack(mapId,phase=1){
  return {mapId,side,title:part.title,bpm:part.bpm,beats:length,seconds:length*60/part.bpm,events};
 }
 // Shared by realtime playback and deterministic OfflineAudioContext verification.
+// Keep the gain envelope continuous: stepping a sounding oscillator's gain creates a click.
 export function scheduleNote(context,destination,event,time,secondsPerBeat){
  const duration=Math.max(.035,event.duration*secondsPerBeat),gain=context.createGain(),filter=context.createBiquadFilter(),osc=context.createOscillator();
  const frequency=440*2**((event.midi-69)/12),isPad=event.voice==='pad',plucked=event.voice==='harp',drum=event.voice==='drum';
@@ -38,7 +39,7 @@ export function scheduleNote(context,destination,event,time,secondsPerBeat){
  const attack=isPad?.075:plucked?.006:.018,release=isPad?.2:.07,end=time+duration+release;
  gain.gain.setValueAtTime(0,time);gain.gain.linearRampToValueAtTime(event.velocity,time+Math.min(attack,duration/3));
  if(plucked||drum)gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
- else{gain.gain.setValueAtTime(event.velocity*.72,time+duration*.72);gain.gain.linearRampToValueAtTime(0,end);}
+ else{gain.gain.linearRampToValueAtTime(event.velocity*.72,time+duration*.72);gain.gain.linearRampToValueAtTime(0,end);}
  osc.connect(filter);filter.connect(gain);let pan=null;
  if(context.createStereoPanner){pan=context.createStereoPanner();pan.pan.value=event.pan||0;gain.connect(pan);pan.connect(destination);}else gain.connect(destination);
  osc.start(time);osc.stop(end+.01);
