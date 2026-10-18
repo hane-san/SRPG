@@ -26,9 +26,12 @@ test('a later animation callback error rejects playback and cancels both schedul
  }finally{for(const [k,descriptor]of Object.entries(saved)){if(descriptor)Object.defineProperty(globalThis,k,descriptor);else delete globalThis[k];}}
 });
 
-test('0.7 retains stable saves from all supported releases and all maps',async()=>{
+test('HP6 release refuses old rule-set saves and preserves fresh HP6 saves',async()=>{
  const {readSave,writeSave}=await import('../save.js');
- for(const release of ['0.2.0','0.3.0','0.4.0','0.5.0','0.5.1','0.5.2','0.6.0'])for(const m of MAPS){let value;const storage={getItem:()=>value,setItem:(_k,v)=>value=v},s=E.createGame(m.id);E.act(s,'a1',s.units[0],'wait');writeSave(storage,release,s,true);const saved=readSave(storage,'0.7.0',MAPS);assert(saved?.campaign);assert.deepEqual(saved.state,s);}
+ for(const m of MAPS){let value;const storage={getItem:()=>value,setItem:(_k,v)=>value=v};const s=E.createGame(m.id);
+ writeSave(storage,'0.7.0',s,true);assert.equal(readSave(storage,'0.8.0',MAPS),null);
+ writeSave(storage,'0.8.0',s,true);const saved=readSave(storage,'0.8.0',MAPS);assert(saved?.campaign);assert.deepEqual(saved.state,s);
+ }
 });
 
 test('future map-wide ranges stay bounded by the map and exclude allies and blue movement',async()=>{
