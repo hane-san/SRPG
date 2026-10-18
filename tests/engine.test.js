@@ -102,3 +102,12 @@ test('castle sortie validates atomically, walks from an occupied castle and figh
  assert.deepEqual(frames.find(event=>event.kind==='move')?.path[0],s.map.camp);
  assert(!E.canDeploy(s),'second sortie blocked this turn');
 });
+
+test('stationary castle sortie still emits a deployment event before a hit',()=>{
+ const s=fixture(),reserve=add(s,'sword',0,0,'ally','reserve'),foe=add(s,'sword',2,16,'enemy','foe');
+ reserve.deployed=false;
+ const events=[];assert(E.deployAndAct(s,reserve.id,s.map.camp,'attack',foe.id,(_,__,event)=>events.push(event)).ok);
+ assert.deepEqual(events.map(e=>e.kind),['deploy','hit','hit']);
+ assert.equal(E.at(s,s.map.camp)?.id,reserve.id);assert.equal(s.deployedThisTurn,1);
+ assert.equal(foe.hp,4);assert.equal(reserve.hp,4);
+});
