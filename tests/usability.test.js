@@ -9,21 +9,21 @@ test('forecast HP matches committed combat, including terrain and lethal counter
  for(const lethal of [false,true]){
   const s=E.createGame(),u=s.units.find(u=>u.id==='a4'),t=s.units.find(u=>u.id==='e1');
   Object.assign(t,{x:8,y:17});s.map.tiles[17]=s.map.tiles[17].slice(0,7)+'f'+s.map.tiles[17].slice(8);if(lethal)u.hp=1;
-  const forecast=battleForecast(s,u,t);assert.equal(forecast.terrain.def,1);assert(attackTargets(s,u).includes(t));
+  const forecast=battleForecast(s,u,t);assert.equal(forecast.terrain.def,0);assert(attackTargets(s,u).includes(t));
   E.act(s,u.id,u,'attack',t.id);assert.equal(u.hp,forecast.allyAfter);assert.equal(t.hp,forecast.enemyAfter);
  }
 });
 test('next ready unit wraps, ignores acted and dead units, and returns null when done',()=>{
  const s=E.createGame();assert.equal(nextReady(s).id,'a1');assert.equal(nextReady(s,'a9').id,'a1');
- s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a9').id,'a3');
+ s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a9'),null);assert(E.deploy(s,'a3').ok);assert.equal(nextReady(s,'a9').id,'a3');
  for(const u of E.alive(s,'ally'))u.acted=true;assert.equal(nextReady(s,'a9'),null);
 });
 test('playback feedback reports the current hit/counter/heal and skips idle enemies',()=>{
  const before=E.createGame(),after=structuredClone(before),actor=after.units.find(u=>u.id==='e1');
  after.log.push('a previous enemy hit');assert.equal(actionMessage(before,after,actor),null);
  actor.y--;assert(actionMessage(before,after,actor).includes('へ移動'));
- after.units[0].hp-=5;actor.hp-=2;const hit=actionMessage(before,after,actor);assert(hit.includes('26→21'));assert(hit.includes(`${before.units.find(u=>u.id===actor.id).hp}→${actor.hp}`));
- before.units[0].hp=20;after.units[0].hp=21;assert(actionMessage(before,after,actor).includes('(+1)'));
+ after.units[0].hp-=5;actor.hp-=2;const hit=actionMessage(before,after,actor);assert(hit.includes('6→1'));assert(hit.includes(`${before.units.find(u=>u.id===actor.id).hp}→${actor.hp}`));
+ before.units[0].hp=4;after.units[0].hp=5;assert(actionMessage(before,after,actor).includes('(+1)'));
 });
 test('action playback produces identical complete state to instantaneous resolution',()=>{
  for(let id=0;id<3;id++){
