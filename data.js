@@ -1,10 +1,9 @@
-import {CLASSES} from './config.js?v=0.7.0';
+import {CLASSES,RULES,PROMOTIONS} from './config.js?v=0.8.0';
 const row = (w,h) => Array.from({length:h},()=>Array(w).fill('.'));
 function path(g,x,y0,y1,t='='){for(let y=y0;y<=y1;y++)g[y][x]=t;}
 function patch(g,x,y,w,h,t){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)g[j][i]=t;}
-// Line troops fall to 2–3 coordinated hits; captains remain a distinct final obstacle.
-const ENEMY_LINE={shield:{hp:18,def:5},sword:{hp:16,def:3},bow:{hp:14,def:2},mage:{hp:14,def:2},horse:{hp:18,def:3}};
-export const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵'}[type],type,x,y,ai,...ENEMY_LINE[type],...(id==='boss'?{name:'守将',hp:22,def:5}:{} )});
+// The first stronger captains teach attack 3; optional maps introduce elite 4.
+export const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵'}[type],type,x,y,ai,...(id==='boss'?{name:'守将',rank:'advanced'}:{})});
 function makeMap(id){
  const w=[12,16,14][id],h=[20,30,26][id],g=row(w,h),cx=Math.floor(w/2);
  path(g,cx,1,h-2);
@@ -26,7 +25,7 @@ function makeMap(id){
    enemies=[enemy('e1','sword',7,18),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,10),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',7,5,'defend'),enemy('boss','shield',7,1,'hold')];
  }
  const goal={x:id===1?8:cx,y:1};g[goal.y][goal.x]='c';if(base)g[base.y][base.x]='c';if(south)g[south.y][south.x]='c';
- return {id,w,h,maxWaves:id===2?2:id===1?3:null,tiles:g.map(r=>r.join('')),goal,base,south,spawns,cannon,enemies,
+ return {id,w,h,maxWaves:id===2?2:id===1?3:null,tiles:g.map(r=>r.join('')),goal,base,camp:base||{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,enemies,
   title:['01 霧河の渡し','02 二つの戦線','03 灰城の砲火'][id],
   subtitle:['正面突破 / 12 × 20','南北挟撃・東側機動 / 16 × 30','予告増援・城砲撃 / 14 × 26'][id],
   briefing:[
@@ -70,7 +69,7 @@ function extraMap(id){
   '森と岩壁に隔てられた縦36マスの回廊。三か所の横道で部隊を合流できる。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。守備隊を弓で崩すか、左右から包むか。味方11隊・敵13隊。砲撃・増援なし。',
   '縦44マスの長期戦。二つの渡河線と三つの砦を越えて北城へ。味方13隊・敵15隊。砲撃はT2予告・T3着弾、以後3ターンごと。T4・T8に各2隊の有限増援、前ターンに予告し到着直後は攻撃しない。'
  ][id-3];
- return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
+ return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,camp:{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
 }
 export const MAPS=[... [0,1,2].map(makeMap),... [3,4,5].map(extraMap)];
 export const ROSTER=[
@@ -79,10 +78,17 @@ export const ROSTER=[
  {id:'a5',name:'ミナ',type:'healer'}, {id:'a6',name:'ルカ',type:'horse'},
  {id:'a7',name:'フィン',type:'horse'}, {id:'a8',name:'テオ',type:'medic'}, {id:'a9',name:'ニコ',type:'shooter'},
 ];
+// Rank changes are common to named and replacement soldiers; only named can carry a branch.
 export function unit(spec,team,options={}){
- const c=CLASSES[spec.type],hp=spec.hp??c.hp;return {...c,...spec,team,maxHp:hp,hp,
-  atk:(spec.atk??c.atk)+(team==='enemy'?(options.enemyAttack||0):0),charges:options.charges??c.charges,
-  alive:true,acted:false,command:null,spend:true,focus:null,guard:0};
+ const rank=spec.rank||'lower',named=spec.named??(team==='ally'&&ROSTER.some(r=>r.id===spec.id)),c=CLASSES[spec.type];
+ const promoted=rank==='advanced',specialty=named&&promoted&&PROMOTIONS[spec.specialty]?spec.specialty:null;
+ const baseAtk=c.atk+(promoted&&!['bow','shooter'].includes(spec.type)?1:0);
+ const hp=RULES.maxHp,def=c.def+(promoted&&spec.type==='shield'?1:0);
+ return {...c,...spec,rank,named,specialty,team,maxHp:hp,hp,
+  atk:Math.min(5,Math.max(1,(spec.atk??baseAtk)+(team==='enemy'?(options.enemyAttack||0):0))),
+  def:spec.def??def,move:(spec.move??c.move)+(specialty==='advance'?1:0),
+  charges:options.charges??RULES.ammo,maxCharges:options.charges??RULES.ammo,
+  alive:true,deployed:spec.deployed??true,acted:false,command:null,spend:true,focus:null,guard:0};
 }
 export function positions(id){
  const deployments={
