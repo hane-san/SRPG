@@ -21,8 +21,8 @@ test('presentation events separate legal movement, attack and counter HP changes
  E.act(baseline,'a',{x:3,y:3},'attack','e');assert.deepEqual(s,baseline);
  assert.deepEqual(frames.map(f=>f.event.kind),['move','hit','hit']);
  assert.deepEqual(frames[0].event.path,[{x:3,y:5},{x:3,y:4},{x:3,y:3}]);
- assert.equal(frames[1].state.units[0].hp,22);assert.equal(frames[1].state.units[1].hp,15);
- assert.equal(frames[2].event.actor,'e');assert(frames[2].event.counter);assert.equal(frames[2].state.units[0].hp,15);
+ assert.equal(frames[1].state.units[0].hp,6);assert.equal(frames[1].state.units[1].hp,4);
+ assert.equal(frames[2].event.actor,'e');assert(frames[2].event.counter);assert.equal(frames[2].state.units[0].hp,4);
 });
 test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
  for(const support of [false,true]){
