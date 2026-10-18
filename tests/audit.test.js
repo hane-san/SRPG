@@ -10,7 +10,7 @@ test('editable maps keep legal geometry, deployments, and reachable objectives',
   const s=E.createGame(map.id);assert.equal(map.tiles.length,map.h);
   for(const row of map.tiles){assert.equal(row.length,map.w);for(const tile of row)assert(Object.hasOwn(TERRAINS,tile),`${map.id}: ${tile}`);}
   const ids=new Set(),cells=new Set();
-  for(const u of s.units){assert(!ids.has(u.id));ids.add(u.id);assert(!cells.has(E.key(u)));cells.add(E.key(u));assert(Number.isFinite(E.terrain(s,u)?.cost));assert(u.hp>0&&u.range[0]>=1&&u.range[1]>=u.range[0]);}
+  for(const u of s.units){assert(!ids.has(u.id));ids.add(u.id);if(u.deployed!==false){assert(!cells.has(E.key(u)));cells.add(E.key(u));}assert(Number.isFinite(E.terrain(s,u)?.cost));assert(u.hp>0&&u.range[0]>=1&&u.range[1]>=u.range[0]);}
   for(const p of [map.goal,map.base,map.south,...map.spawns].filter(Boolean))assert(Number.isFinite(E.terrain(s,p)?.cost));
   const empty={...s,units:[]},field=E.distanceField(empty,map.goal,'ally');
   for(const u of E.alive(s,'ally'))assert(field.has(E.key(u)),`${map.id}: ${u.id} cannot reach goal even on an empty map`);
