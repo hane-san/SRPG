@@ -60,6 +60,7 @@ export function deployAndAct(s,id,dest,action,targetId,observe=()=>{}){
  Object.assign(u,{x:base.x,y:base.y,deployed:true,acted:false,command:null});
  const error=validateAction(s,id,dest,action,targetId);
  if(error){Object.assign(u,original);return {ok:false,error};}
+ observe(s,u,{kind:'deploy',actor:u.id,origin:{...base}});
  const result=act(s,id,dest,action,targetId,observe);
  if(!result.ok){Object.assign(u,original);return result;}
  s.deployedThisTurn++;
