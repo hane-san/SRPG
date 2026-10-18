@@ -122,7 +122,7 @@ export function supportTargets(s,u){
 export function supportTarget(s,u){return supportTargets(s,u)[0]||null;}
 export function validateAction(s,id,dest,action,targetId){
  const u=s.units.find(a=>a.id===id),t=s.units.find(a=>a.id===targetId);
- if(s.status!=='playing'||s.phase!==1||!u?.alive||u.team!=='ally'||u.acted)return 'この部隊は行動できません';
+ if(s.status!=='playing'||s.phase!==1||!u?.alive||u.team!=='ally'||u.deployed===false||u.acted)return 'この部隊は行動できません';
  if(!dest||!reachable(s,u).some(p=>p.x===dest.x&&p.y===dest.y))return '移動できない地点です';
  if(!['attack','wait'].includes(action))return '命令は攻撃か待機を選んでください';
  if(action==='attack'&&(!t?.alive||t.team!=='enemy'||!inRange({...u,...dest},t)))return '射程内の敵を選んでください';
