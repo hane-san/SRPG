@@ -24,6 +24,7 @@ function makeMap(id){
    cannon={x:7,y:2};spawns=[{x:3,y:21}];g[18][6]='c';
    enemies=[enemy('e1','sword',7,18),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,10),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',7,5,'defend'),enemy('boss','shield',7,1,'hold')];
  }
+ if(id<2)enemies=enemies.map(e=>e.id==='boss'?{...e,rank:'lower'}:e);
  const goal={x:id===1?8:cx,y:1};g[goal.y][goal.x]='c';if(base)g[base.y][base.x]='c';if(south)g[south.y][south.x]='c';
  return {id,w,h,maxWaves:id===2?2:id===1?3:null,tiles:g.map(r=>r.join('')),goal,base,camp:base||{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,enemies,
   title:['01 霧河の渡し','02 二つの戦線','03 灰城の砲火'][id],
