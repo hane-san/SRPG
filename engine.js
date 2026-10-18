@@ -46,6 +46,26 @@ export function deploy(s,id,p=deploymentCells(s)[0]){
  Object.assign(u,{x:p.x,y:p.y,deployed:true,acted:false,command:null});
  s.deployedThisTurn++;log(s,`${u.name}が本城から出撃`);return {ok:true};
 }
+// A castle sortie is committed together with its first ordinary P1 action.
+export function sortieUnit(s,id){
+ const u=reserves(s).find(a=>a.id===id),base=s.map.camp;
+ return u&&base&&terrain(s,base)?{...u,x:base.x,y:base.y,deployed:true}:null;
+}
+export function deployAndAct(s,id,dest,action,targetId,observe=()=>{}){
+ if(!canDeploy(s))return {ok:false,error:'このターンは出撃できません'};
+ const virtual=sortieUnit(s,id),base=s.map.camp;
+ if(!virtual)return {ok:false,error:'出撃できる部隊または本城がありません'};
+ if(dest&&dist(dest,base)===0&&at(s,base))return {ok:false,error:'本城には別の部隊がいます'};
+ const u=s.units.find(a=>a.id===id),original={...u};
+ Object.assign(u,{x:base.x,y:base.y,deployed:true,acted:false,command:null});
+ const error=validateAction(s,id,dest,action,targetId);
+ if(error){Object.assign(u,original);return {ok:false,error};}
+ const result=act(s,id,dest,action,targetId,observe);
+ if(!result.ok){Object.assign(u,original);return result;}
+ s.deployedThisTurn++;
+ log(s,u.name+'が本城から出撃');
+ return result;
+}
 export function returnToReserve(s,id){
  const u=alive(s,'ally').find(u=>u.id===id),base=s.map.camp;
  if(s.status!=='playing'||s.phase!==1||!u||u.acted||!base||dist(u,base)>1)return {ok:false,error:'本城に隣接した未行動部隊だけ帰還できます'};
