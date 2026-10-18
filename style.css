@@ -205,3 +205,12 @@ a{color:#e4c8f0}
 #commandDock #orders .command-row button{font-size:14px}
 .hp-track{background:#17111e}.hp-track.ally i{background:#ddd1ed}.hp-track.enemy i{background:#e3bf85}
 #musicVolume{accent-color:#b79ac4}
+
+/* Sound room: easy thumb-size playback controls within the existing menu. */
+#soundRoomList{display:grid;gap:8px;margin:8px 0}
+.sound-room-card{border:1px solid #65526d;border-radius:8px;padding:9px;background:#ffffff08}
+.sound-room-card strong{display:block;font-size:14px;color:#e8d6b5;margin-bottom:6px}
+.sound-room-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.sound-room-actions button{font-size:12px;line-height:1.35;min-height:48px;text-align:left;overflow-wrap:anywhere}
+.sound-room-actions button[aria-pressed=true]{background:#79617f;border-color:#d5b886;color:#fff7e9}
+#soundRoomNow{font-size:13px;line-height:1.5;color:#e6d5bf;min-height:20px}

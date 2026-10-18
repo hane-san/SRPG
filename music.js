@@ -46,19 +46,23 @@ export function scheduleNote(context,destination,event,time,secondsPerBeat){
  const clean=()=>{osc.disconnect();filter.disconnect();gain.disconnect();pan?.disconnect();};osc.onended=clean;
  return {stop(at=context.currentTime){try{gain.gain.cancelScheduledValues(at);gain.gain.setTargetAtTime(0,at,.012);osc.stop(at+.06);}catch{}},clean,osc};
 }
+// Phase/preview switches: fast fade, a short true silence, then normal-level playback.
+export const MUSIC_TRANSITION={fade:.085,silence:.055};
 export function createMusic(storage){
  if(arguments.length===0)try{storage=globalThis.localStorage;}catch{}
- let enabled=false,volume=.32,context=null,master=null,bus=null,timer=null,track=null,key=null,requested=null,index=0,start=0,scheduled=0,serial=0,starts=0;
+ let enabled=false,volume=.32,context=null,master=null,bus=null,timer=null,track=null,key=null,currentSource=null,requested=null,preview=null,index=0,start=0,scheduled=0,serial=0,starts=0;
  const voices=new Set(),retired=new Set();
  try{enabled=storage?.getItem('field-command-music')==='true';const saved=storage?.getItem('field-command-music-volume');if(saved!==null&&saved!==undefined&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)));}catch{}
  function stop(){
   serial++;if(timer!==null){clearInterval(timer);timer=null;}const now=context?.currentTime||0;
-  if(bus)try{bus.gain.cancelScheduledValues(now);bus.gain.setTargetAtTime(0,now,.04);}catch{}
-  for(const v of voices)v.stop(now);voices.clear();
-  if(bus){const old=bus;const cleanup=setTimeout(()=>{old.disconnect();retired.delete(cleanup);},220);retired.add(cleanup);}bus=null;key=null;index=0;
+  if(bus)try{bus.gain.cancelScheduledValues(now);bus.gain.setValueAtTime(bus.gain.value,now);bus.gain.linearRampToValueAtTime(0,now+MUSIC_TRANSITION.fade);}catch{}
+  // All future notes are already connected to the retiring bus. Fade that bus,
+  // then release its oscillators; never abruptly drop a sounding note.
+  for(const v of voices)v.stop(now+MUSIC_TRANSITION.fade);voices.clear();
+  if(bus){const old=bus;const cleanup=setTimeout(()=>{old.disconnect();retired.delete(cleanup);},260);retired.add(cleanup);}bus=null;key=null;currentSource=null;index=0;
  }
  function pump(){
-  if(!context||context.state!=='running'||!bus||!track||!enabled)return;
+  if(!context||context.state!=='running'||!bus||!track||(!enabled&&!preview))return;
   const beat=60/track.bpm,limit=context.currentTime+.24;
   // Recover cleanly from a throttled foreground timer instead of emitting stale notes.
   if(start+track.seconds<context.currentTime-.2){start=context.currentTime+.04;index=0;}
@@ -71,25 +75,42 @@ export function createMusic(storage){
   }
  }
  function activate(){
-  if(!enabled||!requested||requested.status!=='playing'||globalThis.document?.hidden||context?.state!=='running')return;
-  const next=`${requested.mapId}:${requested.phase===1?'ally':'hostile'}`;if(next===key)return;
-  stop();track=buildTrack(requested.mapId,requested.phase);key=next;bus=context.createGain();bus.gain.setValueAtTime(0,context.currentTime);bus.gain.linearRampToValueAtTime(1,context.currentTime+.2);bus.connect(master);start=context.currentTime+.04;index=0;pump();if(key===next){starts++;timer=setInterval(pump,100);}
+  if(globalThis.document?.hidden||context?.state!=='running')return;
+  const target=preview||(enabled&&requested?.status==='playing'?requested:null);
+  if(!target){if(key)stop();return;}
+  const next=`${target.mapId}:${target.phase===1?'ally':'hostile'}`,source=preview?'preview':'game';
+  if(next===key&&currentSource===source)return;
+  const switching=!!bus;stop();
+  track=buildTrack(target.mapId,target.phase);key=next;currentSource=source;bus=context.createGain();
+  // Each oscillator already has its own gentle note attack. Do not fade in the new bus.
+  bus.gain.setValueAtTime(1,context.currentTime);bus.connect(master);
+  start=context.currentTime+(switching?MUSIC_TRANSITION.fade+MUSIC_TRANSITION.silence:.01);
+  index=0;pump();if(key===next){starts++;timer=setInterval(pump,100);}
  }
  function unlock(){
-  if(!enabled||globalThis.document?.hidden)return;
+  if((!enabled&&!preview)||globalThis.document?.hidden)return;
   try{const Audio=globalThis.AudioContext||globalThis.webkitAudioContext;if(!Audio)return;
    if(!context||context.state==='closed'){context=new Audio();master=context.createGain();master.gain.value=volume*.34;const limiter=context.createDynamicsCompressor();limiter.threshold.value=-18;limiter.knee.value=18;limiter.ratio.value=4;master.connect(limiter);limiter.connect(context.destination);}
    if(context.state==='running')activate();else{const token=serial;context.resume().then(()=>{if(token===serial)activate();}).catch(()=>{});}
   }catch{/* Music never blocks input or phase resolution. */}
  }
  function setScene(mapId,phase,status='playing'){
-  requested={mapId,phase,status};if(status!=='playing'){if(key)stop();return;}try{if(enabled)activate();}catch{stop();}
+  requested={mapId,phase,status};if(preview)return;if(status!=='playing'){if(key)stop();return;}try{if(enabled)activate();}catch{stop();}
  }
  function setEnabled(value){enabled=!!value;try{storage?.setItem('field-command-music',String(enabled));}catch{}
-  if(enabled)unlock();else{stop();if(context?.state==='running')context.suspend().catch(()=>{});}return enabled;
+  if(enabled)unlock();else if(!preview)stop();return enabled;
  }
  function setVolume(value){volume=Math.max(0,Math.min(1,Number(value)||0));try{storage?.setItem('field-command-music-volume',String(volume));}catch{}if(master&&context)master.gain.setTargetAtTime(volume*.34,context.currentTime,.03);}
- const visibility=()=>{if(globalThis.document?.hidden){stop();if(context?.state==='running')context.suspend().catch(()=>{});}else if(enabled&&context)unlock();};
+ function playPreview(mapId,phase=1){
+  if(!Number.isInteger(mapId)||mapId<0||mapId>=SCORES.length)return false;
+  preview={mapId,phase:phase===1?1:2};unlock();return true;
+ }
+ function stopPreview(){
+  if(!preview)return false;
+  preview=null;if(enabled&&requested?.status==='playing')activate();
+  else stop();return true;
+ }
+ const visibility=()=>{if(globalThis.document?.hidden){stop();if(context?.state==='running')context.suspend().catch(()=>{});}else if((enabled||preview)&&context)unlock();};
  globalThis.document?.addEventListener('visibilitychange',visibility);
- return {unlock,setScene,setEnabled,setVolume,get enabled(){return enabled;},get volume(){return volume;},snapshot:()=>({enabled,volume,scene:key,title:track?.title||null,state:context?.state||'locked',scheduled,starts,voices:voices.size}),destroy(){stop();globalThis.document?.removeEventListener('visibilitychange',visibility);for(const t of retired)clearTimeout(t);retired.clear();if(context&&context.state!=='closed')context.close().catch(()=>{});}};
+ return {unlock,setScene,setEnabled,setVolume,playPreview,stopPreview,get enabled(){return enabled;},get volume(){return volume;},snapshot:()=>({enabled,volume,scene:key,preview:preview?`${preview.mapId}:${preview.phase===1?'ally':'hostile'}`:null,title:track?.title||null,state:context?.state||'locked',scheduled,starts,voices:voices.size}),destroy(){preview=null;stop();globalThis.document?.removeEventListener('visibilitychange',visibility);for(const t of retired)clearTimeout(t);retired.clear();if(context&&context.state!=='closed')context.close().catch(()=>{});}};
 }

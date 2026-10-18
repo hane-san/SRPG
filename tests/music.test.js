@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {SCORES,buildTrack,createMusic,scheduleNote} from '../music.js';
+import {SCORES,buildTrack,createMusic,scheduleNote,MUSIC_TRANSITION} from '../music.js';
 test('six maps have twelve distinct complete scores; P2-P4 share one uninterrupted score',()=>{
  const signatures=new Set();for(let map=0;map<SCORES.length;map++){
   const ally=buildTrack(map,1),enemy=buildTrack(map,2);assert.notEqual(ally.title,enemy.title);assert.deepEqual(enemy,buildTrack(map,3));assert.deepEqual(enemy,buildTrack(map,4));
@@ -26,4 +26,48 @@ test('synthesized BGM envelopes have no mid-note gain steps that cause clicks',(
    assert.equal(envelope[2][1],.25*.72);
   }
  }
+});
+
+test('phase changes fade out, leave silence and start at normal bus volume; previews ignore saved BGM mute',()=>{
+ const old=globalThis.AudioContext;
+ const contexts=[];
+ const param=()=>({value:0,events:[],setValueAtTime(value,time){this.value=value;this.events.push(['set',value,time]);},linearRampToValueAtTime(value,time){this.value=value;this.events.push(['linear',value,time]);},exponentialRampToValueAtTime(value,time){this.value=value;this.events.push(['exponential',value,time]);},cancelScheduledValues(){},setTargetAtTime(value,time){this.value=value;this.events.push(['target',value,time]);}});
+ class FakeAudio {
+  constructor(){this.state='running';this.currentTime=10;this.gains=[];this.starts=[];contexts.push(this);}
+  createGain(){const node={gain:param(),destination:null,connect(destination){this.destination=destination;},disconnect(){}};this.gains.push(node);return node;}
+  createOscillator(){const owner=this;return {frequency:param(),connect(){},disconnect(){},start(time){owner.starts.push(time);},stop(){},onended:null};}
+  createBiquadFilter(){return {frequency:{value:0},connect(){},disconnect(){}};}
+  createStereoPanner(){return {pan:{value:0},connect(){},disconnect(){}};}
+  createDynamicsCompressor(){return {threshold:{value:0},knee:{value:0},ratio:{value:0},connect(){},disconnect(){}};}
+  resume(){this.state='running';return Promise.resolve();}
+  suspend(){this.state='suspended';return Promise.resolve();}
+  close(){this.state='closed';return Promise.resolve();}
+ }
+ globalThis.AudioContext=FakeAudio;let music;
+ try{
+  music=createMusic({getItem(){return null;},setItem(){}});
+  music.setScene(0,1);music.setEnabled(true);
+  const context=contexts[0],buses=()=>context.gains.filter(g=>g.destination===context.gains[0]);
+  assert.equal(music.snapshot().scene,'0:ally');assert.equal(buses().length,1);
+  const first=buses()[0],before=context.starts.length;
+  music.setScene(0,2);
+  const second=buses()[1],fade=first.gain.events.at(-1);
+  assert.equal(fade[0],'linear');assert.equal(fade[1],0);
+  assert(Math.abs(fade[2]-10-MUSIC_TRANSITION.fade)<1e-8);
+  assert.deepEqual(second.gain.events,[['set',1,10]]);
+  assert(context.starts.slice(before).length>0);
+  assert(Math.min(...context.starts.slice(before))>=10+MUSIC_TRANSITION.fade+MUSIC_TRANSITION.silence-1e-8);
+  const continued=music.snapshot().starts;
+  music.setScene(0,3);music.setScene(0,4);assert.equal(music.snapshot().starts,continued);
+  music.setEnabled(false);assert.equal(music.snapshot().scene,null);
+  assert(music.playPreview(4,1));assert.equal(music.enabled,false);
+  assert.equal(music.snapshot().preview,'4:ally');assert.equal(music.snapshot().scene,'4:ally');
+  assert(music.playPreview(4,2));assert.equal(music.snapshot().preview,'4:hostile');
+  music.stopPreview();assert.equal(music.snapshot().preview,null);assert.equal(music.snapshot().scene,null);
+  music.setScene(1,1);music.setEnabled(true);
+  const regular=music.snapshot().starts;
+  music.playPreview(1,1);assert.equal(music.snapshot().starts,regular+1);
+  music.stopPreview();assert.equal(music.snapshot().scene,'1:ally');
+  assert.equal(music.snapshot().starts,regular+2);
+ }finally{music?.destroy();if(old===undefined)delete globalThis.AudioContext;else globalThis.AudioContext=old;}
 });
