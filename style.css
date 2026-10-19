@@ -221,3 +221,9 @@ a{color:#e4c8f0}
 
 .sound-room-section{font-size:13px;letter-spacing:.025em;color:#e6c793;margin:12px 0 0}
 .sound-room-mood{margin:0 0 9px;font-size:12px;line-height:1.45;color:#cfc1d2}
+
+/* HP6 readability without changing the fixed command-dock geometry. */
+#commandDock #orders .unit-head .hp-value{font-size:16px;font-variant-numeric:tabular-nums;color:#f3e2bb;white-space:nowrap}
+#commandDock #orders .unit-head .hp-value.hp-critical{color:#ffd18a}
+#commandDock #orders .hp-track{height:9px;border:1px solid #9c879d;border-radius:3px;box-sizing:border-box}
+#commandDock #orders .combatant .hp-track{height:10px}

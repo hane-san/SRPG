@@ -79,7 +79,7 @@ Chromiumの画面サイズ・タッチ模擬はSafari/iOS実機テストでは�
 | `save.js` | 安定状態だけの保存、互換性と入れ子データの検証 |
 | `assets/` | 仮アイコンの原画と配信用PNG |
 
-engineのobserverは `(state, actor, event)` で move / hit / heal / settled を通知する。
+engineのobserverは `(state, actor, event)` で deploy / move / hit / heal / settled を通知する。出撃確定時は deploy を移動・攻撃より前に通知し、城を起点とする出撃演出を行う。
 moveには合法な隣接マスの経路、hitには攻撃側・対象・量・反撃フラグを持たせる。
 UIは別の状態を同期解決し、移動の補間→攻撃→反撃を順に表示して最終状態へ揃える。
 P1の直接選択は最終状態を先に保存し、演出中の再読込でも命令を失わない。

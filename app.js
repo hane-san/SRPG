@@ -29,8 +29,8 @@ $('modal').addEventListener('cancel',()=>music.stopPreview());
 $('modal').addEventListener('close',()=>music.stopPreview());
 $('closeModal').onclick=close;
 function button(text,fn,cls=''){const b=document.createElement('button');b.textContent=text;if(cls)b.className=cls;b.onclick=ev=>{sound.unlock();fn(ev);};return b;}
-function selected(){return s.units.find(u=>u.id===view.selected);}
-function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null,dragging:false,destinationPress:false});}
+function selected(){const u=s.units.find(a=>a.id===view.selected);return view.sortie&&u?view.sortieUnit:u;}
+function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null,dragging:false,destinationPress:false,sortie:false,sortieUnit:null});}
 function center(){return {x:(vp.scrollLeft+vp.clientWidth/2)/view.tile,y:(vp.scrollTop+vp.clientHeight/2)/view.tile};}
 function recenter(p){vp.scrollLeft=p.x*view.tile-vp.clientWidth/2;vp.scrollTop=p.y*view.tile-vp.clientHeight/2;}
 function fit(){lastSize={w:vp.clientWidth,h:vp.clientHeight};view.tile=Math.max(20,Math.floor(vp.clientWidth/s.map.w))*[1,1.4,1.9][zoom];$('zoomLabel').textContent=['全幅','×1.4','×1.9'][zoom];}
@@ -61,7 +61,7 @@ function placeOrders(){
 function cancelDraft(){const u=selected();if(u)view.cursor={x:u.x,y:u.y};sound.play('cancel');resetSelection();refresh();}
 function unitDetails(u){const ai={hold:'このマスを守り動かない',defend:'初期位置の周囲3マスまで守備',advance:'接近し射程内へ攻撃',skirmish:'西側の部隊を追う。東道は追わない',raid:'空いた本陣へ突入。回復・弓も狙う'},risk=view.dest&&u.team==='ally'?E.threatAt(s,view.dest,u):null;
  modal(`<h2>${escapeHTML(u.name)} · ${escapeHTML(u.label)}</h2><p>HP ${u.hp}/${u.maxHp}　攻撃 ${u.atk}　軽減 ${u.def}${u.specialty?`　固有：${PROMOTIONS[u.specialty].label}`:''}<br>移動 ${E.movement(s,u)}（基礎${u.move}）　射程 ${u.range.join('–')}${u.team==='ally'&&u.skill==='support'?` / P3 ${E.supportRange(u).join('–')}`:''}</p>${u.team==='ally'?`<p>${SKILLS[u.skill].label}：待機弾薬 ${u.charges}/${u.maxCharges}<br>${SKILLS[u.skill].text}</p><p>${u.type==='bow'?'弓の射程は2で隣接不可。<br>':''}仮の移動先のP2被害上限：${risk}。各敵の単独到達を合算した安全側の値で、敵同士の進路競合やP3の効果を省いています。</p>`:`<p>敵方針：${ai[u.ai]||'方針なし'}。</p>`}<div id="unitDetailControls"></div>`);
- if(u.team==='ally'&&['heal','support'].includes(u.skill))supportControls($('unitDetailControls'),u);
+ if(u.team==='ally'&&!view.sortie&&['heal','support'].includes(u.skill))supportControls($('unitDetailControls'),u);
 }
 function panel(){
  const root=$('orders'),u=selected();root.innerHTML='';root.className=s.status!=='playing'?'result':u?'selected'+(u.team==='enemy'||u.acted?' readonly':!view.menu?' choosing':''):'idle';
@@ -73,7 +73,7 @@ function panel(){
    const hint=document.createElement('span');hint.textContent='部隊を動かすか、本城から追加出撃。';root.append(hint);
    const b=button(`出撃 ${E.reserves(s).length}隊（${s.deployedThisTurn}/${RULES.deploymentsPerTurn}）`,openDeployment,'subtle');b.disabled=!E.canDeploy(s);root.append(b);return;}
  const dest=view.dest||u,targets=u.team==='ally'&&!u.acted?attackTargets(s,u,dest):[],target=targets.find(t=>t.id===view.target);
- const head=document.createElement('div');head.className='unit-head';head.innerHTML=`<strong>${escapeHTML(u.name)}</strong><span>${escapeHTML(u.label)}${target?` → ${escapeHTML(target.name)}`:` · HP ${u.hp}/${u.maxHp}`}</span>`;root.append(head);
+ const head=document.createElement('div');head.className='unit-head';head.innerHTML=`<strong>${escapeHTML(u.name)}${view.sortie?' · 出撃準備':''}</strong><span><b class='hp-value ${u.hp<=2?'hp-critical':''}'>HP ${u.hp}/${u.maxHp}</b> · ${escapeHTML(u.label)}${target?` → ${escapeHTML(target.name)}`:''}</span>`;root.append(head);
  const pre=document.createElement('div');pre.id='actionPreview';pre.className='preview';pre.setAttribute('aria-live','polite');
  if(u.team==='enemy')pre.textContent='敵部隊：詳細で能力と方針を確認';
  else if(u.acted)pre.textContent=u.command?`P3${u.command==='heal'?'回復':'攻撃'}を準備中`:'行動済み';
@@ -124,13 +124,13 @@ function supportControls(root,u){const targets=E.supportTargets(s,u);const p=doc
 async function commit(action){
  if(locked||view.dragging||s.phase!==1||s.status!=='playing')return;const u=selected();if(!u||!['attack','wait'].includes(action))return;
  const resolved=structuredClone(s),frames=[],record=(state,actor,event)=>{if(event&&event.kind!=='settled')frames.push({state:structuredClone(state),event});};
- const r=E.act(resolved,u.id,view.dest||u,action,view.target,record);if(!r.ok){sound.play('cancel');return;}
+ const r=view.sortie?E.deployAndAct(resolved,u.id,view.dest||u,action,view.target,record):E.act(resolved,u.id,view.dest||u,action,view.target,record);if(!r.ok){sound.play('cancel');lastNotice={title:'出撃不可',text:r.error};refresh();return;}
  battleCard=null;lastNotice={title:`${u.name} · ${action==='attack'?'攻撃':'待機'}`,text:'移動を表示中',tail:'確定済み'};
  locked=true;resetSelection();refresh();sound.play('confirm');save(resolved);
  try{await playback.play(frames);}catch(error){console.error('Presentation skipped',error);}
  finally{s=resolved;playback.clear();locked=false;if(!battleCard){const moved=E.dist(u,resolved.units.find(a=>a.id===u.id))>0,command=resolved.units.find(a=>a.id===u.id)?.command;lastNotice={title:`${u.name} · ${moved?'移動待機':'待機'}`,text:command?`P3${command==='heal'?'隣接回復':'攻撃'}を準備 · P2反撃なし`:'通常待機 · P3なし',tail:'続けて部隊を選択できます'};}$('phaseFlash').classList.remove('visible');save();refresh();vp.focus({preventScroll:true});}
 }
-function selectUnit(u,open=false){battleCard=null;lastNotice=null;view.selected=u.id;view.dest={x:u.x,y:u.y};view.cursor={x:u.x,y:u.y};view.keyboard=false;view.action=null;view.target=null;view.menu=false;view.route=[];
+function selectUnit(u,open=false){battleCard=null;lastNotice=null;view.sortie=false;view.sortieUnit=null;view.selected=u.id;view.dest={x:u.x,y:u.y};view.cursor={x:u.x,y:u.y};view.keyboard=false;view.action=null;view.target=null;view.menu=false;view.route=[];
  sound.play('select');view.attackError=null;if(open&&u.team==='ally'&&!u.acted)openDraft();else refresh();}
 function mapPoint(clientX,clientY){const r=canvas.getBoundingClientRect();return {x:Math.floor((clientX-r.left)/view.tile),y:Math.floor((clientY-r.top)/view.tile)};}
 function draftMove(u,p,anchor=null){
@@ -147,13 +147,13 @@ function mapTap(clientX,clientY){
 }
 bindMapInput(vp,mapTap,(clientX,clientY)=>{
  if(locked||s.status!=='playing'||$('modal').open)return {pan:true};
- const p=mapPoint(clientX,clientY),pressed=E.at(s,p);if(s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>setTimeout(openDeployment,150)};
+ const p=mapPoint(clientX,clientY),sortieOrigin=!!view.sortie&&!!s.map.camp&&E.dist(p,s.map.camp)===0,pressed=sortieOrigin?null:E.at(s,p);if(!sortieOrigin&&s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>setTimeout(openDeployment,150)};
  const before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
  const destinationPress=!!(ready&&!pressed&&E.routeTo(s,u,p).length);
  let anchor=before.menu&&before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
  if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
- else if(!ready||(!destinationPress&&pressed?.team!=='enemy'))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
+ else if(!ready||(!destinationPress&&pressed?.team!=='enemy'&&!sortieOrigin))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
  // A newly pressed destination anchors the attack gesture to that exact tile.
  // Existing explicit arrows keep their endpoint through a later enemy flick.
  if(destinationPress&&!anchor){draftMove(u,p);anchor={dest:{...view.dest},route:[...view.route]};}
@@ -238,30 +238,22 @@ function requestStart(id,chain=false){
 }
 function start(id,chain=false,lost=[],specialties={}){battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
 function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties);},'danger wide'));}
+function selectSortie(u){
+ const virtual=E.sortieUnit(s,u.id);
+ if(!virtual||!E.canDeploy(s))return;
+ close();resetSelection();battleCard=null;lastNotice=null;
+ Object.assign(view,{selected:u.id,sortie:true,sortieUnit:virtual,dest:{...s.map.camp},cursor:{...s.map.camp},route:[],keyboard:false,menu:false});
+ sound.play('select');refresh();recenter({x:s.map.camp.x+.5,y:s.map.camp.y+.5});draw();vp.focus({preventScroll:true});
+}
 function openDeployment(){
  if(locked||s.status!=='playing'||s.phase!==1)return;
  resetSelection();refresh();
- const r=E.reserves(s),cells=E.deploymentCells(s),allowed=E.canDeploy(s);
- modal(`<h2>本城から出撃</h2><p>予備 ${r.length}隊／戦場 ${E.alive(s,'ally').length}/${RULES.maxDeployed}隊。1ターンの出撃は${RULES.deploymentsPerTurn}隊、城の近くの空きマスへ配置します。</p><div id="deploymentList"></div>`);
+ const r=E.reserves(s),allowed=E.canDeploy(s);
+ modal(`<h2>本城から出撃</h2><p>予備 ${r.length}隊／戦場 ${E.alive(s,'ally').length}/${RULES.maxDeployed}隊。1ターン1隊。選択すると本城から移動・攻撃できます。行動を確定するまで出撃枠は消費しません。</p><div id="deploymentList"></div>`);
  const root=$('deploymentList');
  if(!r.length){root.textContent='予備部隊はいません。';return;}
- if(!allowed){root.textContent=cells.length?'出撃上限に達しています。次の味方ターンで出撃可能です。':'本城周辺が塞がれています。';return;}
- for(const u of r){
-  const b=button(`${u.name} ／ ${u.label} HP${u.hp} ・弾薬${u.charges}`,()=>{
-   root.replaceChildren();
-   const explanation=document.createElement('p');explanation.className='hint';explanation.textContent=`${u.name}の出撃位置を選択（左右で展開方向を変えられます）`;root.append(explanation);
-   const base=s.map.camp;
-   for(const [label,valid]of [['左翼',p=>p.x<base.x],['中央',p=>p.x===base.x],['右翼',p=>p.x>base.x]]){
-    const p=cells.find(valid);if(!p)continue;
-    root.append(button(`${label}（${p.x+1},${p.y+1}）`,()=>{
-     const result=E.deploy(s,u.id,p);
-     if(!result.ok){lastNotice={title:'出撃不可',text:result.error};close();refresh();return;}
-     close();lastNotice={title:'新部隊出撃',text:`${u.name}が${label}から出撃。P1に行動できます。`};save();refresh();
-    },'subtle wide'));
-   }
-   root.append(button('別の部隊を選ぶ',openDeployment,'subtle wide'));
-  },'wide');root.append(b);
- }
+ if(!allowed){root.textContent='出撃上限、または本城周辺の空きがありません。';return;}
+ for(const u of r)root.append(button(`${u.name} ／ ${u.label} HP${u.hp} ・弾薬${u.charges}`,()=>selectSortie(u),'wide'));
 }
 function promotionMenu(){
  if(!campaign||s.status!=='victory'||s.map.id<1)return;
