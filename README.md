@@ -59,3 +59,5 @@ npm run check         # node --check + 決定論のルールテスト
 npm run test:browser  # Playwright (追加インストールが必要)
 ```
 Node.js 22+。ランタイムの外部依存なし。開発規約は [AGENTS.md](AGENTS.md)、履歴と観測は [docs/](docs/) を参照。Chromium のスマホ画面模擬は iOS Safari 実機テストではありません。
+
+リポジトリ改名と表示名切替の準備・影響一覧・人間の操作は [改名準備手順](docs/rename-preparation.md) を参照してください。現在のrepo・公開URL・表示名は維持しています。
