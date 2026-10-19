@@ -34,6 +34,12 @@
 - Pagesはmain / root、mainの `protected` はfalse。管理画面設定はこの導入で変更していない。
 - 以前の独立した初期監査結果・ゲーム確定仕様引継ぎMDは未提供。提供マニュアルと最新mainの既存資料・テストを読み、今回の運用導入範囲を確認した。
 
+## 現在名の確認（2026-10-19）
+
+- 現在の正本は `hane-san/SRPG-01-FEstyle`。人間が承認・統合した最新main `46e17724accda307c1ab8ee9ced2da43a45745cd` を基準に検証する。現在の公開URLと旧案の区別は[移行記録](rename-preparation.md#確定した現在地2026-10-19)を参照。
+- 既存の移行検査へ現在のrepoパスを追加。過去のパスも回帰用に保持するが、旧案のURLが公開済みという意味ではない。
+- main保護のRulesetとチェック名は改名後も維持されている。以前の失敗CI実地確認の記録も保持する。新しいPRの対象SHAとCI結果はPR本文へ記録する。
+
 ## 人間の試遊・未検証
 
 - main保護の実地確認（2026-10-18）：[検証専用PR #14](https://github.com/hane-san/SRPG/pull/14) / [CI](https://github.com/hane-san/SRPG/actions/runs/39177205008) で、最新mainが直接の親・競合なし・draftでないPRのrules=failure / browser=success時にGitHubがblockedになることを確認。意図的なNodeテストの失敗をログでも確認し、PRを閉じた。マージを試みずmain SHA不変。独立コード監査・実機試遊の代わりにはしない。

@@ -2,9 +2,13 @@
 
 スマートフォン縦画面で動く、オリジナルの4フェーズ戦術SRPG。2026年10月18日に構想した **「HP6・城からの逐次投入・前線と本城の補給・ネームド永久ロスト／一般兵補充」** を検証する **v0.8.0** です。キャラクターや楽曲等、既存作品の素材は使用していません。
 
-**公開プレイ（main版）**：https://hane-san.github.io/SRPG/  
-**正本**：https://github.com/hane-san/SRPG  
+**公開プレイ（main版）**：https://hane-san.github.io/SRPG-01-FEstyle/
+
+**正本**：https://github.com/hane-san/SRPG-01-FEstyle
+
 **仕様・検証上の課題**：[docs/hp6-campaign-design.md](docs/hp6-campaign-design.md)
+
+2026-10-19：repoは `SRPG-01-FEstyle` へ改名済みです。旧Pages `/SRPG/` は404のため、ブックマーク・共有リンク・ホーム画面は上の新URLで確認・再登録してください。表示名・内部ID・保存キーは変更していません。
 
 ## 新しい遊び方（v0.8.0）
 

@@ -1,6 +1,6 @@
 # FIELD COMMAND / 戦線指揮
 
-This is the canonical `hane-san/SRPG` repository. Do not modify the separate Nagi island game.
+This is the canonical `hane-san/SRPG-01-FEstyle` repository (formerly `hane-san/SRPG`). Do not modify the separate Nagi island game.
 
 **Current v0.8.0 rules supersede v0.7 examples below:** read [docs/hp6-campaign-design.md](docs/hp6-campaign-design.md) first. Main HP6 branch changes intentionally replace earlier shooter/healer/attrition contracts. Finale narrative is documentation only, not implemented.
 
@@ -23,7 +23,7 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `npm run check` runs syntax and deterministic rules tests on Node.js 22+.
 - `npm run simulate` reproduces the baseline policy comparison (not an optimal strategy solver).
 - Optional browser QA: `npm install --no-save --package-lock=false playwright@1.57.0`, `npx playwright install chromium`, serve root, then `node tests/browser-check.mjs`, `node tests/interaction-check.mjs`, `node tests/overlay-check.mjs`, `node tests/usability-check.mjs` (or `npm run test:browser`).
-- Production URL (Pages enabled): `https://hane-san.github.io/SRPG/` (case matters).
+- Production URL (Pages enabled): `https://hane-san.github.io/SRPG-01-FEstyle/` (case matters). The former `/SRPG/` Pages URL returns 404.
 
 ## Change map/data before adding rules
 - `data.js`: maps, terrain, positions, wave caps, roster. Coordinates are zero based. UI coordinates are one based.

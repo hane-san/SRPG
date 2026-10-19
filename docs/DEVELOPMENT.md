@@ -1,13 +1,13 @@
 # 共通の開発手順
 
-GPTのチャット（GitHub接続あり）、Codex、Claude Codeから同じ `hane-san/SRPG` を扱う。
+GPTのチャット（GitHub接続あり）、Codex、Claude Codeから同じ `hane-san/SRPG-01-FEstyle` を扱う。
 共通契約はルートの `AGENTS.md`。Claude Codeは `CLAUDE.md` から同じ契約を読み込む。
 この文書とGit履歴で作業を引き継ぐ。チャット履歴や個人の設定ファイルは不要。
 
 ## 作業の始め方
 
 1. `git status --short` と `git log -5 --oneline` で現在地と未コミット変更を確認。
-2. 新規環境は `git clone https://github.com/hane-san/SRPG.git`。既存環境がクリーンなら `git pull --ff-only`。
+2. 新規環境は `git clone https://github.com/hane-san/SRPG-01-FEstyle.git`。既存環境がクリーンなら `git pull --ff-only`。
 3. `AGENTS.md`、[DESIGN.md](DESIGN.md)、[DECISIONS.md](DECISIONS.md)、[ROADMAP.md](ROADMAP.md)、対応Issueを読む。現行ルールは `hp6-campaign-design.md`。`flow-0.4.0.md` は当時の操作設計記録。
 4. `npm run check` で基準を確認してから編集。
 5. `git fetch origin` 後、最新 `origin/main` から `git switch -c <type>/<issue>-<topic> origin/main` で専用ブランチを作る。作業ツリーが汚れている場合は先に内容を確認し、他者の変更を破棄しない。
@@ -117,7 +117,7 @@ GitHub接続ツールだけの環境でも同じファイルを取得・編集�
 
 - **Settings → Actions**：既存の `SRPG rules` を有効にし、PRで `rules` / `browser` が実際に成功することを確認。CIは `contents: read` を維持する。
 - **Settings → Rules → Rulesets**：main対象でActiveにし、PR必須、force push禁止、削除制限、必須ステータスチェックを設定する。成功したPRに表示される正確な `rules` / `browser` のチェック名を選ぶ。個人開発で取得できない他者承認数を必須にしない。利用プランと適用状態を確認し、失敗CIのPRがマージを制限されるか確認する。
-- **Settings → Pages**：現行main / rootと `https://hane-san.github.io/SRPG/` を維持し、マージ後の公開を確認。今回の導入で改名・表示名変更は行わない。
+- **Settings → Pages**：現行main / rootと `https://hane-san.github.io/SRPG-01-FEstyle/` を維持し、マージ後の公開を確認。今回の導入で改名・表示名変更は行わない。
 - **Codex / Claude Code**：実リポジトリ、Node 22+、必要なPython/ブラウザ、実モデルと権限を確認。初回は手動でIssue→PRの受け渡しを試す。
 - **夜間Routineを導入する場合**：対象はまず1リポジトリの未処理PR。対象SHA・権限・モデル・スケジュールを確認し、監査結果をPRに残す。main直接push・自動マージを許さない。
 

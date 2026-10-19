@@ -6,10 +6,11 @@
 
 - 共通AI開発契約、Issue/PRテンプレート、仕様・検証への索引は [Issue #10](https://github.com/hane-san/SRPG/issues/10) / PR #11でmainへ導入済み。統合後CI・Pagesも成功。
 - 人間がmainのRulesetへ必須チェックを設定し、APIで適用を確認済み。失敗CIの実地テストは検証専用PR #14でrules=failure / browser=success時のblockedを確認後に閉じ、mainは不変。[現在地・根拠](rename-preparation.md#基盤統合後の現在地2026-10-18追記)。
-- 改名準備PR #13へ最新mainを取り込み、検証結果はPR本文へ記録する。[独立レビュー](rename-review-handoff.md)と人間確認を終えてから統合する。実Renameと表示名切替は別工程。
+- 改名準備PR #13は人間が承認・統合済み。repoは `SRPG-01-FEstyle`、公開は `https://hane-san.github.io/SRPG-01-FEstyle/`。[現在地](rename-preparation.md#確定した現在地2026-10-19)へ参照を合わせる。表示名切替と実機確認は別工程。
 - Codex/SonnetのIssue受渡しと独立監査を試行し、試遊・監査対象SHAを記録する。夜間Routineは未設定。
-- ゲーム改善の進行中PRは #7（出撃・SE・HP表示）、#9（42曲化）。この運用導入では取り込まない。
-- 改名・表示名の移行は別工程。現行repo、Pagesパス、内部保存キーは維持する。
+- ゲーム改善のPR #7（出撃・SE・HP表示）は統合済み。PR #9（42曲化）は未統合で、今回取り込まない。
+- 独立レビュー記録はGitHub上で未確認。[統合後レビュー](rename-review-handoff.md)の引継ぎを残す。人間の承認・統合を独立監査の証拠と混同しない。
+- repo名は人間が選択した `SRPG-01-FEstyle` を使う。以前のhane-no-*は旧案として保持し、追加改名しない。表示名と内部保存キーを連動させない。
 
 方向性：GBA時代のSRPGの素早い選択・見通せる戦闘・読みやすい盤面と、
 現代的なタッチ操作・明示確認・自動保存を両立する。オリジナルの4フェーズと

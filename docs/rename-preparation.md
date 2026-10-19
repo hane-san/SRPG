@@ -3,6 +3,15 @@
 2026-10-18。対象は **hane-san/SRPGだけ**。初期監査の基準main：`a42c97106ba945f4124bc1b2c7cdb89653c942f0`、v0.8.0。
 対応：[Issue #12](https://github.com/hane-san/SRPG/issues/12)。今回、GitHubの改名・表示名切替・main統合・Settings操作は行わない。
 
+## 確定した現在地（2026-10-19）
+
+- 人間がrepo名を `hane-san/SRPG-01-FEstyle` に変更し、この名前へ合わせて進めるよう指示。repo IDは同じ `1422222754`。旧案 `hane-no-SRPG01` へ追加Renameしない。
+- 準備PR #13と出撃UI等のPR #7は人間が承認・統合済み。今回の基準mainは `46e17724accda307c1ab8ee9ced2da43a45745cd`。BGM42曲化のPR #9は未統合で取り込まない。
+- 現在のPagesは `https://hane-san.github.io/SRPG-01-FEstyle/`（200）。旧 `/SRPG/` は404で、自動転送されない。originは現在のGit URLへ更新済み。
+- 表示名「戦線指揮 — FIELD COMMAND」、release、保存5キー、manifestの起動パス・scope/idは維持する。表示名「英雄叙事詩」への切替は別の小PR。
+- main保護は同一repoのActiveなRulesetを維持。独立レビュー記録はGitHub上で未確認であり、承認・統合と分けて[統合後レビュー](rename-review-handoff.md)へ引き継ぐ。iPhone実機・ホーム画面・他環境のAI対象選択は人間が確認する。
+- 対応：[Issue #15](https://github.com/hane-san/SRPG-01-FEstyle/issues/15)。以下の2026-10-18の記録とhane-no-*への操作例は旧計画の履歴で、現在の改名指示ではない。現在名から旧案へ変更しない。
+
 ## 基盤統合後の現在地（2026-10-18追記）
 
 - 人間が基盤PR #11をマージ。最新main `31b6cd8c999ace1a188914378c161ee2e3e18fdb` を本準備ブランチへ通常のmergeで取り込み、共通契約・テンプレート・既存の記録を保持した。
@@ -13,9 +22,9 @@
 - 両作品の準備は並行して進めるが、本PRの差分・検証・独立レビューはSRPGだけを対象とする。[独立レビューへの引継ぎ](rename-review-handoff.md)。
 Koitototsukuruの改名準備は、SRPGの移行を確認してから別タスクで扱う。
 
-## 新旧の対応と現在地
+## 初期計画の対応（旧案の履歴）
 
-| 項目 | 現在 | 人間の改名後の目標 |
+| 項目 | 当時の現在地 | 当時の目標案 |
 |---|---|---|
 | Repository | `hane-san/SRPG` | `hane-san/hane-no-SRPG01` |
 | Git URL | `https://github.com/hane-san/SRPG.git` | `https://github.com/hane-san/hane-no-SRPG01.git` |
@@ -96,7 +105,7 @@ npm run test:browser
 Apple専用タイトルの新設、manifest idの追加、内部ID・保存キー・アセット名変更を名前切替へ混ぜない。
 READMEの説明見出しは、そのPRで人間向けに編集する。歴史資料の作品名まで自動置換しない。
 
-## 人間が行う順番
+## 初期計画時の順番（現在の改名指示ではない）
 
 ### 改名前
 
