@@ -246,3 +246,5 @@ a{color:#e4c8f0}
 .sound-room-map-assignments{display:grid;gap:3px;margin:6px 0 14px;padding:10px;border:1px solid #65526d;border-radius:8px;background:#ffffff08}
 .sound-room-map-line{font-size:12px;line-height:1.5;color:#e8d8c4;font-variant-numeric:tabular-nums}
 .sound-room-actions button{text-align:left}
+/* Menu links (source, balance notes) keep a 44px touch target like the other controls. */
+#modalBody a{display:inline-flex;align-items:center;min-height:44px}
