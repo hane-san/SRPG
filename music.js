@@ -1407,10 +1407,10 @@ export function createMusic(storage){
   const target=preview||(enabled&&requested?.status==='playing'?requested:null);
   if(!target){if(key)stop();return;}
   const number=preview?trackNumber(target.mapId,target.phase):assignedTrackNumber(target.mapId,target.phase);
-  const candidate=trackByNumber(number);
-  if(!candidate)return;
-  const next=`${candidate.mapId}:${candidate.side}`,source=preview?'preview':'game';
+  if(!Number.isInteger(number)||number<1||number>MUSIC_LIBRARY.length*2)return;
+  const next=`${Math.floor((number-1)/2)}:${number%2?'ally':'hostile'}`,source=preview?'preview':'game';
   if(next===key&&currentSource===source)return;
+  const candidate=trackByNumber(number);
   const switching=!!bus;stop();
   track=candidate;key=next;currentSource=source;bus=context.createGain();
   // Each oscillator already has its own gentle note attack. Do not fade in the new bus.

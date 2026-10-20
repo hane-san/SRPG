@@ -19,7 +19,7 @@ function layers(canvas,s,view){
  const mapKey=JSON.stringify([s.map.id,s.map.w,s.map.h,s.map.tiles]),weather=weatherAt(s);
  if(cache.mapKey!==mapKey){cache.terrain=surface(s);paintTerrain(cache.terrain.getContext('2d'),s);cache.mapKey=mapKey;cache.terrainBuilds++;}
  const rangeKey=JSON.stringify([mapKey,weather,view.selected,!!view.danger,s.units.map(u=>[u.id,u.team,u.alive,u.acted,u.x,u.y,u.move,u.range,u.ai,u.type,u.skill,u.deployed])]);
- const selected=s.units.find(u=>u.id===view.selected);
+ const selected=view.sortie?view.sortieUnit:s.units.find(u=>u.id===view.selected);
  if(cache.rangeKey!==rangeKey){
   const movement=selected?.team==='ally'&&!selected.acted?reachable(s,selected):[];
   Object.assign(cache,movement.length?tacticalRanges(s,selected,movement):{moves:new Set(),attacks:new Set()});cache.danger=new Set();
@@ -91,6 +91,7 @@ export function render(canvas,s,view){
   const motion=view.motion?.id===u.id?view.motion:null;
   drawUnit(c,motion?{...u,x:motion.x,y:motion.y-(motion.bob||0),acted:false}:u);
  }
+ if(view.sortieUnit){c.save();c.globalAlpha=.83;drawUnit(c,view.sortieUnit);c.restore();}
  if(view.ghost){c.globalAlpha=view.ghost.alpha;drawUnit(c,view.ghost.unit);c.globalAlpha=1;}
  if(selected?.alive&&view.dest&&(view.dest.x!==selected.x||view.dest.y!==selected.y)){c.globalAlpha=.55;drawUnit(c,{...selected,...view.dest});c.globalAlpha=1;}
  if(view.dest&&selected&&view.selected)cursor(c,view.dest,'#fff1ad');
@@ -171,8 +172,9 @@ function drawUnit(c,u){const x=u.x*32,y=u.y*32,blue=u.team==='ally',spent=blue&&
  }
  // Persistent high-contrast class badge remains readable for spent units.
  rect(0,0,10,11,'#172f35e6');c.font='bold 8px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(u.glyph,x+5,y+8);
- // Six discrete HP pips remain legible on the map without opening combat details.
-  for(let i=0;i<6;i++)rect(4+i*4,29,3,3,i<u.hp?(u.hp<=2?'#ffbe70':blue?'#b3e59d':'#ffad91'):'#35414a');
+ // High-contrast HP6 pips, visible even when zoomed out.
+ rect(2,26,28,6,'#15202a');
+ for(let i=0;i<6;i++)rect(4+i*4,27,3,5,i<u.hp?(u.hp<=2?'#ffd078':blue?'#c0eabe':'#ffc1a3'):'#45505b');
  // The palette communicates allegiance; a dot still distinguishes spent allies.
  if(spent){rect(26,3,4,4,'#f6e6b1');rect(27,4,2,2,ink);}
 }

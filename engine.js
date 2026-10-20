@@ -1,5 +1,5 @@
 import {RULES,TERRAINS,PROMOTIONS} from './config.js?v=0.8.0';
-import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
@@ -45,6 +45,27 @@ export function deploy(s,id,p=deploymentCells(s)[0]){
  if(!u||!p||!deploymentCells(s).some(t=>dist(t,p)===0))return {ok:false,error:'出撃地点または部隊が無効です'};
  Object.assign(u,{x:p.x,y:p.y,deployed:true,acted:false,command:null});
  s.deployedThisTurn++;log(s,`${u.name}が本城から出撃`);return {ok:true};
+}
+// A castle sortie is committed together with its first ordinary P1 action.
+export function sortieUnit(s,id){
+ const u=reserves(s).find(a=>a.id===id),base=s.map.camp;
+ return u&&base&&terrain(s,base)?{...u,x:base.x,y:base.y,deployed:true}:null;
+}
+export function deployAndAct(s,id,dest,action,targetId,observe=()=>{}){
+ if(!canDeploy(s))return {ok:false,error:'このターンは出撃できません'};
+ const virtual=sortieUnit(s,id),base=s.map.camp;
+ if(!virtual)return {ok:false,error:'出撃できる部隊または本城がありません'};
+ if(dest&&dist(dest,base)===0&&at(s,base))return {ok:false,error:'本城には別の部隊がいます'};
+ const u=s.units.find(a=>a.id===id),original={...u};
+ Object.assign(u,{x:base.x,y:base.y,deployed:true,acted:false,command:null});
+ const error=validateAction(s,id,dest,action,targetId);
+ if(error){Object.assign(u,original);return {ok:false,error};}
+ observe(s,u,{kind:'deploy',actor:u.id,origin:{...base}});
+ const result=act(s,id,dest,action,targetId,observe);
+ if(!result.ok){Object.assign(u,original);return result;}
+ s.deployedThisTurn++;
+ log(s,u.name+'が本城から出撃');
+ return result;
 }
 export function returnToReserve(s,id){
  const u=alive(s,'ally').find(u=>u.id===id),base=s.map.camp;
@@ -122,7 +143,7 @@ export function supportTargets(s,u){
 export function supportTarget(s,u){return supportTargets(s,u)[0]||null;}
 export function validateAction(s,id,dest,action,targetId){
  const u=s.units.find(a=>a.id===id),t=s.units.find(a=>a.id===targetId);
- if(s.status!=='playing'||s.phase!==1||!u?.alive||u.team!=='ally'||u.acted)return 'この部隊は行動できません';
+ if(s.status!=='playing'||s.phase!==1||!u?.alive||u.team!=='ally'||u.deployed===false||u.acted)return 'この部隊は行動できません';
  if(!dest||!reachable(s,u).some(p=>p.x===dest.x&&p.y===dest.y))return '移動できない地点です';
  if(!['attack','wait'].includes(action))return '命令は攻撃か待機を選んでください';
  if(action==='attack'&&(!t?.alive||t.team!=='enemy'||!inRange({...u,...dest},t)))return '射程内の敵を選んでください';
@@ -190,7 +211,7 @@ export function eventPhase(s,observe=noop){if(s.status!=='playing')return;s.phas
  if(s.map.weatherCycle)log(s,`天候更新：次のT${s.turn+1}は${WEATHER[weatherAt(s,s.turn+1)].label}。移動減少は敵味方共通・最小1`);
  s.warnings=s.warnings.filter(w=>w.turn>s.turn);
  const next=s.turn+1;
- if(s.map.cannon&&next%RULES.cannonPeriod===0){const target=alive(s,'ally').sort((a,b)=>b.y-a.y||a.x-b.x)[0];if(target){const cells=[{x:target.x,y:target.y},...[[0,-1],[-1,0],[1,0],[0,1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(p=>terrain(s,p))];s.warnings.push({kind:'cannon',turn:next,cells});log(s,`確報：T${next} P4 赤い照準へ砲撃6。次のP1で退避できます`);}}
+ if(s.map.cannon&&next%RULES.cannonPeriod===0){const target=alive(s,'ally').sort((a,b)=>b.y-a.y||a.x-b.x)[0];if(target){const cells=[{x:target.x,y:target.y},...[[0,-1],[-1,0],[1,0],[0,1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(p=>terrain(s,p))];s.warnings.push({kind:'cannon',turn:next,cells});log(s,`確報：T${next} P4 赤い照準へ砲撃${RULES.barrageDamage}。次のP1で退避できます`);}}
  if(s.map.spawns.length&&!s.southTaken&&next%RULES.reinforcementPeriod===0&&next/RULES.reinforcementPeriod<=(s.map.maxWaves??Infinity)){s.warnings.push({kind:'spawn',turn:next,cells:s.map.spawns});log(s,`確報：T${next} P4 紫の旗に増援。次ターンから攻撃`);}
  checkOutcome(s);
 }

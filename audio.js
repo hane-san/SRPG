@@ -21,7 +21,7 @@ export function createAudio(storage){
   const t=context.currentTime,source=context.createBufferSource(),filter=context.createBiquadFilter(),gain=context.createGain();source.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=frequency;
   gain.gain.setValueAtTime(volume,t);gain.gain.exponentialRampToValueAtTime(.0001,t+duration);source.connect(filter);filter.connect(gain);gain.connect(context.destination);source.start(t);source.stop(t+duration);source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};
  }
- function play(kind){
+ function play(kind,amount=2,lethal=false){
   if(!enabled||!context||globalThis.document?.hidden)return;
   if(kind==='step'){const now=performance.now();if(now-lastStep<55)return;lastStep=now;}
   try{
@@ -34,7 +34,18 @@ export function createAudio(storage){
    else if(kind==='bow'){note(420,.07,0,'triangle',100,.09);note(1300,.22,.035,'sine',380,.055);}
    else if(kind==='magic'){note(240,.25,0,'sine',1100,.07);note(480,.22,.04,'triangle',1500,.035);}
    else if(kind==='range')note(850,.11,0,'sine',330);
-   else if(kind==='hit'){burst(.055,.22,1000);note(135,.12,0,'sine',42,.17);note(1080,.09,.005,'triangle',480,.08);note(1620,.065,.008,'sine',700,.035);}
+   else if(kind==='hit'){
+    // Weight is pitch, low-frequency body and decay, not just loudness.
+    const tier=Math.max(1,Math.min(5,Math.round(Number(amount)||1))),heavy=tier>=3;
+    burst(.04+tier*.009,.12+tier*.02,heavy?520:1300);
+    note(heavy?140-tier*9:175,.08+tier*.023,0,'triangle',heavy?38:80,.09+tier*.017);
+    note(1200-tier*105,.045+tier*.012,.006,'sawtooth',heavy?180:620,.035+tier*.006);
+    if(heavy)note(68,.12+(tier-3)*.055,.015,'sine',32,.055+(tier-3)*.012);
+    if(lethal){burst(.045,.10,2300);note(100,.15,.03,'triangle',37,.07);}
+   }
+   else if(kind==='deploy'){note(330,.08,0,'triangle',440,.06);note(660,.12,.065,'triangle',880,.05);}
+   else if(kind==='defend'){burst(.035,.055,2600);note(1500,.07,0,'sine',900,.06);note(750,.06,.018,'triangle',580,.03);}
+   else if(kind==='defeat'){burst(.09,.07,750);note(180,.24,0,'sawtooth',35,.045);note(75,.28,.02,'sine',25,.065);}
    else if(kind==='heal'){note(520,.12);note(650,.13,.06);note(780,.15,.12);}
    else if(kind==='phase'){note(390,.08);note(520,.12,.07);}
    else return;

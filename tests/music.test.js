@@ -59,7 +59,14 @@ test('phase changes fade out, leave silence and start at normal bus volume; prev
   assert(context.starts.slice(before).length>0);
   assert(Math.min(...context.starts.slice(before))>=10+MUSIC_TRANSITION.fade+MUSIC_TRANSITION.silence-1e-8);
   const continued=music.snapshot().starts;
-  music.setScene(0,3);music.setScene(0,4);assert.equal(music.snapshot().starts,continued);
+  const part=SCORES[0].hostile,descriptor=Object.getOwnPropertyDescriptor(part,'rhythm');
+  let rebuildReads=0;
+  Object.defineProperty(part,'rhythm',{configurable:true,get(){rebuildReads++;return descriptor?.value;}});
+  try{
+   music.setScene(0,3);music.setScene(0,4);music.unlock();
+   assert.equal(music.snapshot().starts,continued);
+   assert.equal(rebuildReads,0,'same-key input/phase updates must not rebuild the score');
+  }finally{if(descriptor)Object.defineProperty(part,'rhythm',descriptor);else delete part.rhythm;}
   music.setEnabled(false);assert.equal(music.snapshot().scene,null);
   assert(music.playPreview(4,1));assert.equal(music.enabled,false);
   assert.equal(music.snapshot().preview,'4:ally');assert.equal(music.snapshot().scene,'4:ally');
