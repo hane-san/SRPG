@@ -1,4 +1,5 @@
-import {tacticalRanges} from './ui-model.js?v=0.8.0';
+import {tacticalRanges,attackTargets} from './ui-model.js?v=0.8.0-position22';
+import {RULES} from './config.js?v=0.8.0';
 import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
@@ -70,7 +71,17 @@ function paintTactics(c,s,view,selected,{moves,attacks,danger}){
   if(selected?.skill==='heal'&&view.dest&&key(view.dest)===key(selected)&&Math.abs(selected.x-x)+Math.abs(selected.y-y)===1){c.strokeStyle='#b5ffe0';c.lineWidth=2;c.strokeRect(px+2,py+2,28,28);}
  }
  if(moves.size){outline(c,new Set([...moves,...attacks]),'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
- for(const w of s.warnings)for(const p of w.cells){c.strokeStyle=w.kind==='cannon'?'#ffdfb0':'#e0b9f2';c.lineWidth=2;c.strokeRect(p.x*32+2,p.y*32+2,28,28);c.fillStyle=w.kind==='cannon'?'#b34545bb':'#79568ebb';c.fillRect(p.x*32+3,p.y*32+3,26,8);c.fillStyle='#fff2cd';c.font='bold 7px sans-serif';c.textAlign='center';c.fillText(w.kind==='cannon'?`P4 −6`:`増援T${w.turn}`,p.x*32+16,p.y*32+10);}
+ // Gold corners identify ordinary P1 targets from this exact destination.
+ // They do not extend the blue movement field or promise a future P3 attack.
+ if(selected?.team==='ally'&&!selected.acted&&view.dest){
+  c.strokeStyle='#ffe2a1';c.lineWidth=2;c.beginPath();
+  for(const t of attackTargets(s,selected,view.dest)){
+   const x=t.x*32,y=t.y*32;
+   c.moveTo(x+1,y+9);c.lineTo(x+1,y+1);c.lineTo(x+9,y+1);
+   c.moveTo(x+23,y+1);c.lineTo(x+31,y+1);c.lineTo(x+31,y+9);
+  }c.stroke();
+ }
+ for(const w of s.warnings)for(const p of w.cells){c.strokeStyle=w.kind==='cannon'?'#ffdfb0':'#e0b9f2';c.lineWidth=2;c.strokeRect(p.x*32+2,p.y*32+2,28,28);c.fillStyle=w.kind==='cannon'?'#b34545bb':'#79568ebb';c.fillRect(p.x*32+3,p.y*32+3,26,8);c.fillStyle='#fff2cd';c.font='bold 7px sans-serif';c.textAlign='center';c.fillText(w.kind==='cannon'?`P4 −${RULES.barrageDamage}`:`増援T${w.turn}`,p.x*32+16,p.y*32+10);}
  if(s.map.camp&&s.map.tiles[s.map.camp.y]?.[s.map.camp.x]!=='c')castle(c,s.map.camp.x*32,s.map.camp.y*32);
   for(const [p,color,label]of [[s.map.goal,'#c66557','北城'],[s.map.camp,'#6dc6db','出撃'],[s.map.south,s.southTaken?'#75b9c0':'#c66557','南城']])if(p){c.fillStyle=color;c.fillRect(p.x*32+27,p.y*32+2,3,19);c.fillRect(p.x*32+19,p.y*32+2,10,7);c.fillStyle='#fff8d4';c.font='7px sans-serif';c.textAlign='center';c.fillText(label,p.x*32+16,p.y*32+31);}
  const weather=weatherAt(s);
