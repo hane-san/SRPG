@@ -124,3 +124,7 @@ GitHub接続ツールだけの環境でも同じファイルを取得・編集�
 文書・PRの作成だけで保護設定やRoutineが有効になったとは扱わない。
 
 描画キャッシュは `render.js` の内部。演出とルール解決を分けたまま、能力・天候・盤面編集の更新をキーへ含める。`tests/tap-performance-check.mjs` は2タップ移動・取消・敵へのスライド・演出失敗復帰と、6マップの再利用／無効化を検証する。将来のマップ追加は `tests/audit.test.js` の配置・地形・連結検査も通す。
+
+## Claude Codeによる監督・夜間巡回
+
+Codex/GPT等が作ったPRをClaude Codeが受け取るときの手順（競合→CI→差分監査→1件の記録コメント→人間待ち）と、夜間巡回の範囲は `.claude/skills/steward/SKILL.md`。クラウドのセッションでは `.claude/hooks/session-start.sh` がブラウザ検査の依存を用意する。マージ・承認・Settings変更はしない。
