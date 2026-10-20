@@ -11,7 +11,7 @@ test('continuous slide keeps its route endpoint when entering an enemy and can c
  const move=slideDraft(s,u,{x:6,y:13});assert.equal(move.route.length,4);
  const aim=slideDraft(s,u,{x:6,y:12},move.dest);assert.deepEqual(aim.dest,move.dest);assert.deepEqual(aim.route,move.route);assert.equal(aim.target,'e1');
  const jump=slideDraft(s,u,{x:6,y:12});assert.deepEqual(jump.dest,{x:6,y:13});
- assert.equal(slideDraft(s,u,{x:5,y:8}),null);assert.equal(slideDraft(s,u,{x:0,y:0}),null);
+ const tooFar=slideDraft(s,u,{x:5,y:8});assert.equal(tooFar.target,null);assert(tooFar.attackError.includes('移動しても届きません'));assert.equal(slideDraft(s,u,{x:0,y:0}),null);
  assert.deepEqual(s,original,'preview never changes rules or spends an action');
 });
 test('presentation events separate legal movement, attack and counter HP changes',()=>{

@@ -228,6 +228,12 @@ a{color:#e4c8f0}
 #commandDock #orders .hp-track{height:9px;border:1px solid #9c879d;border-radius:3px;box-sizing:border-box}
 #commandDock #orders .combatant .hp-track{height:10px}
 
+/* Position preview stays inside the existing fixed dock while the finger is held. */
+#commandHint{align-content:center;justify-items:stretch;gap:8px;padding:10px;text-align:left;line-height:1.4}
+#commandHint .route-readout{font-size:14px;color:#f3e2bb;font-variant-numeric:tabular-nums}
+#commandHint .route-intent{font-size:14px;white-space:pre-line;color:#f5eee5}
+#commandHint .route-help{font-size:12px;color:#d5c8d6}
+
 /* Issue17: keep the 144px dock, expose sortie after reports, and wrap 320px controls. */
 #commandDock #orders.battle-report{grid-template-rows:20px minmax(0,1fr) 44px}
 #commandDock .report-tail{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px}

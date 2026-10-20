@@ -1,10 +1,10 @@
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0';
 import {MAPS} from './data.js?v=0.8.0-issue17';
 import * as E from './engine.js?v=0.8.0-issue17';
-import {render,mini} from './render.js?v=0.8.0';
+import {render,mini} from './render.js?v=0.8.0-position22';
 import {bindMapInput} from './ui-input.js?v=0.8.0';
 import {readSave,writeSave} from './save.js?v=0.8.0';
-import {attackTargets,battleForecast,nextReady,slideDraft} from './ui-model.js?v=0.8.0';
+import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22';
 import {createAudio} from './audio.js?v=0.8.0-issue17';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0-issue17';
@@ -56,7 +56,16 @@ function placeOrders(){
  const root=$('orders'),u=selected();for(const k of ['top','bottom','left','right'])root.style.removeProperty(k);delete root.dataset.pointer;
  root.dataset.location='outside-map';if(u)root.dataset.destination=`${(view.dest||u).x},${(view.dest||u).y}`;
  const editing=s.status==='playing'&&u?.team==='ally'&&!u.acted&&(view.dragging||!view.menu);
- root.hidden=!!editing;$('commandHint').hidden=!editing;$('commandHint').textContent=view.destinationPress?'敵へスライド。選ばず離すと取消':view.dragging?'指を離して操作を選択':'移動先を選択';
+ root.hidden=!!editing;$('commandHint').hidden=!editing;
+ if(editing){
+  const dest=view.dest||u,summary=routeSummary(s,u,dest,view.route?.length?view.route:[u]),target=s.units.find(t=>t.id===view.target);
+  const hint=$('commandHint');hint.replaceChildren();
+  const route=document.createElement('strong');route.className='route-readout';route.textContent=`移動先 (${dest.x+1}, ${dest.y+1}) · コスト ${summary.cost??'—'}/${summary.budget} · ${summary.weather}`;
+  const detail=document.createElement('span');detail.className='route-intent';
+  detail.textContent=view.attackError|| (target?`${target.name}へ攻撃可能 · 指を離して予測を確認`:`通常攻撃 ${summary.targets}隊 · 金の目印が対象`);
+  const help=document.createElement('span');help.className='route-help';help.textContent=view.destinationPress&&!view.target?'敵へスライド。選ばず離すと取消':view.dragging?'指を離して攻撃／待機を選択':'移動先をタップ、または部隊からスライド';
+  hint.append(route,detail,help);
+ }
 }
 function cancelDraft(){const u=selected();if(u)view.cursor={x:u.x,y:u.y};sound.play('cancel');resetSelection();refresh();}
 function unitDetails(u){const ai={hold:'このマスを守り動かない',defend:'初期位置の周囲3マスまで守備',advance:'接近し射程内へ攻撃',skirmish:'西側の部隊を追う。東道は追わない',raid:'空いた本陣へ突入。回復・弓も狙う'},risk=view.dest&&u.team==='ally'?E.threatAt(s,view.dest,u):null;
@@ -77,7 +86,7 @@ function panel(){
  const pre=document.createElement('div');pre.id='actionPreview';pre.className='preview';pre.setAttribute('aria-live','polite');
  if(u.team==='enemy')pre.textContent='敵部隊：詳細で能力と方針を確認';
  else if(u.acted)pre.textContent=u.command?`P3${u.command==='heal'?'回復':'攻撃'}を準備中`:'行動済み';
- else if(view.attackError)pre.textContent='射程外。移動先は維持しています。';
+ else if(view.attackError)pre.textContent=view.attackError;
  else if(target){
   const p=battleForecast(s,u,target,dest);pre.classList.add('combat-forecast');
   const bar=(hp,max,kind)=>`<div class="hp-track ${kind}" aria-hidden="true"><i style="width:${Math.max(0,hp/max*100)}%"></i></div>`;
@@ -138,7 +147,7 @@ function mapPoint(clientX,clientY){const r=canvas.getBoundingClientRect();return
 function draftMove(u,p,anchor=null){
  const draft=slideDraft(s,u,p,anchor?.dest||view.dest||u,{preserve:!!anchor,route:anchor?.route});view.invalid=!draft;if(!draft)return false;
  const changed=E.key(draft.dest)!==E.key(view.dest||u)||draft.target!==view.target;
- Object.assign(view,draft,{cursor:{...p},action:null});if(changed)sound.play('cursor');return true;
+ Object.assign(view,draft,{cursor:{...p},action:null});if(changed)sound.play('cursor');placeOrders();return true;
 }
 function mapTap(clientX,clientY){
  if(locked||s.status!=='playing'||$('modal').open)return;
@@ -152,7 +161,7 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
  const p=mapPoint(clientX,clientY),sortieOrigin=!!view.sortie&&!!s.map.camp&&E.dist(p,s.map.camp)===0,pressed=sortieOrigin?null:E.at(s,p);if(!sortieOrigin&&s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>setTimeout(openDeployment,150)};
  const before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
- const destinationPress=!!(ready&&!pressed&&E.routeTo(s,u,p).length);
+ const destinationPress=!!(ready&&!sortieOrigin&&!pressed&&E.routeTo(s,u,p).length);
  let anchor=before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
  const existingArrow=!!anchor;
  if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
