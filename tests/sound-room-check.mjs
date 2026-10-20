@@ -4,6 +4,11 @@ import {launch,setup} from './browser-helpers.mjs';
 const browser=await launch();
 try{
  const {page,errors}=await setup(browser,390,844);
+ // Menu links keep the same 44px touch target as the rest of the controls.
+ const linkHeights=await page.evaluate(()=>{document.querySelectorAll('#modalBody details').forEach(d=>d.open=true);
+  const h=[...document.querySelectorAll('#modalBody a')].map(a=>a.getBoundingClientRect().height);
+  document.querySelectorAll('#modalBody details').forEach(d=>d.open=false);return h;});
+ assert.ok(linkHeights.length>=2&&linkHeights.every(h=>h>=44),'menu links must be at least 44px tall: '+linkHeights);
  await page.locator('#soundRoomDetails summary').click();
  assert.equal(await page.locator('#soundRoomList button').count(),42);
  assert.equal(await page.locator('.sound-room-section').count(),3);
