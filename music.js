@@ -1,3 +1,4 @@
+import {NEW_SCORES} from './music-extra.js?v=0.8.0-library42';
 // Original map scores. No samples, downloads, quotes or melodies from other games.
 // A score has a composed A/B melody, harmony, bass and countermelody, then a varied reprise.
 const major=[0,2,4,5,7,9,11],minor=[0,2,3,5,7,8,10];
@@ -1314,7 +1315,28 @@ export const BONUS_SCORES=[
   }
  }
 ];
-export const MUSIC_LIBRARY=[...SCORES,...BONUS_SCORES];
+// Appending score pairs preserves the original No.01–26 catalogue forever.
+export const MUSIC_LIBRARY=[...SCORES,...BONUS_SCORES,...NEW_SCORES];
+export const trackNumber=(scoreIndex,phase=1)=>scoreIndex*2+(phase===1?1:2);
+export const MAP_TRACK_NUMBERS=Object.freeze([
+ {ally:1,hostile:2},  // 01 霧河の渡し
+ {ally:3,hostile:4},  // 02 二つの戦線
+ {ally:5,hostile:6},  // 03 灰城の砲火
+ {ally:7,hostile:8},  // 04 長河の三橋
+ {ally:9,hostile:10}, // 05 森壁の回廊
+ {ally:11,hostile:12} // 06 暁の城塞線
+]);
+// Change only this assignment table when the producer picks a numbered track.
+// Odd numbers are the first (ally) candidate; even numbers are the second.
+// Any number may be assigned to either phase without changing the composition.
+export function assignedTrackNumber(mapId,phase=1){
+ return MAP_TRACK_NUMBERS[mapId]?.[phase===1?'ally':'hostile']??trackNumber(mapId,phase);
+}
+export function trackByNumber(number){
+ if(!Number.isInteger(number)||number<1||number>MUSIC_LIBRARY.length*2)return null;
+ const scoreIndex=Math.floor((number-1)/2),phase=number%2?1:2;
+ return {...buildTrack(scoreIndex,phase),number};
+}
 const degree=(root,scale,n)=>root+12*Math.floor(n/7)+scale[((n%7)+7)%7];
 export function buildTrack(mapId,phase=1){
  const score=MUSIC_LIBRARY[mapId]||SCORES[0],side=phase===1?'ally':'hostile',part=score[side],bar=score.meter,length=bar*32;
@@ -1384,10 +1406,13 @@ export function createMusic(storage){
   if(globalThis.document?.hidden||context?.state!=='running')return;
   const target=preview||(enabled&&requested?.status==='playing'?requested:null);
   if(!target){if(key)stop();return;}
-  const next=`${target.mapId}:${target.phase===1?'ally':'hostile'}`,source=preview?'preview':'game';
+  const number=preview?trackNumber(target.mapId,target.phase):assignedTrackNumber(target.mapId,target.phase);
+  if(!Number.isInteger(number)||number<1||number>MUSIC_LIBRARY.length*2)return;
+  const next=`${Math.floor((number-1)/2)}:${number%2?'ally':'hostile'}`,source=preview?'preview':'game';
   if(next===key&&currentSource===source)return;
+  const candidate=trackByNumber(number);
   const switching=!!bus;stop();
-  track=buildTrack(target.mapId,target.phase);key=next;currentSource=source;bus=context.createGain();
+  track=candidate;key=next;currentSource=source;bus=context.createGain();
   // Each oscillator already has its own gentle note attack. Do not fade in the new bus.
   bus.gain.setValueAtTime(1,context.currentTime);bus.connect(master);
   start=context.currentTime+(switching?MUSIC_TRANSITION.fade+MUSIC_TRANSITION.silence:.01);

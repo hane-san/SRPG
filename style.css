@@ -242,3 +242,7 @@ a{color:#e4c8f0}
 
 #commandDock .report-tail-text{min-width:0;overflow:hidden;text-overflow:ellipsis}
 #commandDock #waitOrder{white-space:pre-line}
+/* Numbered music catalogue: clear mobile map/phase references. */
+.sound-room-map-assignments{display:grid;gap:3px;margin:6px 0 14px;padding:10px;border:1px solid #65526d;border-radius:8px;background:#ffffff08}
+.sound-room-map-line{font-size:12px;line-height:1.5;color:#e8d8c4;font-variant-numeric:tabular-nums}
+.sound-room-actions button{text-align:left}
