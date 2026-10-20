@@ -1,0 +1,6042 @@
+{
+  "source": "46e17724accda307c1ab8ee9ced2da43a45745cd",
+  "policy": "roster-order castle sortie once per turn, advance or hold; 40-turn cap; six unchanged states stop",
+  "results": [
+    {
+      "map": 1,
+      "layout": "before",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 11,
+      "alive": 5,
+      "reserves": 3,
+      "commands": 48,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a2"
+        },
+        {
+          "turn": 3,
+          "id": "e4",
+          "reason": "a4"
+        },
+        {
+          "turn": 5,
+          "id": "e5",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "e2",
+          "reason": "a3"
+        },
+        {
+          "turn": 5,
+          "id": "a1",
+          "reason": "e3"
+        },
+        {
+          "turn": 9,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 10,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 82,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 121,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 156,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "e4",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 0,
+          "legalMoves": 148,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 0,
+          "legalMoves": 115,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e5",
+              "reason": "a1"
+            },
+            {
+              "turn": 5,
+              "id": "e2",
+              "reason": "a3"
+            },
+            {
+              "turn": 5,
+              "id": "a1",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 196,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 11,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 3,
+        "sorties": 0,
+        "legalMoves": 174,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 1,
+      "layout": "before",
+      "policy": "hold",
+      "status": "stalled",
+      "stop": "unchanged-six-turns",
+      "turn": 14,
+      "alive": 5,
+      "reserves": 1,
+      "commands": 62,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "e1"
+        },
+        {
+          "turn": 4,
+          "id": "a4",
+          "reason": "e4"
+        },
+        {
+          "turn": 6,
+          "id": "a7",
+          "reason": "e4"
+        },
+        {
+          "turn": 7,
+          "id": "e1",
+          "reason": "a8"
+        },
+        {
+          "turn": 7,
+          "id": "e4",
+          "reason": "a8"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 110,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 131,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 122,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "e1"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 159,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a4",
+              "reason": "e4"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 2,
+          "sorties": 1,
+          "legalMoves": 233,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 2,
+          "sorties": 0,
+          "legalMoves": 169,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a7",
+              "reason": "e4"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 13,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 1,
+        "sorties": 0,
+        "legalMoves": 213,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 1,
+      "layout": "after",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 11,
+      "alive": 5,
+      "reserves": 3,
+      "commands": 48,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a2"
+        },
+        {
+          "turn": 3,
+          "id": "e4",
+          "reason": "a4"
+        },
+        {
+          "turn": 5,
+          "id": "e5",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "e2",
+          "reason": "a3"
+        },
+        {
+          "turn": 5,
+          "id": "a1",
+          "reason": "e3"
+        },
+        {
+          "turn": 9,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 10,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 82,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 121,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 156,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "e4",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 0,
+          "legalMoves": 148,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 0,
+          "legalMoves": 115,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e5",
+              "reason": "a1"
+            },
+            {
+              "turn": 5,
+              "id": "e2",
+              "reason": "a3"
+            },
+            {
+              "turn": 5,
+              "id": "a1",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 196,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 11,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 3,
+        "sorties": 0,
+        "legalMoves": 174,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 1,
+      "layout": "after",
+      "policy": "hold",
+      "status": "stalled",
+      "stop": "unchanged-six-turns",
+      "turn": 14,
+      "alive": 5,
+      "reserves": 1,
+      "commands": 62,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "e1"
+        },
+        {
+          "turn": 4,
+          "id": "a4",
+          "reason": "e4"
+        },
+        {
+          "turn": 6,
+          "id": "a7",
+          "reason": "e4"
+        },
+        {
+          "turn": 7,
+          "id": "e1",
+          "reason": "a8"
+        },
+        {
+          "turn": 7,
+          "id": "e4",
+          "reason": "a8"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 110,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 131,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 122,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "e1"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 159,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a4",
+              "reason": "e4"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 2,
+          "sorties": 1,
+          "legalMoves": 233,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 2,
+          "sorties": 0,
+          "legalMoves": 169,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a7",
+              "reason": "e4"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 13,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 1,
+        "sorties": 0,
+        "legalMoves": 213,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 2,
+      "layout": "before",
+      "policy": "advance",
+      "status": "defeat",
+      "stop": "outcome",
+      "turn": 4,
+      "alive": 4,
+      "reserves": 3,
+      "commands": 15,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "e1",
+          "reason": "a4"
+        },
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e2"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "e3"
+        },
+        {
+          "turn": 4,
+          "id": "e5",
+          "reason": "a1"
+        },
+        {
+          "turn": 4,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 4,
+          "id": "e2",
+          "reason": "a6"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 90,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 88,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "e1",
+              "reason": "a4"
+            },
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "e2"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e6",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 103,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 177,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "e5",
+              "reason": "a1"
+            },
+            {
+              "turn": 4,
+              "id": "e3",
+              "reason": "a2"
+            },
+            {
+              "turn": 4,
+              "id": "e2",
+              "reason": "a6"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 4,
+        "enemyHits": [
+          {
+            "phase": 2,
+            "kind": "hit",
+            "actor": "e2",
+            "target": "a6",
+            "amount": 2,
+            "counter": false
+          }
+        ],
+        "alive": 4,
+        "reserves": 3,
+        "sorties": 1,
+        "legalMoves": 177,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 4,
+            "id": "e5",
+            "reason": "a1"
+          },
+          {
+            "turn": 4,
+            "id": "e3",
+            "reason": "a2"
+          },
+          {
+            "turn": 4,
+            "id": "e2",
+            "reason": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "map": 2,
+      "layout": "before",
+      "policy": "hold",
+      "status": "defeat",
+      "stop": "outcome",
+      "turn": 4,
+      "alive": 3,
+      "reserves": 3,
+      "commands": 15,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e5"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "e2"
+        },
+        {
+          "turn": 4,
+          "id": "a5",
+          "reason": "e1"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 107,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e6",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 95,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "e5"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e6",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 90,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "e2"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 128,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a5",
+              "reason": "e1"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 4,
+        "enemyHits": [
+          {
+            "phase": 2,
+            "kind": "hit",
+            "actor": "e1",
+            "target": "a5",
+            "amount": 2,
+            "counter": false
+          },
+          {
+            "phase": 2,
+            "kind": "hit",
+            "actor": "e2",
+            "target": "a2",
+            "amount": 2,
+            "counter": false
+          }
+        ],
+        "alive": 3,
+        "reserves": 3,
+        "sorties": 1,
+        "legalMoves": 128,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 4,
+            "id": "a5",
+            "reason": "e1"
+          }
+        ]
+      }
+    },
+    {
+      "map": 2,
+      "layout": "after",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 14,
+      "alive": 5,
+      "reserves": 2,
+      "commands": 65,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e3"
+        },
+        {
+          "turn": 2,
+          "id": "e3",
+          "reason": "a4"
+        },
+        {
+          "turn": 3,
+          "id": "e1",
+          "reason": "a2"
+        },
+        {
+          "turn": 3,
+          "id": "e5",
+          "reason": "a5"
+        },
+        {
+          "turn": 5,
+          "id": "e2",
+          "reason": "a2"
+        },
+        {
+          "turn": 8,
+          "id": "reinforcement-4-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "e4",
+          "reason": "a4"
+        },
+        {
+          "turn": 8,
+          "id": "a4",
+          "reason": "boss"
+        },
+        {
+          "turn": 12,
+          "id": "reinforcement-8-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 14,
+          "id": "boss",
+          "reason": "a2"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 92,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 93,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "e3"
+            },
+            {
+              "turn": 2,
+              "id": "e3",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 152,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "e1",
+              "reason": "a2"
+            },
+            {
+              "turn": 3,
+              "id": "e5",
+              "reason": "a5"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 203,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 0,
+          "legalMoves": 222,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e2",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e4",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 0,
+          "legalMoves": 191,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 14,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 2,
+        "sorties": 0,
+        "legalMoves": 227,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 14,
+            "id": "boss",
+            "reason": "a2"
+          }
+        ]
+      }
+    },
+    {
+      "map": 2,
+      "layout": "after",
+      "policy": "hold",
+      "status": "stalled",
+      "stop": "unchanged-six-turns",
+      "turn": 23,
+      "alive": 5,
+      "reserves": 0,
+      "commands": 106,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e5"
+        },
+        {
+          "turn": 3,
+          "id": "e5",
+          "reason": "a4"
+        },
+        {
+          "turn": 4,
+          "id": "a5",
+          "reason": "e1"
+        },
+        {
+          "turn": 5,
+          "id": "e1",
+          "reason": "a7"
+        },
+        {
+          "turn": 8,
+          "id": "a6",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 9,
+          "id": "reinforcement-4-0",
+          "reason": "a8"
+        },
+        {
+          "turn": 11,
+          "id": "reinforcement-8-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 15,
+          "id": "a8",
+          "reason": "reinforcement-12-0"
+        },
+        {
+          "turn": 15,
+          "id": "reinforcement-12-0",
+          "reason": "a4"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 109,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 111,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "e5"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e5",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 143,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "e5",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 199,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a5",
+              "reason": "e1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 2,
+          "sorties": 1,
+          "legalMoves": 279,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e1",
+              "reason": "a7"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 2,
+          "sorties": 0,
+          "legalMoves": 277,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 22,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 216,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 3,
+      "layout": "before",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 11,
+      "alive": 5,
+      "reserves": 2,
+      "commands": 50,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a2"
+        },
+        {
+          "turn": 2,
+          "id": "e2",
+          "reason": "a3"
+        },
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e3"
+        },
+        {
+          "turn": 3,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 5,
+          "id": "e4",
+          "reason": "a4"
+        },
+        {
+          "turn": 6,
+          "id": "e5",
+          "reason": "a5"
+        },
+        {
+          "turn": 8,
+          "id": "reinforcement-4-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 9,
+          "id": "a1",
+          "reason": "boss"
+        },
+        {
+          "turn": 11,
+          "id": "boss",
+          "reason": "a5"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 127,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 110,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "e2",
+              "reason": "a3"
+            },
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 137,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "e3",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 199,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 5,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 0,
+          "legalMoves": 225,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e4",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 0,
+          "legalMoves": 247,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "e5",
+              "reason": "a5"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 11,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 2,
+        "sorties": 0,
+        "legalMoves": 239,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 11,
+            "id": "boss",
+            "reason": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "map": 3,
+      "layout": "before",
+      "policy": "hold",
+      "status": "defeat",
+      "stop": "outcome",
+      "turn": 24,
+      "alive": 0,
+      "reserves": 0,
+      "commands": 77,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "e1"
+        },
+        {
+          "turn": 4,
+          "id": "a4",
+          "reason": "e3"
+        },
+        {
+          "turn": 5,
+          "id": "e1",
+          "reason": "a7"
+        },
+        {
+          "turn": 5,
+          "id": "e3",
+          "reason": "a7"
+        },
+        {
+          "turn": 5,
+          "id": "a7",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 6,
+          "id": "a5",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 7,
+          "id": "reinforcement-4-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "a2",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 11,
+          "id": "a9",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 12,
+          "id": "reinforcement-8-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 18,
+          "id": "a1",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 18,
+          "id": "a8",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 24,
+          "id": "a6",
+          "reason": "砲撃"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 114,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 144,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 132,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "e1"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 178,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a4",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 2,
+          "sorties": 1,
+          "legalMoves": 195,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e1",
+              "reason": "a7"
+            },
+            {
+              "turn": 5,
+              "id": "e3",
+              "reason": "a7"
+            },
+            {
+              "turn": 5,
+              "id": "a7",
+              "reason": "reinforcement-4-0"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 1,
+          "sorties": 1,
+          "legalMoves": 201,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a5",
+              "reason": "砲撃"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 24,
+        "enemyHits": [],
+        "alive": 0,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 0,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 24,
+            "id": "a6",
+            "reason": "砲撃"
+          }
+        ]
+      }
+    },
+    {
+      "map": 3,
+      "layout": "after",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 11,
+      "alive": 5,
+      "reserves": 2,
+      "commands": 50,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "e1",
+          "reason": "a2"
+        },
+        {
+          "turn": 2,
+          "id": "e2",
+          "reason": "a3"
+        },
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "e3"
+        },
+        {
+          "turn": 3,
+          "id": "e3",
+          "reason": "a2"
+        },
+        {
+          "turn": 5,
+          "id": "e4",
+          "reason": "a4"
+        },
+        {
+          "turn": 6,
+          "id": "e5",
+          "reason": "a5"
+        },
+        {
+          "turn": 8,
+          "id": "reinforcement-4-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 9,
+          "id": "a1",
+          "reason": "boss"
+        },
+        {
+          "turn": 11,
+          "id": "boss",
+          "reason": "a5"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 127,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "e1",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 110,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "e2",
+              "reason": "a3"
+            },
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 137,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "e3",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 199,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 5,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 0,
+          "legalMoves": 225,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e4",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 0,
+          "legalMoves": 247,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "e5",
+              "reason": "a5"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 11,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 2,
+        "sorties": 0,
+        "legalMoves": 239,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 11,
+            "id": "boss",
+            "reason": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "map": 3,
+      "layout": "after",
+      "policy": "hold",
+      "status": "defeat",
+      "stop": "outcome",
+      "turn": 24,
+      "alive": 0,
+      "reserves": 0,
+      "commands": 77,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "e1"
+        },
+        {
+          "turn": 4,
+          "id": "a4",
+          "reason": "e3"
+        },
+        {
+          "turn": 5,
+          "id": "e1",
+          "reason": "a7"
+        },
+        {
+          "turn": 5,
+          "id": "e3",
+          "reason": "a7"
+        },
+        {
+          "turn": 5,
+          "id": "a7",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 6,
+          "id": "a5",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 7,
+          "id": "reinforcement-4-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "a2",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 11,
+          "id": "a9",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 12,
+          "id": "reinforcement-8-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 18,
+          "id": "a1",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 18,
+          "id": "a8",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 24,
+          "id": "a6",
+          "reason": "砲撃"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 114,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 144,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 132,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "e1"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 178,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a4",
+              "reason": "e3"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e1",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "e3",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 2,
+          "sorties": 1,
+          "legalMoves": 195,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "e1",
+              "reason": "a7"
+            },
+            {
+              "turn": 5,
+              "id": "e3",
+              "reason": "a7"
+            },
+            {
+              "turn": 5,
+              "id": "a7",
+              "reason": "reinforcement-4-0"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 1,
+          "sorties": 1,
+          "legalMoves": 201,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a5",
+              "reason": "砲撃"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 24,
+        "enemyHits": [],
+        "alive": 0,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 0,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 24,
+            "id": "a6",
+            "reason": "砲撃"
+          }
+        ]
+      }
+    },
+    {
+      "map": 4,
+      "layout": "before",
+      "policy": "advance",
+      "status": "stalled",
+      "stop": "unchanged-six-turns",
+      "turn": 30,
+      "alive": 5,
+      "reserves": 3,
+      "commands": 142,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "extra-3-0-1",
+          "reason": "a4"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-0-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-1-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "a3",
+          "reason": "extra-3-2-0"
+        },
+        {
+          "turn": 7,
+          "id": "extra-3-1-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "extra-3-2-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 9,
+          "id": "extra-3-0-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 10,
+          "id": "extra-3-1-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 11,
+          "id": "extra-3-1-1",
+          "reason": "a2"
+        },
+        {
+          "turn": 15,
+          "id": "extra-3-2-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 15,
+          "id": "a1",
+          "reason": "extra-3-2-1"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 95,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 114,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "extra-3-0-1",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 132,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "extra-3-0-3",
+              "reason": "a1"
+            },
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "extra-3-0-0"
+            },
+            {
+              "turn": 3,
+              "id": "extra-3-1-3",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 164,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-3-0-2",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-2-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 0,
+          "legalMoves": 168,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "a3",
+              "reason": "extra-3-2-0"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 203,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 29,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 3,
+        "sorties": 0,
+        "legalMoves": 250,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 4,
+      "layout": "before",
+      "policy": "hold",
+      "status": "stalled",
+      "stop": "unchanged-six-turns",
+      "turn": 22,
+      "alive": 5,
+      "reserves": 0,
+      "commands": 100,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "extra-3-1-3"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-0-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 4,
+          "id": "a6",
+          "reason": "extra-3-1-3"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-1-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 6,
+          "id": "extra-3-0-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 8,
+          "id": "a8",
+          "reason": "extra-3-2-0"
+        },
+        {
+          "turn": 11,
+          "id": "a9",
+          "reason": "extra-3-2-0"
+        },
+        {
+          "turn": 14,
+          "id": "aux-bow",
+          "reason": "extra-3-2-0"
+        },
+        {
+          "turn": 15,
+          "id": "extra-3-2-0",
+          "reason": "a7"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 113,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 133,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 108,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "extra-3-0-0"
+            },
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "extra-3-1-3"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-3",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 119,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-3-0-3",
+              "reason": "a6"
+            },
+            {
+              "turn": 4,
+              "id": "a6",
+              "reason": "extra-3-1-3"
+            },
+            {
+              "turn": 4,
+              "id": "extra-3-1-3",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 199,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-2-0",
+              "target": "a8",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 227,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "extra-3-0-0",
+              "reason": "a7"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 21,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 233,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 4,
+      "layout": "after",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 17,
+      "alive": 5,
+      "reserves": 1,
+      "commands": 77,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "extra-3-0-1",
+          "reason": "a4"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-0-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-0-2",
+          "reason": "a4"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 4,
+          "id": "extra-3-0-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "extra-3-2-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 6,
+          "id": "extra-3-1-2",
+          "reason": "a2"
+        },
+        {
+          "turn": 6,
+          "id": "a2",
+          "reason": "extra-3-1-1"
+        },
+        {
+          "turn": 6,
+          "id": "a6",
+          "reason": "extra-3-1-3"
+        },
+        {
+          "turn": 7,
+          "id": "extra-3-1-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "extra-3-1-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 8,
+          "id": "a5",
+          "reason": "extra-3-1-1"
+        },
+        {
+          "turn": 9,
+          "id": "extra-3-1-1",
+          "reason": "a1"
+        },
+        {
+          "turn": 10,
+          "id": "extra-3-2-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 11,
+          "id": "extra-3-2-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 11,
+          "id": "a7",
+          "reason": "extra-3-2-2"
+        },
+        {
+          "turn": 14,
+          "id": "extra-3-2-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 16,
+          "id": "boss",
+          "reason": "a8"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 95,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 117,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "extra-3-0-1",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 134,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "extra-3-0-3",
+              "reason": "a1"
+            },
+            {
+              "turn": 3,
+              "id": "extra-3-0-2",
+              "reason": "a4"
+            },
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "extra-3-0-0"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 183,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-3-0-0",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-2-0",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 0,
+          "legalMoves": 163,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "extra-3-2-0",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-1",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-1-3",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 5,
+          "sorties": 0,
+          "legalMoves": 79,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "extra-3-1-2",
+              "reason": "a2"
+            },
+            {
+              "turn": 6,
+              "id": "a2",
+              "reason": "extra-3-1-1"
+            },
+            {
+              "turn": 6,
+              "id": "a6",
+              "reason": "extra-3-1-3"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 17,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 1,
+        "sorties": 0,
+        "legalMoves": 131,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 4,
+      "layout": "after",
+      "policy": "hold",
+      "status": "stalled",
+      "stop": "unchanged-six-turns",
+      "turn": 22,
+      "alive": 5,
+      "reserves": 0,
+      "commands": 102,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 3,
+          "id": "extra-3-0-3",
+          "reason": "a4"
+        },
+        {
+          "turn": 4,
+          "id": "a4",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 6,
+          "id": "a7",
+          "reason": "extra-3-2-0"
+        },
+        {
+          "turn": 8,
+          "id": "a8",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 8,
+          "id": "extra-3-2-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 11,
+          "id": "a9",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 14,
+          "id": "aux-bow",
+          "reason": "extra-3-0-0"
+        },
+        {
+          "turn": 15,
+          "id": "extra-3-0-0",
+          "reason": "a6"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 113,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 133,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 144,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "extra-3-0-0"
+            },
+            {
+              "turn": 3,
+              "id": "extra-3-0-3",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 205,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "a4",
+              "reason": "extra-3-0-0"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 284,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-0-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-3-2-0",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 4,
+          "sorties": 0,
+          "legalMoves": 196,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a7",
+              "reason": "extra-3-2-0"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 21,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 233,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 5,
+      "layout": "before",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 26,
+      "alive": 5,
+      "reserves": 2,
+      "commands": 123,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-4-0-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 1,
+          "id": "a2",
+          "reason": "extra-4-0-1"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-3",
+          "reason": "a4"
+        },
+        {
+          "turn": 4,
+          "id": "extra-4-1-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "a1",
+          "reason": "extra-4-2-3"
+        },
+        {
+          "turn": 7,
+          "id": "extra-4-2-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 7,
+          "id": "extra-4-1-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 7,
+          "id": "a6",
+          "reason": "extra-4-1-1"
+        },
+        {
+          "turn": 8,
+          "id": "extra-4-1-1",
+          "reason": "a7"
+        },
+        {
+          "turn": 17,
+          "id": "a3",
+          "reason": "extra-4-2-1"
+        },
+        {
+          "turn": 17,
+          "id": "extra-4-2-1",
+          "reason": "a7"
+        },
+        {
+          "turn": 19,
+          "id": "extra-4-2-0",
+          "reason": "a8"
+        },
+        {
+          "turn": 26,
+          "id": "boss",
+          "reason": "a5"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 2,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 61,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "extra-4-0-0",
+              "reason": "a2"
+            },
+            {
+              "turn": 1,
+              "id": "a2",
+              "reason": "extra-4-0-1"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-3",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 27,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "extra-4-0-2",
+              "reason": "a1"
+            },
+            {
+              "turn": 2,
+              "id": "extra-4-0-1",
+              "reason": "a3"
+            },
+            {
+              "turn": 2,
+              "id": "extra-4-0-3",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 9,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 4,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 59,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-4-1-3",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-2-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 0,
+          "legalMoves": 138,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "a1",
+              "reason": "extra-4-2-3"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 198,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 26,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 2,
+        "sorties": 0,
+        "legalMoves": 156,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 26,
+            "id": "boss",
+            "reason": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "map": 5,
+      "layout": "before",
+      "policy": "hold",
+      "status": "timeout",
+      "stop": "turn-limit",
+      "turn": 41,
+      "alive": 5,
+      "reserves": 1,
+      "commands": 194,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "a3",
+          "reason": "extra-4-0-0"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "a5",
+          "reason": "extra-4-0-3"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-0-3",
+          "reason": "a4"
+        },
+        {
+          "turn": 4,
+          "id": "extra-4-0-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 5,
+          "id": "a6",
+          "reason": "extra-4-0-1"
+        },
+        {
+          "turn": 5,
+          "id": "a1",
+          "reason": "extra-4-1-3"
+        },
+        {
+          "turn": 6,
+          "id": "extra-4-1-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 7,
+          "id": "a8",
+          "reason": "extra-4-0-1"
+        },
+        {
+          "turn": 7,
+          "id": "extra-4-2-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 8,
+          "id": "extra-4-0-1",
+          "reason": "a7"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 112,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 35,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "a3",
+              "reason": "extra-4-0-0"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-3",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 17,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "extra-4-0-2",
+              "reason": "a1"
+            },
+            {
+              "turn": 3,
+              "id": "a5",
+              "reason": "extra-4-0-3"
+            },
+            {
+              "turn": 3,
+              "id": "extra-4-0-3",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 70,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-4-0-0",
+              "reason": "a6"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 4,
+          "sorties": 1,
+          "legalMoves": 166,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "a6",
+              "reason": "extra-4-0-1"
+            },
+            {
+              "turn": 5,
+              "id": "a1",
+              "reason": "extra-4-1-3"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a8",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-3",
+              "target": "a7",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-2-3",
+              "target": "a8",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 3,
+          "sorties": 1,
+          "legalMoves": 190,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "extra-4-1-3",
+              "reason": "a7"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 40,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 1,
+        "sorties": 0,
+        "legalMoves": 234,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 5,
+      "layout": "after",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 30,
+      "alive": 5,
+      "reserves": 1,
+      "commands": 143,
+      "deaths": [
+        {
+          "turn": 1,
+          "id": "extra-4-0-0",
+          "reason": "a2"
+        },
+        {
+          "turn": 2,
+          "id": "extra-4-0-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "extra-4-0-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 6,
+          "id": "a4",
+          "reason": "extra-4-1-1"
+        },
+        {
+          "turn": 8,
+          "id": "extra-4-1-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "extra-4-1-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "a1",
+          "reason": "extra-4-1-2"
+        },
+        {
+          "turn": 10,
+          "id": "extra-4-1-2",
+          "reason": "a2"
+        },
+        {
+          "turn": 12,
+          "id": "extra-4-1-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 12,
+          "id": "extra-4-2-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 12,
+          "id": "a6",
+          "reason": "extra-4-2-0"
+        },
+        {
+          "turn": 13,
+          "id": "extra-4-2-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 21,
+          "id": "a7",
+          "reason": "extra-4-2-3"
+        },
+        {
+          "turn": 26,
+          "id": "extra-4-2-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 26,
+          "id": "a2",
+          "reason": "extra-4-2-2"
+        },
+        {
+          "turn": 28,
+          "id": "boss",
+          "reason": "a5"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 95,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 1,
+              "id": "extra-4-0-0",
+              "reason": "a2"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 50,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "extra-4-0-3",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 20,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "extra-4-0-2",
+              "reason": "a1"
+            },
+            {
+              "turn": 3,
+              "id": "extra-4-0-1",
+              "reason": "a3"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 6,
+          "sorties": 0,
+          "legalMoves": 47,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 6,
+          "sorties": 0,
+          "legalMoves": 136,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-1-1",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 6,
+          "sorties": 0,
+          "legalMoves": 113,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a4",
+              "reason": "extra-4-1-1"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 30,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 1,
+        "sorties": 0,
+        "legalMoves": 41,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 5,
+      "layout": "after",
+      "policy": "hold",
+      "status": "timeout",
+      "stop": "turn-limit",
+      "turn": 41,
+      "alive": 5,
+      "reserves": 5,
+      "commands": 197,
+      "deaths": [
+        {
+          "turn": 3,
+          "id": "a3",
+          "reason": "extra-4-0-0"
+        },
+        {
+          "turn": 4,
+          "id": "extra-4-0-0",
+          "reason": "a4"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 126,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 45,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 6,
+          "sorties": 1,
+          "legalMoves": 20,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a3",
+              "reason": "extra-4-0-0"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-4-0-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 1,
+          "legalMoves": 84,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-4-0-0",
+              "reason": "a4"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 0,
+          "legalMoves": 258,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 5,
+          "sorties": 0,
+          "legalMoves": 258,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 40,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 5,
+        "sorties": 0,
+        "legalMoves": 258,
+        "canDeploy": false,
+        "deaths": []
+      }
+    },
+    {
+      "map": 6,
+      "layout": "before",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 29,
+      "alive": 5,
+      "reserves": 2,
+      "commands": 139,
+      "deaths": [
+        {
+          "turn": 4,
+          "id": "extra-5-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "extra-5-1-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 5,
+          "id": "a3",
+          "reason": "extra-5-0-1"
+        },
+        {
+          "turn": 5,
+          "id": "a5",
+          "reason": "extra-5-0-3"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-2-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-0-3",
+          "reason": "a6"
+        },
+        {
+          "turn": 6,
+          "id": "a1",
+          "reason": "extra-5-2-0"
+        },
+        {
+          "turn": 6,
+          "id": "reinforcement-4-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 8,
+          "id": "extra-5-2-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 8,
+          "id": "extra-5-0-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 8,
+          "id": "a7",
+          "reason": "extra-5-0-1"
+        },
+        {
+          "turn": 9,
+          "id": "reinforcement-4-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "extra-5-0-1",
+          "reason": "a8"
+        },
+        {
+          "turn": 10,
+          "id": "reinforcement-8-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 12,
+          "id": "a2",
+          "reason": "extra-5-1-0"
+        },
+        {
+          "turn": 12,
+          "id": "extra-5-1-1",
+          "reason": "a4"
+        },
+        {
+          "turn": 14,
+          "id": "a9",
+          "reason": "extra-5-1-0"
+        },
+        {
+          "turn": 16,
+          "id": "extra-5-1-0",
+          "reason": "a8"
+        },
+        {
+          "turn": 16,
+          "id": "reinforcement-8-1",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 18,
+          "id": "tower-west",
+          "reason": "a6"
+        },
+        {
+          "turn": 19,
+          "id": "extra-5-1-3",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 23,
+          "id": "extra-5-2-2",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 27,
+          "id": "tower-east",
+          "reason": "aux-shield"
+        },
+        {
+          "turn": 29,
+          "id": "boss",
+          "reason": "a6"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-1",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 10,
+          "sorties": 1,
+          "legalMoves": 111,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 9,
+          "sorties": 1,
+          "legalMoves": 138,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 165,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-1-2",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 8,
+          "sorties": 0,
+          "legalMoves": 149,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-5-0-2",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 8,
+          "sorties": 0,
+          "legalMoves": 94,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 5,
+              "id": "extra-5-1-2",
+              "reason": "a1"
+            },
+            {
+              "turn": 5,
+              "id": "a3",
+              "reason": "extra-5-0-1"
+            },
+            {
+              "turn": 5,
+              "id": "a5",
+              "reason": "extra-5-0-3"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-0",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 154,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "extra-5-2-3",
+              "reason": "a1"
+            },
+            {
+              "turn": 6,
+              "id": "extra-5-0-3",
+              "reason": "a6"
+            },
+            {
+              "turn": 6,
+              "id": "a1",
+              "reason": "extra-5-2-0"
+            },
+            {
+              "turn": 6,
+              "id": "reinforcement-4-0",
+              "reason": "a4"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 29,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 2,
+        "sorties": 0,
+        "legalMoves": 185,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 29,
+            "id": "boss",
+            "reason": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "map": 6,
+      "layout": "before",
+      "policy": "hold",
+      "status": "defeat",
+      "stop": "outcome",
+      "turn": 14,
+      "alive": 0,
+      "reserves": 0,
+      "commands": 59,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "extra-5-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "extra-5-0-0"
+        },
+        {
+          "turn": 4,
+          "id": "extra-5-0-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 6,
+          "id": "a2",
+          "reason": "extra-5-1-2"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-2-3",
+          "reason": "a1"
+        },
+        {
+          "turn": 7,
+          "id": "a6",
+          "reason": "extra-5-1-2"
+        },
+        {
+          "turn": 7,
+          "id": "a7",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 7,
+          "id": "extra-5-1-2",
+          "reason": "a3"
+        },
+        {
+          "turn": 9,
+          "id": "a9",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 10,
+          "id": "aux-bow",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 11,
+          "id": "a5",
+          "reason": "extra-5-2-0"
+        },
+        {
+          "turn": 11,
+          "id": "a8",
+          "reason": "reinforcement-4-1"
+        },
+        {
+          "turn": 11,
+          "id": "reinforcement-4-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 12,
+          "id": "a3",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 12,
+          "id": "a1",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 13,
+          "id": "aux-shield",
+          "reason": "extra-5-2-0"
+        },
+        {
+          "turn": 13,
+          "id": "aux-horse",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 14,
+          "id": "aux-medic",
+          "reason": "reinforcement-8-0"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [],
+          "alive": 3,
+          "reserves": 10,
+          "sorties": 1,
+          "legalMoves": 110,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-2",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 9,
+          "sorties": 1,
+          "legalMoves": 141,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "extra-5-0-2",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-1-2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 140,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "extra-5-0-0"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-1-2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 236,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-5-0-0",
+              "reason": "a3"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-1-2",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 7,
+          "sorties": 0,
+          "legalMoves": 224,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-1-2",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-0",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-3",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 7,
+          "sorties": 0,
+          "legalMoves": 184,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "a2",
+              "reason": "extra-5-1-2"
+            },
+            {
+              "turn": 6,
+              "id": "extra-5-2-3",
+              "reason": "a1"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 14,
+        "enemyHits": [
+          {
+            "phase": 2,
+            "kind": "hit",
+            "actor": "extra-5-2-0",
+            "target": "aux-medic",
+            "amount": 2,
+            "counter": false
+          },
+          {
+            "phase": 2,
+            "kind": "hit",
+            "actor": "reinforcement-4-1",
+            "target": "aux-medic",
+            "amount": 2,
+            "counter": false
+          },
+          {
+            "phase": 2,
+            "kind": "hit",
+            "actor": "reinforcement-8-0",
+            "target": "aux-medic",
+            "amount": 2,
+            "counter": false
+          }
+        ],
+        "alive": 0,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 0,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 14,
+            "id": "aux-medic",
+            "reason": "reinforcement-8-0"
+          }
+        ]
+      }
+    },
+    {
+      "map": 6,
+      "layout": "after",
+      "policy": "advance",
+      "status": "victory",
+      "stop": "outcome",
+      "turn": 34,
+      "alive": 5,
+      "reserves": 4,
+      "commands": 164,
+      "deaths": [
+        {
+          "turn": 4,
+          "id": "extra-5-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-2-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 6,
+          "id": "extra-5-0-1",
+          "reason": "a2"
+        },
+        {
+          "turn": 6,
+          "id": "a5",
+          "reason": "extra-5-0-3"
+        },
+        {
+          "turn": 6,
+          "id": "reinforcement-4-0",
+          "reason": "a4"
+        },
+        {
+          "turn": 7,
+          "id": "a1",
+          "reason": "extra-5-1-0"
+        },
+        {
+          "turn": 8,
+          "id": "extra-5-0-3",
+          "reason": "a2"
+        },
+        {
+          "turn": 8,
+          "id": "extra-5-1-2",
+          "reason": "a4"
+        },
+        {
+          "turn": 8,
+          "id": "extra-5-0-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 9,
+          "id": "extra-5-1-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 9,
+          "id": "a4",
+          "reason": "reinforcement-4-1"
+        },
+        {
+          "turn": 10,
+          "id": "reinforcement-4-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 13,
+          "id": "reinforcement-8-1",
+          "reason": "a6"
+        },
+        {
+          "turn": 14,
+          "id": "extra-5-1-1",
+          "reason": "a7"
+        },
+        {
+          "turn": 19,
+          "id": "a6",
+          "reason": "extra-5-2-3"
+        },
+        {
+          "turn": 20,
+          "id": "extra-5-2-3",
+          "reason": "a7"
+        },
+        {
+          "turn": 23,
+          "id": "tower-west",
+          "reason": "a7"
+        },
+        {
+          "turn": 29,
+          "id": "extra-5-2-2",
+          "reason": "a9"
+        },
+        {
+          "turn": 34,
+          "id": "boss",
+          "reason": "a2"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-1",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 3,
+          "reserves": 10,
+          "sorties": 1,
+          "legalMoves": 111,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a2",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 9,
+          "sorties": 1,
+          "legalMoves": 138,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-2",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 163,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 8,
+          "sorties": 0,
+          "legalMoves": 148,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-5-0-2",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-1",
+              "target": "a3",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-0",
+              "target": "a1",
+              "amount": 1,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 8,
+          "sorties": 0,
+          "legalMoves": 145,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-3",
+              "target": "a5",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "reinforcement-4-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 8,
+          "sorties": 0,
+          "legalMoves": 123,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 6,
+              "id": "extra-5-2-0",
+              "reason": "a1"
+            },
+            {
+              "turn": 6,
+              "id": "extra-5-0-1",
+              "reason": "a2"
+            },
+            {
+              "turn": 6,
+              "id": "a5",
+              "reason": "extra-5-0-3"
+            },
+            {
+              "turn": 6,
+              "id": "reinforcement-4-0",
+              "reason": "a4"
+            }
+          ]
+        }
+      ],
+      "final": {
+        "turn": 34,
+        "enemyHits": [],
+        "alive": 5,
+        "reserves": 4,
+        "sorties": 0,
+        "legalMoves": 179,
+        "canDeploy": false,
+        "deaths": [
+          {
+            "turn": 34,
+            "id": "boss",
+            "reason": "a2"
+          }
+        ]
+      }
+    },
+    {
+      "map": 6,
+      "layout": "after",
+      "policy": "hold",
+      "status": "timeout",
+      "stop": "turn-limit",
+      "turn": 41,
+      "alive": 4,
+      "reserves": 0,
+      "commands": 195,
+      "deaths": [
+        {
+          "turn": 2,
+          "id": "extra-5-0-2",
+          "reason": "a1"
+        },
+        {
+          "turn": 3,
+          "id": "a4",
+          "reason": "extra-5-0-0"
+        },
+        {
+          "turn": 4,
+          "id": "extra-5-0-0",
+          "reason": "a6"
+        },
+        {
+          "turn": 7,
+          "id": "a6",
+          "reason": "extra-5-2-0"
+        },
+        {
+          "turn": 7,
+          "id": "extra-5-2-0",
+          "reason": "a3"
+        },
+        {
+          "turn": 8,
+          "id": "a2",
+          "reason": "reinforcement-4-0"
+        },
+        {
+          "turn": 9,
+          "id": "reinforcement-4-0",
+          "reason": "a7"
+        },
+        {
+          "turn": 12,
+          "id": "a8",
+          "reason": "reinforcement-8-0"
+        },
+        {
+          "turn": 12,
+          "id": "a7",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 13,
+          "id": "reinforcement-8-0",
+          "reason": "a1"
+        },
+        {
+          "turn": 13,
+          "id": "reinforcement-4-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 15,
+          "id": "a9",
+          "reason": "reinforcement-8-1"
+        },
+        {
+          "turn": 17,
+          "id": "reinforcement-8-1",
+          "reason": "a3"
+        },
+        {
+          "turn": 21,
+          "id": "aux-bow",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 30,
+          "id": "aux-horse",
+          "reason": "砲撃"
+        },
+        {
+          "turn": 39,
+          "id": "aux-medic",
+          "reason": "砲撃"
+        }
+      ],
+      "opening": [
+        {
+          "turn": 1,
+          "enemyHits": [],
+          "alive": 3,
+          "reserves": 10,
+          "sorties": 1,
+          "legalMoves": 110,
+          "canDeploy": true,
+          "deaths": []
+        },
+        {
+          "turn": 2,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            },
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-2",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 9,
+          "sorties": 1,
+          "legalMoves": 141,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 2,
+              "id": "extra-5-0-2",
+              "reason": "a1"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a4",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 4,
+          "reserves": 8,
+          "sorties": 1,
+          "legalMoves": 144,
+          "canDeploy": true,
+          "deaths": [
+            {
+              "turn": 3,
+              "id": "a4",
+              "reason": "extra-5-0-0"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-0-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 7,
+          "sorties": 1,
+          "legalMoves": 245,
+          "canDeploy": false,
+          "deaths": [
+            {
+              "turn": 4,
+              "id": "extra-5-0-0",
+              "reason": "a6"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "enemyHits": [],
+          "alive": 5,
+          "reserves": 7,
+          "sorties": 0,
+          "legalMoves": 236,
+          "canDeploy": false,
+          "deaths": []
+        },
+        {
+          "turn": 6,
+          "enemyHits": [
+            {
+              "phase": 2,
+              "kind": "hit",
+              "actor": "extra-5-2-0",
+              "target": "a6",
+              "amount": 2,
+              "counter": false
+            }
+          ],
+          "alive": 5,
+          "reserves": 7,
+          "sorties": 0,
+          "legalMoves": 233,
+          "canDeploy": false,
+          "deaths": []
+        }
+      ],
+      "final": {
+        "turn": 40,
+        "enemyHits": [],
+        "alive": 4,
+        "reserves": 0,
+        "sorties": 0,
+        "legalMoves": 132,
+        "canDeploy": false,
+        "deaths": []
+      }
+    }
+  ]
+}
