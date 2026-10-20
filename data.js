@@ -17,7 +17,7 @@ function makeMap(id){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
    path(g,13,1,28);path(g,7,1,28);for(let x=7;x<=13;x++)g[2][x]='=';
-   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,9,'skirmish'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',7,4,'defend'),enemy('e5','sword',7,25,'raid'),enemy('e6','bow',6,27,'raid'),enemy('boss','shield',8,1,'hold'),enemy('southguard','shield',7,28,'hold')];
+   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',7,4,'defend'),enemy('e5','sword',7,25,'raid'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',8,1,'hold'),enemy('southguard','shield',7,28,'hold')];
    spawns=[{x:7,y:27}];
  } else {
    patch(g,0,13,w,2,'~');patch(g,4,13,2,2,'+');patch(g,10,13,2,2,'+');path(g,10,2,23);g[13][10]=g[14][10]='+';
@@ -55,11 +55,13 @@ function extraMap(id){
  g[goal.y][goal.x]='c';
  // Each front has a purpose: screen, ranged cover, flank, then a guarded approach.
  const formations={
-  3:[['shield',6,29,'advance'],['bow',6,27,'defend'],['sword',2,28,'defend'],['horse',9,27,'advance'],['shield',6,19,'defend'],['mage',5,18,'defend'],['bow',2,19,'defend'],['horse',9,18,'advance'],['sword',6,7,'advance'],['mage',9,6,'defend'],['bow',2,6,'defend'],['shield',6,4,'defend']],
-  4:[['sword',5,26,'advance'],['bow',5,24,'defend'],['shield',10,26,'defend'],['horse',12,24,'advance'],['shield',5,17,'defend'],['mage',4,16,'defend'],['bow',11,17,'defend'],['sword',12,15,'advance'],['shield',5,7,'defend'],['bow',4,5,'defend'],['mage',11,6,'defend'],['horse',12,4,'advance']],
-  5:[['shield',7,32,'defend'],['mage',6,31,'defend'],['sword',2,33,'advance'],['bow',11,32,'defend'],['shield',7,24,'defend'],['bow',6,23,'defend'],['horse',2,23,'advance'],['mage',11,22,'defend'],['sword',7,10,'advance'],['shield',2,9,'defend'],['mage',11,8,'defend'],['horse',7,6,'advance']]
+  3:[['shield',6,29,'advance'],['bow',6,27,'defend'],['sword',2,28,'defend'],['horse',9,27,'advance'],['shield',6,19,'defend'],['mage',5,18,'defend'],['bow',2,19,'defend'],['horse',9,18,'defend'],['sword',6,7,'advance'],['mage',9,6,'defend'],['bow',2,6,'defend'],['shield',6,4,'defend']],
+  4:[['sword',5,26,'advance'],['bow',5,24,'defend'],['shield',10,26,'defend'],['horse',12,24,'defend'],['shield',5,17,'defend'],['mage',4,16,'defend'],['bow',11,17,'defend'],['sword',12,15,'defend'],['shield',5,7,'defend'],['bow',4,5,'defend'],['mage',11,6,'defend'],['horse',12,4,'defend']],
+  5:[['shield',7,32,'defend'],['mage',6,31,'defend'],['sword',2,33,'advance'],['bow',11,32,'defend'],['shield',7,24,'defend'],['bow',6,23,'defend'],['horse',2,23,'defend'],['mage',11,22,'defend'],['sword',7,10,'advance'],['shield',2,9,'defend'],['mage',11,8,'defend'],['horse',7,6,'defend']]
  };
  const enemies=formations[id].map(([type,x,y,ai],i)=>{g[y][x]='=';return enemy(`extra-${id}-${Math.floor(i/4)}-${i%4}`,type,x,y,ai);});
+ // Keep terrain stamped at its original formation cells; move only enemy specs.
+ if(id===4){enemies[1].y=21;enemies[2].y=22;enemies[3].y=22;}
  enemies.push(enemy('boss','shield',cx,1,'hold'));
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
  // More troops without introducing a new class, resource or campaign roster.
