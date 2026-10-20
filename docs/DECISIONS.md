@@ -22,9 +22,9 @@
 - 未実装／保留：最終章の物語・無限増援・外伝・詳細な上級分岐。人間プレイでの難度・一般兵編成の完走は未検証。
 - この一覧は既存資料の索引。新たなゲーム仕様の採用・実装を意味しない。
 
-## D003 — 改名は別工程（保留）
+## D003 — 改名は別工程（初期計画の履歴）
 
-- 現行repoは `hane-san/SRPG`、Pagesは `https://hane-san.github.io/SRPG/`。
+- 初期計画時のrepoは `hane-san/SRPG`、Pagesは `https://hane-san.github.io/SRPG/`。現在の確定名はD005を参照。
 - 提供マニュアルの目標repo `hane-no-SRPG01` と表示名「英雄叙事詩」は別の移行工程で扱う。今回、改名・URL・manifest・内部保存キーを変更しない。
 - 旧Pages URLの転送を仮定せず、移行時は配信パス・ホーム画面登録・設定と保存を別途検証する。
 
@@ -33,3 +33,10 @@
 - [PR #7](https://github.com/hane-san/SRPG/pull/7)：出撃UI・SE・HP表示。
 - [PR #9](https://github.com/hane-san/SRPG/pull/9)：BGM42曲化。
 - 本導入では取り込まない。AGENTS / DEVELOPMENTの編集が重なるため、後から統合する側で差分を確認して共通契約を保持する。
+
+## D005 — 人間が確定した現在のrepo名へ追随（2026-10-19、採用済み）
+
+- 決裁：はねさん。実際の改名とPR承認・統合後に「ここに合わせて進める」と指示。現在の正本は `hane-san/SRPG-01-FEstyle`。以前のhane-no-*は旧案であり追加Renameしない。
+- 人間が統合したPR #13 / #7を含む最新main `46e17724accda307c1ab8ee9ced2da43a45745cd` を基準に現在参照とパス検査を修正。対応：[Issue #15](https://github.com/hane-san/SRPG-01-FEstyle/issues/15)。
+- 表示名と技術ID・保存・ゲーム仕様・CI定義を維持。古い名前・URL・SHA・run・判断の記録は履歴として保持する。[現在地](rename-preparation.md#確定した現在地2026-10-19)を優先する。
+- 独立レビューの実施記録とiPhone実機・ホーム画面・外部AIの選択は未確認。人間の承認・統合やCI成功をその証拠に置き換えない。

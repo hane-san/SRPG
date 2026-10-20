@@ -10,7 +10,7 @@ import {RELEASE} from '../config.js';
 import {DISPLAY_NAME} from '../display-name.js';
 import {launch} from './browser-helpers.mjs';
 
-const root=fileURLToPath(new URL('../',import.meta.url)),prefixes=['/SRPG/','/hane-no-SRPG01/'];
+const root=fileURLToPath(new URL('../',import.meta.url)),prefixes=['/SRPG/','/SRPG-01-FEstyle/','/hane-no-SRPG01/'];
 const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json','.webmanifest':'application/manifest+json','.png':'image/png','.md':'text/plain'};
 const server=createServer(async(req,res)=>{
  try{
