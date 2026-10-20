@@ -1,5 +1,5 @@
 import {RULES,TERRAINS,PROMOTIONS} from './config.js?v=0.8.0';
-import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
@@ -211,7 +211,7 @@ export function eventPhase(s,observe=noop){if(s.status!=='playing')return;s.phas
  if(s.map.weatherCycle)log(s,`天候更新：次のT${s.turn+1}は${WEATHER[weatherAt(s,s.turn+1)].label}。移動減少は敵味方共通・最小1`);
  s.warnings=s.warnings.filter(w=>w.turn>s.turn);
  const next=s.turn+1;
- if(s.map.cannon&&next%RULES.cannonPeriod===0){const target=alive(s,'ally').sort((a,b)=>b.y-a.y||a.x-b.x)[0];if(target){const cells=[{x:target.x,y:target.y},...[[0,-1],[-1,0],[1,0],[0,1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(p=>terrain(s,p))];s.warnings.push({kind:'cannon',turn:next,cells});log(s,`確報：T${next} P4 赤い照準へ砲撃6。次のP1で退避できます`);}}
+ if(s.map.cannon&&next%RULES.cannonPeriod===0){const target=alive(s,'ally').sort((a,b)=>b.y-a.y||a.x-b.x)[0];if(target){const cells=[{x:target.x,y:target.y},...[[0,-1],[-1,0],[1,0],[0,1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(p=>terrain(s,p))];s.warnings.push({kind:'cannon',turn:next,cells});log(s,`確報：T${next} P4 赤い照準へ砲撃${RULES.barrageDamage}。次のP1で退避できます`);}}
  if(s.map.spawns.length&&!s.southTaken&&next%RULES.reinforcementPeriod===0&&next/RULES.reinforcementPeriod<=(s.map.maxWaves??Infinity)){s.warnings.push({kind:'spawn',turn:next,cells:s.map.spawns});log(s,`確報：T${next} P4 紫の旗に増援。次ターンから攻撃`);}
  checkOutcome(s);
 }
