@@ -29,6 +29,10 @@ try{
  assert.deepEqual(await t.camera(),camera,'dock and camera remain stable');
  assert(await page.locator('#moveUndo').isVisible());
  await t.select('b');assert(await page.locator('#moveUndo').isVisible(),'selection alone preserves undo');
+ await t.slide({x:3,y:16},{x:3,y:15},{end:false});
+ assert(await page.locator('#moveUndo').isHidden(),'Undo must be unavailable during another held gesture');
+ await t.touch('touchCancel',[]);
+ assert(await page.locator('#moveUndo').isVisible(),'aborting the other gesture does not consume Undo');
  await page.locator('#moveUndo').click();
  assert.deepEqual(await t.state(),original,'undo restores acted flag, position, log and metrics');
  assert(await page.locator('#moveUndo').isHidden());
