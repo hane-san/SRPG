@@ -74,7 +74,7 @@ try{
   const sortie=E.createGame();if(occupied)Object.assign(sortie.units[0],sortie.map.camp,{deployed:true});
   await t.reset(sortie);await page.locator('#orders button').filter({hasText:'出撃可'}).click();await page.locator('#deploymentList button').first().click();
   const before=await t.draft(),virtual=before.sortieUnit,p=E.reachable(sortie,virtual).find(p=>p.y===virtual.y&&E.dist(p,virtual)===1);
-  await t.slide(virtual,p,{end:false});const held=await t.draft();assert(held.dragging&&!held.destinationPress);assert((await page.locator('#commandHint').innerText()).includes('コスト 1/4'));await t.touch('touchCancel',[]);
+  await t.slide(virtual,p,{end:false});const held=await t.draft();assert(held.dragging&&!held.destinationPress);assert((await page.locator('#commandHint').innerText()).includes(`コスト ${p.cost}/${E.movement(sortie,virtual)}`));await t.touch('touchCancel',[]);
   assert.deepEqual(await t.draft(),before);assert.deepEqual(await t.state(),sortie);
   const expected=structuredClone(sortie);assert(E.deployAndAct(expected,virtual.id,p,'wait').ok);
   await t.slide(virtual,p);await t.settled();assert.deepEqual(await t.state(),expected,'releasing a castle drag commits the sortie without another button');
