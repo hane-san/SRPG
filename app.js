@@ -30,7 +30,7 @@ $('modal').addEventListener('close',()=>music.stopPreview());
 $('closeModal').onclick=close;
 function button(text,fn,cls=''){const b=document.createElement('button');b.textContent=text;if(cls)b.className=cls;b.onclick=ev=>{sound.unlock();fn(ev);};return b;}
 function selected(){const u=s.units.find(a=>a.id===view.selected);return view.sortie&&u?view.sortieUnit:u;}
-function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null,dragging:false,destinationPress:false,sortie:false,sortieUnit:null});}
+function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null,dragging:false,destinationPress:false,moveArmed:false,sortie:false,sortieUnit:null});}
 function center(){return {x:(vp.scrollLeft+vp.clientWidth/2)/view.tile,y:(vp.scrollTop+vp.clientHeight/2)/view.tile};}
 function recenter(p){vp.scrollLeft=p.x*view.tile-vp.clientWidth/2;vp.scrollTop=p.y*view.tile-vp.clientHeight/2;}
 function fit(){lastSize={w:vp.clientWidth,h:vp.clientHeight};view.tile=Math.max(20,Math.floor(vp.clientWidth/s.map.w))*[1,1.4,1.9][zoom];$('zoomLabel').textContent=['全幅','×1.4','×1.9'][zoom];}
@@ -187,12 +187,9 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
  const update=(x,y,release=false)=>{
   const point=mapPoint(x,y),cell=E.key(point),enemy=E.at(s,point)?.team==='enemy';
   if(!release&&cell===lastCell)return;lastCell=cell;
-  // A newly armed route is fixed while the finger crosses an enemy.
-  // Moving onto another empty destination disarms and starts a fresh 200ms dwell.
-  if(!release&&lockAnchor&&!enemy&&cell!==E.key(anchor.dest)){
-   hold.reset();anchor=null;lockAnchor=false;view.moveArmed=false;
-  }
-  if(anchor&&!enemy&&!release){
+  // Once locked, preserve the exact endpoint through intervening empty cells
+  // on the way to a ranged target; release away from endpoint/enemy cancels.
+  if(anchor&&!enemy&&(lockAnchor||!release)){
    if(!hold.armed)hold.reset();
    view.cursor={...point};draw();return;
   }
@@ -214,6 +211,7 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
   if(quick&&!view.invalid&&!view.attackError&&!view.sortie){
    if(enemy&&view.target){commit('attack');return;}
    if(!enemy&&!view.target&&E.key(view.dest)===E.key(point)&&E.dist(u,view.dest)>0){commit('wait');return;}
+   sound.play('cancel');restore();return;
   }
   if(view.invalid||(destinationPress&&!existingArrow&&!view.target&&!view.attackError)){sound.play('cancel');restore();return;}
   openDraft();
