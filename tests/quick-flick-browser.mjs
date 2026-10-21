@@ -36,15 +36,16 @@ try{
  assert.deepEqual(await t.state(),original,'undo overwrites durable save');
  cases.push('armed movement, exact state undo, selection retention, camera and reload');
 
- // Moving to a second tile restarts the 200ms clock; cancellation cannot commit.
+ // The locked endpoint must survive intermediate empty cells on the way to a target.
  await t.reset(fixture());await t.slide(origin,step,{end:false});
  await page.waitForFunction(()=>window.srpgDebug.draft().moveArmed===true);
  const next=await t.point({x:5,y:14});await t.touch('touchMove',[next]);
- assert.equal((await t.draft()).moveArmed,false,'changing destination disarms');
- await t.touch('touchCancel',[]);
- assert.deepEqual(await t.state(),original);
+ assert.equal((await t.draft()).moveArmed,true,'an armed route stays fixed');
+ assert.deepEqual((await t.draft()).dest,step);
+ await t.touch('touchEnd',[]);
+ assert.deepEqual(await t.state(),original,'releasing at a different empty cell cancels');
  assert(await page.locator('#moveUndo').isHidden());
- cases.push('move to a new tile disarms, cancel never consumes command');
+ cases.push('locked destination remains fixed, off-endpoint release cancels');
 
  // A legal endpoint is fixed; the enemy release commits an attack immediately.
  await t.reset(fixture());await t.slide(origin,firing,{end:false});
