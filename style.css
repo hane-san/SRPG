@@ -259,3 +259,13 @@ a{color:#e4c8f0}
 #deploymentList .sortie-choice{display:flex;align-items:center;text-align:left;gap:11px;min-height:49px;padding:6px 9px}
 .sortie-choice-icon{display:grid;place-items:center;flex:0 0 35px;height:35px;border-radius:7px;background:#294d50;color:#fff2c7;font-size:20px;font-weight:700}
 .sortie-choice-copy{flex:1;min-width:0;line-height:1.35;font-size:13px}
+/* Issue #24: a fixed, low-noise one-step movement undo, never part of map scrolling. */
+#moveUndo{position:absolute;right:10px;bottom:10px;z-index:6;width:48px;height:48px;min-width:48px;min-height:48px;border-radius:12px;background:#302936b8;color:#ffe9b5;border:1px solid #d2bd9f9c;font-size:29px;line-height:1;padding:0;box-shadow:0 2px 8px #1a142333;backdrop-filter:none}
+#moveUndo:active{background:#5e4d63}
+/* Side-by-side battle forecast: stable rows and tabular figures down to 320px. */
+#commandDock #orders .combat-forecast{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;align-content:center;padding-block:0}
+#commandDock #orders .combat-forecast .forecast-side{display:grid;grid-template-rows:18px 10px 18px;align-content:center;min-width:0;gap:3px}
+#commandDock #orders .combat-forecast .forecast-side span{font-size:14px;line-height:18px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#commandDock #orders .combat-forecast .forecast-side .hp-track{height:10px;margin:0;align-self:center}
+#commandDock #orders .combat-forecast .forecast-side small{font-size:13px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+@media(max-width:340px){#commandDock #orders .combat-forecast{gap:8px}#commandDock #orders .combat-forecast .forecast-side span{font-size:13px}}

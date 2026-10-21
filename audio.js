@@ -28,6 +28,7 @@ export function createAudio(storage){
    if(kind==='select')note(520,.045);
    else if(kind==='cursor')note(700,.025,0,'sine');
    else if(kind==='confirm'){note(520,.055);note(780,.08,.045);}
+   else if(kind==='lock'){burst(.022,.035,2400);note(820,.04,0,'triangle',610,.025);}
    else if(kind==='cancel')note(360,.07,0,'triangle',220);
    else if(kind==='step')note(125,.035,0,'triangle',70);
    else if(kind==='swing'){burst(.075,.09,1900);note(760,.075,0,'sawtooth',130,.065);note(150,.09,.02,'triangle',65,.065);}

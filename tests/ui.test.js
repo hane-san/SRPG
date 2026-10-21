@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGesture} from '../ui-input.js';
+import {createGesture,createHoldLock} from '../ui-input.js';
 import {readSave,writeSave,STORAGE} from '../save.js';
 import {createGame} from '../engine.js';
 import {MAPS} from '../data.js';
@@ -28,4 +28,17 @@ test('old HP6 P1 saves retain the roster but discard obsolete all-class P3 comma
  assert.equal(restored.units.find(u=>u.id===mage.id).command,null);
  assert.equal(restored.units.find(u=>u.id===mage.id).hp,mage.hp);
  assert.equal(restored.units.length,s.units.length);
+});
+
+test('destination hold starts at the last legal tile, cancels stale timers and fires once',async()=>{
+ const fired=[],hold=createHoldLock(18,k=>fired.push(k));
+ hold.enter('5,15');await new Promise(r=>setTimeout(r,7));
+ hold.enter('5,14');await new Promise(r=>setTimeout(r,13));
+ assert.equal(hold.armed,false,'moving to another cell restarts the hold');
+ await new Promise(r=>setTimeout(r,13));
+ assert.equal(hold.armed,true);assert.deepEqual(fired,['5,14']);
+ hold.enter('5,14');assert.deepEqual(fired,['5,14']);
+ hold.reset();assert.equal(hold.armed,false);
+ hold.enter('5,13');hold.reset();await new Promise(r=>setTimeout(r,25));
+ assert.deepEqual(fired,['5,14'],'cancelled pointer must never arm later');
 });

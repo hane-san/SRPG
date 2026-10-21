@@ -1,11 +1,11 @@
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26-sortie29';
 import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29';
 import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29';
-import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29';
-import {bindMapInput} from './ui-input.js?v=0.8.0';
+import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24';
+import {bindMapInput,createHoldLock} from './ui-input.js?v=0.8.0-issue24';
 import {readSave,writeSave} from './save.js?v=0.8.0-p3-26';
 import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26';
-import {createAudio} from './audio.js?v=0.8.0-issue17-sortie29';
+import {createAudio} from './audio.js?v=0.8.0-issue17-sortie29-issue24';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0-issue17-sortie29';
 import {DISPLAY_NAME} from './display-name.js?v=0.8.0-display-2fb0ebb2368b';
@@ -15,7 +15,7 @@ let lastSize={w:0,h:0};
 let view={selected:null,dest:null,target:null,action:null,danger:false,tile:32,cursor:null};
 let fast=false;try{fast=localStorage.getItem('field-command-fast')==='true';}catch{}
 const sound=createAudio(),music=createMusic();
-let battleCard=null,lastNotice=null;
+let battleCard=null,lastNotice=null,pendingUndo=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const playback=createPlayback({getState:()=>s,setState:state=>{s=state;},view,draw,sound,isFast:()=>fast,isReduced:reduced,onCombat:presentCombat,onMessage:message=>{$('phaseFlash').textContent=message;$('phaseFlash').classList.add('visible');}});
 for(const event of ['pointerdown','keydown'])document.addEventListener(event,()=>{sound.unlock();music.unlock();},{capture:true,passive:true});
@@ -30,7 +30,7 @@ $('modal').addEventListener('close',()=>music.stopPreview());
 $('closeModal').onclick=close;
 function button(text,fn,cls=''){const b=document.createElement('button');b.textContent=text;if(cls)b.className=cls;b.onclick=ev=>{sound.unlock();fn(ev);};return b;}
 function selected(){const u=s.units.find(a=>a.id===view.selected);return view.sortie&&u?view.sortieUnit:u;}
-function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null,dragging:false,destinationPress:false,sortie:false,sortieUnit:null});}
+function resetSelection(){Object.assign(view,{selected:null,dest:null,target:null,action:null,menu:false,route:[],invalid:false,attackError:null,dragging:false,destinationPress:false,moveArmed:false,sortie:false,sortieUnit:null});}
 function center(){return {x:(vp.scrollLeft+vp.clientWidth/2)/view.tile,y:(vp.scrollTop+vp.clientHeight/2)/view.tile};}
 function recenter(p){vp.scrollLeft=p.x*view.tile-vp.clientWidth/2;vp.scrollTop=p.y*view.tile-vp.clientHeight/2;}
 function fit(){lastSize={w:vp.clientWidth,h:vp.clientHeight};view.tile=Math.max(20,Math.floor(vp.clientWidth/s.map.w))*[1,1.4,1.9][zoom];$('zoomLabel').textContent=['全幅','×1.4','×1.9'][zoom];}
@@ -43,6 +43,7 @@ function refresh(){
  const warning=[weather,s.warnings.map(w=>`T${w.turn} ${w.kind==='cannon'?`終了時：赤枠に砲撃 −${RULES.barrageDamage}`:'終了時：紫枠に増援'}`).join(' ／ ')].filter(Boolean).join(' ／ ');
  $('forecast').hidden=!warning;$('forecast').textContent=warning;
  const ready=E.alive(s,'ally').filter(u=>!u.acted).length;
+ $('moveUndo').hidden=locked||!!view.dragging||!pendingUndo||s.phase!==1||s.status!=='playing';
  $('endTurn').disabled=locked||view.dragging||s.status!=='playing';$('endTurn').textContent=locked?'進行中…':`命令終了 (${ready}) →`;
  $('nextUnit').disabled=locked||view.dragging||s.status!=='playing'||!ready;
  $('soundBtn').textContent=sound.enabled?'SE ON':'SE OFF';$('soundBtn').setAttribute('aria-pressed',String(sound.enabled));
@@ -62,8 +63,8 @@ function placeOrders(){
   const hint=$('commandHint');hint.replaceChildren();
   const route=document.createElement('strong');route.className='route-readout';route.textContent=`移動先 (${dest.x+1}, ${dest.y+1}) · コスト ${summary.cost??'—'}/${summary.budget} · ${summary.weather}`;
   const detail=document.createElement('span');detail.className='route-intent';
-  detail.textContent=view.attackError|| (target?`${target.name}へ攻撃可能 · 指を離して予測を確認`:`通常攻撃 ${summary.targets}隊 · 金の目印が対象`);
-  const help=document.createElement('span');help.className='route-help';help.textContent=view.destinationPress&&!view.target?'敵へスライド。選ばず離すと取消':view.dragging?'指を離して攻撃／待機を選択':'移動先をタップ、または部隊からスライド';
+  detail.textContent=view.attackError||(target?(()=>{const f=battleForecast(s,u,target,dest);return `${target.name} · 自HP ${u.hp}→${f.allyAfter} ／ 敵HP ${target.hp}→${f.enemyAfter} · 反撃${f.counter}`;})():view.moveArmed?'移動先を固定しました · 離すと移動、敵へ滑らせると攻撃':`通常攻撃 ${summary.targets}隊 · 金の目印が対象`);
+  const help=document.createElement('span');help.className='route-help';help.textContent=view.moveArmed?'カチャッ · 離すと確定':view.destinationPress&&!view.target?'敵へスライド。選ばず離すと取消':view.dragging?'同じマスで0.2秒保持すると確定可能':'部隊からスライド（静止待機は命令欄から）';
   hint.append(route,detail,help);
  }
 }
@@ -90,7 +91,7 @@ function panel(){
  else if(target){
   const p=battleForecast(s,u,target,dest);pre.classList.add('combat-forecast');
   const bar=(hp,max,kind)=>`<div class="hp-track ${kind}" aria-hidden="true"><i style="width:${Math.max(0,hp/max*100)}%"></i></div>`;
-  pre.innerHTML=`<div><span>自HP ${u.hp} → ${p.allyAfter}</span>${bar(p.allyAfter,u.maxHp,'ally')}<small class="${p.allyAfter===0?'fatal':''}">反撃 ${p.counter}${p.allyAfter===0?' · ⚠ 離脱':''}</small></div><div><span>敵HP ${target.hp} → ${p.enemyAfter}</span>${bar(p.enemyAfter,target.maxHp,'enemy')}<small>攻撃 ${p.damage}${p.enemyAfter===0?' · 撃破':u.type==='bow'?' · 隣接不可':u.type==='shooter'?' · 距離3は1':''}</small></div>`;
+  pre.innerHTML=`<div class="forecast-side ally"><span>自HP ${u.hp} → ${p.allyAfter}</span>${bar(p.allyAfter,u.maxHp,'ally')}<small class="${p.allyAfter===0?'fatal':''}">反撃 ${p.counter}${p.allyAfter===0?' · ⚠ 離脱':''}</small></div><div class="forecast-side enemy"><span>敵HP ${target.hp} → ${p.enemyAfter}</span>${bar(p.enemyAfter,target.maxHp,'enemy')}<small>攻撃 ${p.damage}${p.enemyAfter===0?' · 撃破':u.type==='bow'?' · 隣接不可':u.type==='shooter'?' · 距離3は1':''}</small></div>`;
  }
  else{const command=E.waitCommand(u,dest);pre.textContent=(s.map.base&&E.dist(u,s.map.base)===0&&E.dist(dest,u)>0?'本陣から離れます ／ ':'')+(u.type==='bow'?'弓2マス・隣接不可 ／ ':u.type==='shooter'?'砲兵は移動せずP3砲撃 ／ ':u.skill==='heal'?'魔術師系は移動せずP3治療 ／ ':'')+(command==='heal'?'待機：P3回復・P2反撃なし':command==='support'?'待機：P3攻撃・P2反撃なし':'待機：P3なし');}
  root.append(pre);
@@ -98,7 +99,7 @@ function panel(){
  if(u.team==='ally'&&!u.acted){
   const attack=button('攻撃',()=>commit('attack'),'attack primary');attack.id='attackOrder';attack.disabled=!E.canNormalAttack(u)||!target||!!view.dragging;attack.setAttribute('aria-label','攻撃');
   const preparing=E.waitCommand(u,dest);
-  const wait=button(preparing?'待機\n無反撃':'待機',()=>commit('wait'),'primary');wait.title=preparing?'その場で待機：P3準備・P2反撃なし':'通常待機：P3なし';wait.setAttribute('aria-label',wait.title);wait.id='waitOrder';wait.disabled=!!view.dragging;row.append(attack,wait);if(s.map.camp&&E.dist(u,s.map.camp)<=1)row.append(button('帰還',()=>{const result=E.returnToReserve(s,u.id);if(result.ok){lastNotice={title:'帰還',text:`${u.name}は予備隊に戻りました`};resetSelection();save();refresh();}},'subtle'));row.append(button('戻る',cancelDraft,'subtle'));
+  const wait=button(preparing?'待機\n無反撃':'待機',()=>commit('wait'),'primary');wait.title=preparing?'その場で待機：P3準備・P2反撃なし':'通常待機：P3なし';wait.setAttribute('aria-label',wait.title);wait.id='waitOrder';wait.disabled=!!view.dragging;row.append(attack,wait);if(s.map.camp&&E.dist(u,s.map.camp)<=1)row.append(button('帰還',()=>{const result=E.returnToReserve(s,u.id);if(result.ok){pendingUndo=null;lastNotice={title:'帰還',text:`${u.name}は予備隊に戻りました`};resetSelection();save();refresh();}},'subtle'));row.append(button('戻る',cancelDraft,'subtle'));
   if(targets.length>1){const cycle=button('対象 ↻',()=>{const i=targets.findIndex(t=>t.id===view.target);view.target=targets[(i+1)%targets.length].id;view.attackError=null;sound.play('cursor');refresh();},'subtle');cycle.id='targetCycle';cycle.setAttribute('aria-label','次の攻撃対象');row.append(cycle);}
  }else row.append(button('解除',()=>{resetSelection();refresh();},'subtle'));
  row.append(button('詳細',()=>unitDetails(u),'subtle'));row.style.setProperty('--choices',row.childElementCount);root.append(row);
@@ -127,20 +128,29 @@ function openDraft(){
  view.menu=true;view.invalid=false;view.action=null;refresh();
 }
 function supportControls(root,u){const targets=E.supportTargets(s,u);const p=document.createElement('p');p.className='hint';p.textContent=`P3の現時点候補：${targets.length?targets.map(t=>u.skill==='heal'?`${t.name}＋${E.healAmount(s,u,t)}`:t.name).join('、'):'なし'}。敵移動・被害後に再判定。${u.type==='shooter'?'射程内の敵1隊。距離3は威力1':u.skill==='support'?'指定→撃破可能→攻撃力順':'隣接味方1隊を2回復'}。対象なしは消費0。`;root.append(p);
- root.append(button(u.spend?'消費許可：ON':'消費許可：温存',()=>{if(locked)return;u.spend=!u.spend;save();refresh();unitDetails(u);}));
+ root.append(button(u.spend?'消費許可：ON':'消費許可：温存',()=>{if(locked)return;pendingUndo=null;u.spend=!u.spend;save();refresh();unitDetails(u);}));
  if(u.skill==='heal')return;
  const select=document.createElement('select');select.className='focus-select';select.setAttribute('aria-label','待機支援の優先対象');select.add(new Option('対象は自動選択',''));
- for(const a of E.alive(s,'enemy'))select.add(new Option(`${a.name}を優先（射程外なら自動）`,a.id));select.value=u.focus||'';select.onchange=()=>{if(locked)return;u.focus=select.value||null;save();refresh();unitDetails(u);};root.append(select);
+ for(const a of E.alive(s,'enemy'))select.add(new Option(`${a.name}を優先（射程外なら自動）`,a.id));select.value=u.focus||'';select.onchange=()=>{if(locked)return;pendingUndo=null;u.focus=select.value||null;save();refresh();unitDetails(u);};root.append(select);
 }
 async function commit(action){
  if(locked||view.dragging||s.phase!==1||s.status!=='playing')return;const u=selected();if(!u||!['attack','wait'].includes(action))return;
+ const eligibleUndo=action==='wait'&&!view.sortie&&E.dist(u,view.dest||u)>0;
+ const undoCandidate=eligibleUndo?{state:structuredClone(s),id:u.id}:null;
  const resolved=structuredClone(s),frames=[],record=(state,actor,event)=>{if(event&&event.kind!=='settled')frames.push({state:structuredClone(state),event});};
  const r=view.sortie?E.deployAndAct(resolved,u.id,view.dest||u,action,view.target,record):E.act(resolved,u.id,view.dest||u,action,view.target,record);if(!r.ok){sound.play('cancel');lastNotice={title:'出撃不可',text:r.error};refresh();return;}
- battleCard=null;lastNotice={title:`${u.name} · ${action==='attack'?'攻撃':'待機'}`,text:'移動を表示中',tail:'確定済み'};
+ pendingUndo=null;battleCard=null;lastNotice={title:`${u.name} · ${action==='attack'?'攻撃':'待機'}`,text:'移動を表示中',tail:'確定済み'};
  locked=true;resetSelection();refresh();sound.play('confirm');save(resolved);
  try{await playback.play(frames);}catch(error){console.error('Presentation skipped',error);}
- finally{s=resolved;playback.clear();locked=false;if(!battleCard){const moved=E.dist(u,resolved.units.find(a=>a.id===u.id))>0,command=resolved.units.find(a=>a.id===u.id)?.command;lastNotice={title:`${u.name} · ${moved?'移動待機':'待機'}`,text:command?`P3${command==='heal'?'隣接回復':'攻撃'}を準備 · P2反撃なし`:'通常待機 · P3なし',tail:'続けて部隊を選択できます'};}$('phaseFlash').classList.remove('visible');save();refresh();vp.focus({preventScroll:true});}
+ finally{s=resolved;playback.clear();locked=false;pendingUndo=undoCandidate;if(!battleCard){const moved=E.dist(u,resolved.units.find(a=>a.id===u.id))>0,command=resolved.units.find(a=>a.id===u.id)?.command;lastNotice={title:`${u.name} · ${moved?'移動待機':'待機'}`,text:command?`P3${command==='heal'?'隣接回復':'攻撃'}を準備 · P2反撃なし`:'通常待機 · P3なし',tail:'続けて部隊を選択できます'};}$('phaseFlash').classList.remove('visible');save();refresh();vp.focus({preventScroll:true});}
 }
+function undoMove(){
+ if(locked||view.dragging||!pendingUndo||s.status!=='playing'||s.phase!==1)return;
+ const {state,id}=pendingUndo;pendingUndo=null;s=state;resetSelection();battleCard=null;lastNotice=null;
+ const u=s.units.find(a=>a.id===id);if(u)selectUnit(u);else refresh();
+ sound.play('cancel');save();
+}
+$('moveUndo').onclick=undoMove;
 function selectUnit(u,open=false){battleCard=null;lastNotice=null;view.sortie=false;view.sortieUnit=null;view.selected=u.id;view.dest={x:u.x,y:u.y};view.cursor={x:u.x,y:u.y};view.keyboard=false;view.action=null;view.target=null;view.menu=false;view.route=[];
  sound.play('select');view.attackError=null;if(open&&u.team==='ally'&&!u.acted)openDraft();else refresh();}
 function mapPoint(clientX,clientY){const r=canvas.getBoundingClientRect();return {x:Math.floor((clientX-r.left)/view.tile),y:Math.floor((clientY-r.top)/view.tile)};}
@@ -166,20 +176,44 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
  const existingArrow=!!anchor;
  if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
  else if(!ready||(!destinationPress&&pressed?.team!=='enemy'&&!sortieOrigin&&!anchor))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
- // A newly pressed destination anchors the attack gesture to that exact tile.
- // Existing explicit arrows keep their endpoint through a later enemy flick.
  if(destinationPress&&!anchor){draftMove(u,p);anchor={dest:{...view.dest},route:[...view.route]};}
- view.dragging=true;view.destinationPress=destinationPress;view.menu=false;refresh();vp.focus({preventScroll:true});
- let lastCell=null;
- const update=(x,y,release=false)=>{const point=mapPoint(x,y),cell=E.key(point),enemy=E.at(s,point)?.team==='enemy';
+ view.dragging=true;view.destinationPress=destinationPress;view.menu=false;view.moveArmed=false;refresh();vp.focus({preventScroll:true});
+ let lastCell=null,lockAnchor=false;
+ const hold=createHoldLock(200,()=>{
+  if(!view.dragging||view.invalid||view.target||view.attackError||!view.dest||E.dist(u,view.dest)===0)return;
+  if(!anchor){anchor={dest:{...view.dest},route:[...view.route]};lockAnchor=true;}
+  view.moveArmed=true;sound.play('lock');placeOrders();draw();
+ });
+ const update=(x,y,release=false)=>{
+  const point=mapPoint(x,y),cell=E.key(point),enemy=E.at(s,point)?.team==='enemy';
   if(!release&&cell===lastCell)return;lastCell=cell;
-  if(anchor&&!enemy&&!release){view.cursor={...point};draw();return;}
-  const wasMenu=view.menu,oldTarget=view.target,legal=draftMove(u,point,enemy?anchor:null);view.menu=legal&&(!!view.target||!!view.attackError);
-  if(view.menu&&(!wasMenu||oldTarget!==view.target))openDraft();else if(wasMenu&&!view.menu)refresh();else draw();};
- const restore=()=>{for(const k of Object.keys(view))if(!(k in before))delete view[k];Object.assign(view,before);refresh();};
+  // Once locked, preserve the exact endpoint through intervening empty cells
+  // on the way to a ranged target; release away from endpoint/enemy cancels.
+  if(anchor&&!enemy&&(lockAnchor||!release)){
+   if(!hold.armed)hold.reset();
+   if(lockAnchor){view.target=null;view.attackError=null;view.menu=false;}
+   view.cursor={...point};placeOrders();draw();return;
+  }
+  const wasMenu=view.menu,oldTarget=view.target,legal=draftMove(u,point,enemy?anchor:null);
+  view.menu=legal&&(!!view.target||!!view.attackError);
+  if(!release){
+   if(!enemy&&legal&&!view.attackError&&E.dist(u,view.dest)>0&&!anchor)hold.enter(cell);
+   else if(!hold.armed)hold.reset();
+  }
+  if(view.menu&&(!wasMenu||oldTarget!==view.target))openDraft();
+  else if(wasMenu&&!view.menu)refresh();else {placeOrders();draw();}
+ };
+ const restore=()=>{hold.reset();for(const k of Object.keys(view))if(!(k in before))delete view[k];Object.assign(view,before);refresh();};
  const end=(x,y)=>{
-  // Keep controls hidden until the release has been fully classified.
-  update(x,y,true);view.dragging=false;view.destinationPress=false;
+  const point=mapPoint(x,y),enemy=E.at(s,point)?.team==='enemy';
+  // Classify release while the lock is still armed; no command can fire on cancel.
+  const quick=hold.armed;update(x,y,true);
+  view.dragging=false;view.destinationPress=false;view.moveArmed=false;hold.reset();
+  if(quick&&!view.invalid&&!view.attackError&&!view.sortie){
+   if(enemy&&view.target){commit('attack');return;}
+   if(!enemy&&!view.target&&E.key(view.dest)===E.key(point)&&E.dist(u,view.dest)>0){commit('wait');return;}
+   sound.play('cancel');restore();return;
+  }
   if(view.invalid||(destinationPress&&!existingArrow&&!view.target&&!view.attackError)){sound.play('cancel');restore();return;}
   // A clean drag starting at the castle confirms a move+wait directly.
   // A chosen attack target still goes through the normal target confirmation.
@@ -187,6 +221,7 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
   openDraft();
  };
  const tap=(x,y)=>{
+  hold.reset();
   if(same){view.dragging=false;cancelDraft();return;}
   if(destinationPress){
    view.dragging=false;view.destinationPress=false;
@@ -233,7 +268,7 @@ function askEnd(){if(locked||s.status!=='playing')return;const unacted=E.alive(s
 $('endTurn').onclick=askEnd;
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function runTurn(){if(locked||s.phase!==1||s.status!=='playing')return;
- const recovery=structuredClone(s);battleCard=null;lastNotice={title:`T${s.turn} · 敵軍行動`,text:'一隊ずつ戦闘を表示します',tail:''};locked=true;resetSelection();
+ pendingUndo=null;const recovery=structuredClone(s);battleCard=null;lastNotice={title:`T${s.turn} · 敵軍行動`,text:'一隊ずつ戦闘を表示します',tail:''};locked=true;resetSelection();
  try{
   if(!E.prepareEnemy(s))return;refresh();
   for(const [phase,fn,label]of [[2,E.enemyPhase,'敵軍行動'],[3,E.supportPhase,'待機支援'],[4,E.eventPhase,'戦場更新']]){
@@ -252,7 +287,7 @@ function requestStart(id,chain=false){
  if(s.metrics.commands===0&&s.turn===1&&s.status==='playing'){start(id,chain);return;}
  modal('<h2>新しい戦闘を開始しますか？</h2><p>現在の戦闘と連戦の進行は、新しい戦闘に置き換わります。</p><div id="newBattleConfirm"></div>');$('newBattleConfirm').append(button('新しい戦闘を開始',()=>start(id,chain),'primary wide'));
 }
-function start(id,chain=false,lost=[],specialties={}){battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
+function start(id,chain=false,lost=[],specialties={}){pendingUndo=null;battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
 function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties);},'danger wide'));}
 function selectSortie(u){
  const virtual=E.sortieUnit(s,u.id);

@@ -24,7 +24,7 @@ try{
    if(map.id===4)assert(text.includes('大雨'));
    const geometry=await page.locator('#commandHint').evaluate(e=>{const dock=e.parentElement.getBoundingClientRect();return {dock:dock.height,children:[...e.children].map(c=>{const r=c.getBoundingClientRect();return {top:r.top>=dock.top,bottom:r.bottom<=dock.bottom,left:r.left>=dock.left,right:r.right<=dock.right,font:parseFloat(getComputedStyle(c).fontSize)};})};});
    assert.equal(geometry.dock,144);assert(geometry.children.every(c=>c.top&&c.bottom&&c.left&&c.right),JSON.stringify({width,map:map.id,geometry}));assert(geometry.children.slice(0,2).every(c=>c.font>=14));
-   assert.deepEqual(await t.state(),s);await t.touch('touchEnd',[]);assert.deepEqual(await t.state(),s);
+   assert.deepEqual(await t.state(),s);await t.touch('touchCancel',[]);assert.deepEqual(await t.state(),s);
    assert.deepEqual(await t.camera(),camera);await page.keyboard.press('Escape');assert.deepEqual(await t.camera(),camera);
    results.push({width,map:map.id+1,weather:E.weatherAt(s),cost:p.cost,budget:E.movement(s,u)});
   }
