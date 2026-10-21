@@ -18,14 +18,14 @@ export function createGame(mapId=0,opts={},lost=[],progress={}){
  const allies=specs.map((r,i)=>{
   const missing=lost.includes(r.id)&&settings.mode==='classic';
   const spec=missing?{...r,id:`general-${r.id}`,name:`補充兵 ${i+1}`,named:false}:r;
-  const spawn=i<2?pos[i+1]:pos[i];
-  return unit({...spec,x:spawn[0],y:spawn[1],rank:mapId>=2?'advanced':'lower',specialty:missing?null:specialties[r.id]||null,deployed:i<2},'ally',settings);
+  const spawn=pos[i];
+  return unit({...spec,x:spawn[0],y:spawn[1],rank:mapId>=2?'advanced':'lower',specialty:missing?null:specialties[r.id]||null,deployed:false},'ally',settings);
  });
  const s={version:2,map,settings,units:[...allies,...map.enemies.map(e=>unit(e,'enemy',settings))],
   turn:1,phase:1,status:'playing',lost:[...lost],specialties:{...specialties},deployedThisTurn:0,
   log:[],warnings:[],southTaken:false,
   metrics:{commands:0,supports:0,misfires:0,charges:0,deaths:[],turns:0},events:[]};
- log(s,map.briefing);log(s,`初期配備 ${Math.min(2,allies.length)}隊・予備 ${reserves(s).length}隊。自軍本城から各ターン1隊を出撃可能`);return s;
+ log(s,map.briefing);log(s,`全${reserves(s).length}隊が本城で出撃待機。初ターンは${RULES.openingDeployments}隊、以降は毎ターン${RULES.deploymentsPerTurn}隊まで出撃可能`);return s;
 }
 export function deploymentCells(s){
  const base=s.map.camp;if(!base)return [];
@@ -36,8 +36,9 @@ export function deploymentCells(s){
  }
  return candidates.sort((a,b)=>dist(a,base)-dist(b,base)||a.y-b.y||a.x-b.x);
 }
+export const deploymentLimit=s=>s.turn===1?RULES.openingDeployments:RULES.deploymentsPerTurn;
 export function canDeploy(s){
- return s.status==='playing'&&s.phase===1&&s.deployedThisTurn<RULES.deploymentsPerTurn&&alive(s,'ally').length<RULES.maxDeployed&&reserves(s).length>0&&deploymentCells(s).length>0;
+ return s.status==='playing'&&s.phase===1&&s.deployedThisTurn<deploymentLimit(s)&&alive(s,'ally').length<RULES.maxDeployed&&reserves(s).length>0&&deploymentCells(s).length>0;
 }
 export function deploy(s,id,p=deploymentCells(s)[0]){
  if(!canDeploy(s))return {ok:false,error:'このターンは出撃できません'};
@@ -60,7 +61,7 @@ export function deployAndAct(s,id,dest,action,targetId,observe=()=>{}){
  Object.assign(u,{x:base.x,y:base.y,deployed:true,acted:false,command:null});
  const error=validateAction(s,id,dest,action,targetId);
  if(error){Object.assign(u,original);return {ok:false,error};}
- observe(s,u,{kind:'deploy',actor:u.id,origin:{...base}});
+ observe(s,u,{kind:'deploy',actor:u.id,origin:{...base},line:'出撃する！'});
  const result=act(s,id,dest,action,targetId,observe);
  if(!result.ok){Object.assign(u,original);return result;}
  s.deployedThisTurn++;
