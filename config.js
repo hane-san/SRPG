@@ -1,7 +1,7 @@
 // HP6 fixed-damage tactical prototype. P3 ammunition belongs to artillery and mage-family healers.
 export const RELEASE = '0.8.0';
 export const RULES = {
-  maxHp: 6, heal: 2, emergencyCap: 0.5,
+  maxHp: 6, heal: 2, emergencyCap: 0.5, openingDeployments: 2,
   barrageDamage: 2, ammo: 2, supplyRadius: 1, maxDeployed: 5, deploymentsPerTurn: 1,
   supportRange: [2, 2], cannonPeriod: 3, reinforcementPeriod: 4,
 };
