@@ -1,6 +1,6 @@
-import {tacticalRanges,attackTargets} from './ui-model.js?v=0.8.0-position22';
-import {RULES} from './config.js?v=0.8.0';
-import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0';
+import {tacticalRanges,attackTargets} from './ui-model.js?v=0.8.0-position22-p3-26';
+import {RULES} from './config.js?v=0.8.0-p3-26';
+import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0-p3-26';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
  {'.':'#919e7b','=':'#beb792',f:'#627d68','~':'#769aab'},
