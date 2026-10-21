@@ -14,7 +14,7 @@ export function tween(duration,update){
 }
 export function createPlayback({getState,setState,view,draw,sound,isFast,isReduced,onMessage=()=>{},onCombat=()=>{}}){
  const duration=(normal,quick=0,still=0)=>document.hidden||isFast()?quick:isReduced()?still:normal;
- const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation'])view[k]=null;};
+ const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation','sortieEntrance','sortieQuote'])view[k]=null;};
  async function play(frames){
   let lastActor=null;
   for(const {state,event} of frames){
@@ -25,7 +25,15 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
     view.animation={...event,stage:'ready',progress:0};draw();await tween(duration(60,0,30),()=>{});lastActor=event.actor;
    }
    if(event.kind==='deploy'){
-    setState(state);sound.play('deploy');onMessage(`${actor.name}が本城から出撃`);draw();
+    // A committed sortie is presented at the gate before any travel or attack.
+    // Scene changes happen only in playback; combat and charges were settled by engine.
+    const entrant=state.units.find(u=>u.id===event.actor),line=event.line||'出撃する！';
+    setState(state);sound.play('deploy');onMessage(`${entrant.name}、本城より出撃！`);
+    await tween(duration(210,30,80),p=>{view.sortieEntrance={id:entrant.id,x:event.origin.x,y:event.origin.y,progress:p};draw();});
+    view.sortieEntrance=null;view.sortieQuote={id:entrant.id,x:event.origin.x,y:event.origin.y,line};
+    onMessage(`${entrant.name}「${line}」`);draw();
+    await tween(duration(440,60,130),()=>{});
+    view.sortieQuote=null;draw();
    }else if(event.kind==='move'){
     setState(state);onMessage(`${actor.name}が移動`);
     for(let i=1;i<event.path.length;i++){
