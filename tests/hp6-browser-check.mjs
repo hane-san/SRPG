@@ -41,7 +41,7 @@ try{
    assert(E.canDeploy(deployed),'first turn still permits a second sortie');
    await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);
    assert.deepEqual(await t.state(),deployed,'the sortie survives reload');
-   const next=E.reserves(deployed)[0],virtual2=E.sortieUnit(deployed,next.id);
+   const nextReserve=E.reserves(deployed)[0],virtual2=E.sortieUnit(deployed,nextReserve.id);
    const dest2=E.reachable(deployed,virtual2).find(p=>E.dist(p,virtual2)>0&&!E.alive(deployed,'enemy').some(e=>E.inRange({...virtual2,...p},e)));
    assert(dest2,'a second opening sortie route exists');
    await page.locator('#orders button').filter({hasText:'出撃'}).click();
