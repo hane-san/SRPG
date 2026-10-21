@@ -43,7 +43,16 @@ export function createAudio(storage){
      note(armoured?110:145,.16,0,'sawtooth',38,.08);
      note(270,.12,.016,'triangle',85,.045);
     }else if(armoured){
-     burst(.04,.065,570);note(180,.085,0,'triangle',70,.05);
+     // Armour keeps its dull identity; a two-point wound still has body.
+     const double=Math.round(Number(amount))===2;
+     burst(double?.06:.04,double?.09:.065,570);
+     note(double?165:180,double?.105:.085,0,'triangle',70,double?.067:.05);
+    }else if(Math.round(Number(amount))===2){
+     // HP6's bread-and-butter strike should feel like *two* real gems breaking,
+     // not a featherweight cue. Reserved heavy hitstop remains 4+ only.
+     burst(.065,.13,1150);
+     note(275,.105,0,'triangle',82,.078);
+     note(950,.048,.012,'sawtooth',340,.031);
     }else{
      burst(.045,.075,1500);note(450,.065,0,'triangle',190,.035);
     }
@@ -51,16 +60,19 @@ export function createAudio(storage){
    else if(kind==='gem-chain'){
     const chips=Math.max(0,Math.min(6,Math.floor(Number(amount)||0)));
     const interval=Math.max(20,Math.min(140,Number(options.intervalMs)||74))/1000;
-    const heal=!!options.heal,armoured=!!options.armoured;
+    const heal=!!options.heal,armoured=!!options.armoured,double=chips===2&&!heal;
     for(let i=0;i<chips;i++){
      const delay=i*interval,variation=[0,65,-25,95,25,125][i],base=heal?630:armoured?650:850;
      if(heal){
       note(base+variation,.085,delay,'sine',base+variation+320,.052);
       note(base+variation+350,.065,delay+.014,'triangle',base+variation+600,.027);
      }else{
-      burst(.029,armoured?.041:.052,armoured?1300:2700,delay);
-      note(base+variation,.055,delay,'sine',armoured?base*.54:base*.67,.044);
-      note(base*1.8+variation,.033,delay+.004,'triangle',base,.016);
+      // Each jewel has one well-defined transient. Two-point hits get wider,
+      // bright glass and a final resonance without suggesting a third crack.
+      burst(double?.045:.029,armoured?(double?.06:.041):(double?.083:.052),armoured?1300:double?2550:2700,delay);
+      note(base+variation,double?.077:.055,delay,'sine',armoured?base*.54:base*.67,double?.064:.044);
+      note(base*1.8+variation,double?.041:.033,delay+.004,'triangle',base,double?.028:.016);
+      if(double&&i===1)note(1660,.08,delay+.005,'sine',720,armoured?.014:.022);
      }
     }
    }
