@@ -90,7 +90,7 @@ export function unit(spec,team,options={}){
  return {...c,...spec,rank,named,specialty,team,maxHp:hp,hp,
   atk:Math.min(5,Math.max(1,(spec.atk??baseAtk)+(team==='enemy'?(options.enemyAttack||0):0))),
   def:spec.def??def,move:(spec.move??c.move)+(specialty==='advance'?1:0),
-  charges:options.charges??RULES.ammo,maxCharges:options.charges??RULES.ammo,
+  charges:options.charges??c.charges,maxCharges:options.charges??c.charges,
   alive:true,deployed:spec.deployed??true,acted:false,command:null,spend:true,focus:null,guard:0};
 }
 export function positions(id){
