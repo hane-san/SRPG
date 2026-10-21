@@ -64,8 +64,8 @@ function placeOrders(){
   const hint=$('commandHint');hint.replaceChildren();
   const route=document.createElement('strong');route.className='route-readout';route.textContent=`移動先 (${dest.x+1}, ${dest.y+1}) · コスト ${summary.cost??'—'}/${summary.budget} · ${summary.weather}`;
   const detail=document.createElement('span');detail.className='route-intent';
-  detail.textContent=view.attackError||(target?(()=>{const f=battleForecast(s,u,target,dest);return `${target.name} · 自HP ${u.hp}→${f.allyAfter} ／ 敵HP ${target.hp}→${f.enemyAfter} · 反撃${f.counter}`;})():view.moveArmed?'移動先を固定しました · 離すと移動、敵へ滑らせると攻撃':`通常攻撃 ${summary.targets}隊 · 金の目印が対象`);
-  const help=document.createElement('span');help.className='route-help';help.textContent=view.moveArmed?'カチャッ · 離すと確定':view.destinationPress&&!view.target?'敵へスライド。選ばず離すと取消':view.dragging?'同じマスで0.2秒保持すると確定可能':'部隊からスライド（静止待機は命令欄から）';
+  detail.textContent=view.attackError||(target?(()=>{const f=battleForecast(s,u,target,dest);return `${target.name} · 自HP ${u.hp}→${f.allyAfter} ／ 敵HP ${target.hp}→${f.enemyAfter} · 反撃${f.counter} · 敵の上で離して攻撃`;})():view.moveArmed?'移動先を固定しました · 離すと移動、敵へ滑らせると攻撃':`通常攻撃 ${summary.targets}隊 · 金の目印が対象`);
+  const help=document.createElement('span');help.className='route-help';help.textContent=view.target&&view.dragging?'敵の上で離すと攻撃確定':view.moveArmed?'カチャッ · 離すと移動確定':view.destinationPress&&!view.target?'敵へスライド。選ばず離すと取消':view.dragging?'敵まで滑らせて離すと直接攻撃／移動だけは0.2秒保持':'部隊からスライド（静止待機は命令欄から）';
   hint.append(route,detail,help);
  }
 }
@@ -175,6 +175,9 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
  const destinationPress=!!(ready&&!sortieOrigin&&!pressed&&E.routeTo(s,u,p).length);
  let anchor=before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
  const existingArrow=!!anchor;
+ // An explicit drag beginning on a friendly unit, the chosen endpoint, or the gate
+ // may commit on enemy release. Merely touching an enemy never auto-attacks.
+ const directAttackGesture=!!(pressed?.team==='ally'&&!pressed.acted||destinationPress||existingArrow||sortieOrigin);
  if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
  else if(!ready||(!destinationPress&&pressed?.team!=='enemy'&&!sortieOrigin&&!anchor))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
  if(destinationPress&&!anchor){draftMove(u,p);anchor={dest:{...view.dest},route:[...view.route]};}
@@ -190,19 +193,27 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
   if(!release&&cell===lastCell)return;lastCell=cell;
   // Once locked, preserve the exact endpoint through intervening empty cells
   // on the way to a ranged target; release away from endpoint/enemy cancels.
-  if(anchor&&!enemy&&(lockAnchor||!release)){
+  if(anchor&&!enemy){
    if(!hold.armed)hold.reset();
-   if(lockAnchor){view.target=null;view.attackError=null;view.menu=false;}
+   // Leaving a target clears the intent. The drawn endpoint stays fixed.
+   view.target=null;view.attackError=null;view.menu=false;view.invalid=false;
    view.cursor={...point};placeOrders();draw();return;
   }
-  const wasMenu=view.menu,oldTarget=view.target,legal=draftMove(u,point,enemy?anchor:null);
-  view.menu=legal&&(!!view.target||!!view.attackError);
+  // Preserve the last *explicitly visited* legal destination when crossing onto
+  // an enemy; slideDraft without an anchor could silently pick a new approach.
+  if(enemy&&!anchor){
+   const dest=view.dest||u,route=E.routeTo(s,u,dest);
+   if(route.length)anchor={dest:{x:dest.x,y:dest.y},route:[...route]};
+  }
+  const legal=draftMove(u,point,enemy?anchor:null);
+  // Keep the static command dock hidden throughout the gesture; the live HP
+  // and counter preview is already shown by placeOrders().
+  view.menu=false;
   if(!release){
    if(!enemy&&legal&&!view.attackError&&E.dist(u,view.dest)>0&&!anchor)hold.enter(cell);
    else if(!hold.armed)hold.reset();
   }
-  if(view.menu&&(!wasMenu||oldTarget!==view.target))openDraft();
-  else if(wasMenu&&!view.menu)refresh();else {placeOrders();draw();}
+  placeOrders();draw();
  };
  const restore=()=>{hold.reset();for(const k of Object.keys(view))if(!(k in before))delete view[k];Object.assign(view,before);refresh();};
  const end=(x,y)=>{
@@ -210,14 +221,16 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
   // Classify release while the lock is still armed; no command can fire on cancel.
   const quick=hold.armed;update(x,y,true);
   view.dragging=false;view.destinationPress=false;view.moveArmed=false;hold.reset();
+  // A deliberate enemy release is the confirmation: no 200ms hold and no
+  // second attack button. Engine legality is still checked inside commit().
+  if(enemy&&view.target&&!view.invalid&&!view.attackError&&directAttackGesture){commit('attack');return;}
   if(quick&&!view.invalid&&!view.attackError&&!view.sortie){
-   if(enemy&&view.target){commit('attack');return;}
    if(!enemy&&!view.target&&E.key(view.dest)===E.key(point)&&E.dist(u,view.dest)>0){commit('wait');return;}
    sound.play('cancel');restore();return;
   }
   if(view.invalid||(destinationPress&&!existingArrow&&!view.target&&!view.attackError)){sound.play('cancel');restore();return;}
-  // A clean drag starting at the castle confirms a move+wait directly.
-  // A chosen attack target still goes through the normal target confirmation.
+  // A clean drag starting at the castle confirms move+wait directly.
+  // Enemy release has already committed above, including a legal sortie attack.
   if(sortieOrigin&&view.sortie&&!view.target&&!view.attackError&&E.dist(view.dest,u)>0){commit('wait');return;}
   openDraft();
  };
