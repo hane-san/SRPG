@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGesture} from '../ui-input.js';
+import {createGesture,createHoldLock} from '../ui-input.js';
 import {readSave,writeSave,STORAGE} from '../save.js';
 import {createGame} from '../engine.js';
 import {MAPS} from '../data.js';
@@ -12,3 +12,16 @@ test('old, unavailable and malformed storage resets safely without a crash',()=>
 test('save uses release map rules and rejects duplicate units',()=>{const store=memory(),s=createGame();s.map.warnings='edited';writeSave(store,'test',s,false);const r=readSave(store,'test',MAPS);assert.equal(r.state.map.warnings,undefined);s.units.push({...s.units[0]});writeSave(store,'test',s,false);assert.equal(readSave(store,'test',MAPS),null);});
 
 test('unknown class or skill cannot reach the UI from a save',()=>{for(const field of ['type','skill']){const store=memory(),s=createGame();s.units[0][field]='missing';writeSave(store,'test',s,false);assert.equal(readSave(store,'test',MAPS),null);}});
+
+test('destination hold starts at the last legal tile, cancels stale timers and fires once',async()=>{
+ const fired=[],hold=createHoldLock(18,k=>fired.push(k));
+ hold.enter('5,15');await new Promise(r=>setTimeout(r,7));
+ hold.enter('5,14');await new Promise(r=>setTimeout(r,13));
+ assert.equal(hold.armed,false,'moving to another cell restarts the hold');
+ await new Promise(r=>setTimeout(r,13));
+ assert.equal(hold.armed,true);assert.deepEqual(fired,['5,14']);
+ hold.enter('5,14');assert.deepEqual(fired,['5,14']);
+ hold.reset();assert.equal(hold.armed,false);
+ hold.enter('5,13');hold.reset();await new Promise(r=>setTimeout(r,25));
+ assert.deepEqual(fired,['5,14'],'cancelled pointer must never arm later');
+});
