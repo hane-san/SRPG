@@ -239,6 +239,11 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
  const tap=(x,y)=>{
   hold.reset();
   if(same){view.dragging=false;cancelDraft();return;}
+  // Tapping an enemy is a deliberate *preview*, not a release-confirmed
+  // attack. Keep the old "no reachable approach" explanation on taps.
+  if(E.at(s,mapPoint(x,y))?.team==='enemy'){
+   restore();mapTap(x,y);return;
+  }
   if(destinationPress){
    view.dragging=false;view.destinationPress=false;
    if(existingArrow){update(x,y,true);openDraft();return;}
