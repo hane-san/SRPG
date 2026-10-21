@@ -33,7 +33,7 @@ test('damage fixed at 1–3 initially, advanced shields reduce one more',()=>{
  assert.equal(generic.def,2);
 });
 test('supply cannot exceed maximum, no penalty repair resource after death',()=>{
- const s=E.createGame(),a=s.units.find(u=>u.id==='a1');a.charges=0;
+ const s=E.createGame(),a=s.units.find(u=>u.id==='a4');Object.assign(a,{deployed:true,x:s.map.camp.x,y:s.map.camp.y,charges:0});
  E.nextTurn(s);assert.equal(a.charges,1);E.nextTurn(s);assert.equal(a.charges,RULES.ammo);
  E.nextTurn(s);assert.equal(a.charges,RULES.ammo);assert(!('repairs' in s.metrics));assert(!('repairCosts' in s));
 });
