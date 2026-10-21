@@ -33,7 +33,7 @@ try{
    const virtual={...next,...first.map.camp,deployed:true};
    const dest=E.reachable(first,virtual).filter(p=>E.dist(p,virtual)>0&&!E.alive(first,'enemy').some(e=>E.inRange({...virtual,...p},e))).sort((a,b)=>a.cost-b.cost)[0];
    assert(dest,'a legal sortie route should exist');
-   await t.tap(dest);await t.settled();
+   await t.slide(first.map.camp,dest);await t.settled();
    const deployed=await t.state();
    assert.equal(E.alive(deployed,'ally').length,1);
    assert.equal(deployed.deployedThisTurn,1);
@@ -46,7 +46,7 @@ try{
    assert(dest2,'a second opening sortie route exists');
    await page.locator('#orders button').filter({hasText:'出撃'}).click();
    await page.locator('#deploymentList button').first().click();
-   await t.tap(dest2);await t.settled();
+   await t.slide(deployed.map.camp,dest2);await t.settled();
    const second=await t.state();
    assert.equal(E.alive(second,'ally').length,2);assert.equal(second.deployedThisTurn,2);
    assert(!E.canDeploy(second),'opening sortie limit reached');
