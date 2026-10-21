@@ -8,8 +8,8 @@ function fixture(){const s=E.createGame();s.map.tiles=Array(20).fill('.'.repeat(
 const add=(s,type,x,y,team='ally',id=type,rank='lower')=>{const u=unit({id,name:id,type,x,y,rank},team);s.units.push(u);return u;};
 const cmd=(s,u,action,t,dest=u)=>E.act(s,u.id,{x:dest.x,y:dest.y},action,t?.id);
 
-test('all six maps start with two active HP6 allies; reserves never occupy a tile',()=>{
- for(const m of MAPS){const s=E.createGame(m.id),cells=new Set();assert.equal(E.alive(s,'ally').length,2);assert.equal(E.reserves(s).length,ROSTER.length+(m.extraAllies?.length||0)-2);
+test('all six maps start with every ally in the castle reserve, with no initial board units',()=>{
+ for(const m of MAPS){const s=E.createGame(m.id),cells=new Set();assert.equal(E.alive(s,'ally').length,0);assert.equal(E.reserves(s).length,ROSTER.length+(m.extraAllies?.length||0));
   for(const u of s.units){assert.equal(u.maxHp,6);assert.equal(u.hp,6);assert(Number.isFinite(E.terrain(s,u)?.cost));if(u.deployed===false)continue;assert(!cells.has(E.key(u)));cells.add(E.key(u));}
   assert(E.deploymentCells(s).length>0);
  }
@@ -51,8 +51,8 @@ test('only specialists receive castle supply; ordinary waiting keeps P2 counter'
 });
 test('castle deployment: one per P1, active cap five, no bench target or premature action',()=>{
  const s=E.createGame(),r=E.reserves(s),before=E.alive(s,'ally').length;
- assert(E.canDeploy(s));assert(!E.alive(s).some(u=>u.id===r[0].id));assert(E.deploy(s,r[0].id).ok);assert.equal(E.alive(s,'ally').length,before+1);
- assert(!E.deploy(s,r[1].id).ok);E.endTurn(s);if(s.status==='playing'){assert(E.canDeploy(s));assert(E.deploy(s,r[1].id).ok);}
+ assert(E.canDeploy(s));assert.equal(E.deploymentLimit(s),2);assert(!E.alive(s).some(u=>u.id===r[0].id));assert(E.deploy(s,r[0].id).ok);assert.equal(E.alive(s,'ally').length,before+1);
+ assert(E.deploy(s,r[1].id).ok);assert(!E.deploy(s,r[2].id).ok);E.endTurn(s);if(s.status==='playing'){assert.equal(E.deploymentLimit(s),1);assert(E.canDeploy(s));assert(E.deploy(s,r[2].id).ok);assert(!E.canDeploy(s));}
 });
 test('return to castle restores a slot but requires an unused adjacent unit',()=>{
  const s=fixture(),a=add(s,'sword',2,16);assert(E.returnToReserve(s,a.id).ok);assert.equal(E.alive(s,'ally').length,0);assert.equal(E.reserves(s).length,1);
@@ -65,7 +65,7 @@ test('named death is persistent, but its slot becomes a same-rank generic next c
  assert(!next.units.some(u=>u.id==='a2'));const generic=next.units.find(u=>u.id==='general-a2');
  assert(generic&&!generic.named&&generic.rank==='advanced'&&generic.specialty===null&&generic.atk===3);
  const hero=next.units.find(u=>u.id==='a1');assert.equal(hero.specialty,'guard');assert.equal(hero.atk,3);
- assert.equal(E.alive(next,'ally').length,2);assert.equal(E.reserves(next).length,7);assert(named.named);
+ assert.equal(E.alive(next,'ally').length,0);assert.equal(E.reserves(next).length,9);assert(named.named);
 });
 test('promotions are three mutually exclusive named-only extra abilities',()=>{
  const s=E.createGame(1);s.status='victory';
@@ -79,7 +79,7 @@ test('P4 warnings arrive after notification; waves cannot attack before next P2'
  E.eventPhase(s);const e=s.units.find(u=>u.id.startsWith('reinforcement'));assert(e&&e.hp===6&&!e.acted);assert.equal(s.phase,4);
 });
 test('four phases preserve terrain movement, weather and finite turn reset',()=>{
- const s=E.createGame(4),u=E.alive(s,'ally')[1];assert(E.routeTo(s,u,u).length);
+ const s=E.createGame(4),u=E.sortieUnit(s,E.reserves(s)[1].id);assert(E.routeTo(s,u,u).length);
  for(let i=0;i<5&&s.status==='playing';i++){assert.equal(s.phase,1);E.endTurn(s);assert.equal(s.phase,1);}
  assert(['clear','light','heavy'].includes(E.weatherAt(s)));
 });
@@ -160,4 +160,28 @@ test('UI attack targeting and overlays never advertise specialist P1 attacks',()
   assert.equal(draft.target,null);
   assert(draft.attackError.includes('P3'));
  }
+});
+
+test('castle deployment observes committed entrance before travel and any combat',()=>{
+ const s=E.createGame(),u=E.reserves(s)[0],base={...s.map.camp},virtual=E.sortieUnit(s,u.id);
+ assert.equal(E.alive(s,'ally').length,0);
+ const open=E.reachable(s,virtual).find(p=>E.dist(p,base)===1);
+ assert(open);const snapshot=structuredClone(s),events=[];
+ assert(!E.deployAndAct(s,u.id,open,'attack','non-existent').ok);
+ assert.deepEqual(s,snapshot,'invalid sortie cannot spend an action or expose a reserve');
+ assert(E.deployAndAct(s,u.id,open,'wait',undefined,(state,_actor,event)=>events.push({state:structuredClone(state),event})).ok);
+ assert.deepEqual(events.map(e=>e.event.kind),['deploy','move']);
+ assert.equal(events[0].event.line,'出撃する！');
+ assert.deepEqual(events[0].event.origin,base);
+ const entering=events[0].state.units.find(x=>x.id===u.id);
+ assert(entering.deployed);assert.deepEqual({x:entering.x,y:entering.y},base);
+ assert.equal(E.alive(s,'ally').length,1);assert.equal(s.deployedThisTurn,1);
+ assert(E.canDeploy(s),'one further sortie is permitted on the first turn');
+ assert.equal(E.reserves(s).length,ROSTER.length-1);
+});
+test('P3 specialists moving out of castle do not arm a P3 stance',()=>{
+ const s=E.createGame(),u=E.reserves(s).find(u=>u.type==='mage'),origin=E.sortieUnit(s,u.id);
+ const dest=E.reachable(s,origin).find(p=>E.dist(p,origin)===1);
+ assert(E.deployAndAct(s,u.id,dest,'wait').ok);
+ assert.equal(s.units.find(a=>a.id===u.id).command,null);
 });
