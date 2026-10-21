@@ -41,8 +41,9 @@ try{
  await t.slide(dest,{x:9,y:8});assert((await page.locator('#actionPreview').innerText()).includes('遠方まで10マス'));assert(await page.locator('#attackOrder').isDisabled());
  assert.deepEqual((await t.draft()).route,arrow.route);assert.deepEqual(await t.state(),s);assert.deepEqual(await t.camera(),camera);
  await page.screenshot({path:'test-results/position22-range-390.png'});
- await t.slide(dest,{x:6,y:14});const expected=structuredClone(s);assert(E.act(expected,'a',dest,'attack','e').ok);
- await page.locator('#attackOrder').click();await t.settled();assert.deepEqual(await t.state(),expected);
+ const expected=structuredClone(s);assert(E.act(expected,'a',dest,'attack','e').ok);
+ await t.slide(dest,{x:6,y:14});await t.settled();
+ assert.deepEqual(await t.state(),expected,'enemy release from a fixed route attacks without command menu');
  await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.deepEqual(await t.state(),expected);
  // An adjacent bow error must not silently switch to the other, legal enemy.
  const bow=fixture('bow');await t.reset(bow);await t.slide(origin,dest);await t.slide(dest,{x:6,y:14});
