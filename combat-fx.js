@@ -6,7 +6,7 @@ export function feedbackStyle({heal=false,heavy=false,armoured=false,count=0,all
   recoil:heal||calm?0:heavy?2:hits===2?1.35:hits>=3?1.1:.75,
   radius:heal?9:heavy?14:armoured?8:hits===2?11:8,
   rays:heal?4:heavy?8:hits===2?6:4,
-  glow:reduced?0:heal?.38:heavy?.58:hits===2?.46:.30,
+  glow:calm?0:heal?.38:heavy?.58:hits===2?.46:.30,
   dust:calm?0:.28
  };
 }
