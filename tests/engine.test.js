@@ -43,7 +43,7 @@ test('healing costs one supply and restores two to one adjacent ally',()=>{
  assert.equal([a.hp,b.hp].filter(x=>x>3).length,0);assert.equal(a.hp+b.hp,6);assert.equal(h.charges,1);
 });
 test('only specialists receive castle supply; ordinary waiting keeps P2 counter',()=>{
- const s=fixture(),a=add(s,'sword',2,16),cannon=add(s,'shooter',2,15),e=add(s,'sword',3,16,'enemy');e.ai='hold';cannon.charges=0;
+ const s=fixture(),a=add(s,'sword',2,16),cannon=add(s,'shooter',2,17),e=add(s,'sword',3,16,'enemy');e.ai='hold';cannon.charges=0;
  assert(cmd(s,a,'wait').ok);assert.equal(a.command,null);E.prepareEnemy(s);E.enemyPhase(s);assert.equal(e.hp,4);
  E.supportPhase(s);E.eventPhase(s);E.nextTurn(s);assert.equal(a.charges,0);assert.equal(cannon.charges,1);
  E.nextTurn(s);assert.equal(cannon.charges,2);E.nextTurn(s);assert.equal(cannon.charges,2);
