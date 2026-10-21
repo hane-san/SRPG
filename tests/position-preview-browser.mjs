@@ -16,7 +16,7 @@ try{
  for(const [width,height]of [[320,568],[360,740],[390,844],[844,390]]){
   await page.setViewportSize({width,height});
   for(const map of MAPS){
-   const s=E.createGame(map.id);const p=positions(map.id);s.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:p[i+1][0],y:p[i+1][1]}));if(map.id===4)s.turn=4;
+   const s=E.createGame(map.id);const openingPositions=positions(map.id);s.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:openingPositions[i+1][0],y:openingPositions[i+1][1]}));if(map.id===4)s.turn=4;
    await t.reset(s);await t.select('a1');const camera=await t.camera(),u=E.alive(s,'ally')[0];
    const p=E.reachable(s,u).find(p=>p.y===u.y&&E.dist(p,u)===1&&(!s.map.camp||E.dist(p,s.map.camp)>0));assert(p);
    await t.slide(u,p,{end:false});const draft=await t.draft();assert(draft.dragging);assert(await page.locator('#orders').isHidden());
