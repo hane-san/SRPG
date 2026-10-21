@@ -12,3 +12,20 @@ test('old, unavailable and malformed storage resets safely without a crash',()=>
 test('save uses release map rules and rejects duplicate units',()=>{const store=memory(),s=createGame();s.map.warnings='edited';writeSave(store,'test',s,false);const r=readSave(store,'test',MAPS);assert.equal(r.state.map.warnings,undefined);s.units.push({...s.units[0]});writeSave(store,'test',s,false);assert.equal(readSave(store,'test',MAPS),null);});
 
 test('unknown class or skill cannot reach the UI from a save',()=>{for(const field of ['type','skill']){const store=memory(),s=createGame();s.units[0][field]='missing';writeSave(store,'test',s,false);assert.equal(readSave(store,'test',MAPS),null);}});
+
+test('old HP6 P1 saves retain the roster but discard obsolete all-class P3 commands',()=>{
+ const store=memory(),s=createGame(),bow=s.units.find(u=>u.type==='bow'),mage=s.units.find(u=>u.type==='mage'),sword=s.units.find(u=>u.type==='sword');
+ bow.skill='support';bow.command='support';bow.acted=true;bow.charges=2;bow.maxCharges=2;
+ mage.skill='support';mage.command='support';mage.acted=true;
+ sword.skill='support';sword.command='support';sword.acted=true;sword.charges=2;sword.maxCharges=2;
+ writeSave(store,'0.8.0',s,false);const restored=readSave(store,'0.8.0',MAPS)?.state;
+ assert(restored);
+ assert.equal(restored.units.find(u=>u.id===bow.id).skill,'none');
+ assert.equal(restored.units.find(u=>u.id===bow.id).command,null);
+ assert.equal(restored.units.find(u=>u.id===bow.id).maxCharges,0);
+ assert.equal(restored.units.find(u=>u.id===sword.id).charges,0);
+ assert.equal(restored.units.find(u=>u.id===mage.id).skill,'heal');
+ assert.equal(restored.units.find(u=>u.id===mage.id).command,null);
+ assert.equal(restored.units.find(u=>u.id===mage.id).hp,mage.hp);
+ assert.equal(restored.units.length,s.units.length);
+});
