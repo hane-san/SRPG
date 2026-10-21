@@ -50,6 +50,9 @@ try{
    const second=await t.state();
    assert.equal(E.alive(second,'ally').length,2);assert.equal(second.deployedThisTurn,2);
    assert(!E.canDeploy(second),'opening sortie limit reached');
+   await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);
+   assert.deepEqual(await t.state(),second,'both opening sorties survive same-turn reload');
+   assert(!E.canDeploy(await t.state()),'reload cannot grant a third opening sortie');
    const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,app:document.querySelector('#app').getBoundingClientRect().height>innerHeight+1,end:document.querySelector('#endTurn').getBoundingClientRect().bottom>innerHeight+1}));
    assert.deepEqual(geometry,{overflow:false,app:false,end:false});
    await t.endTurn();const after=await t.state();assert(after.turn===2||after.status!=='playing');
