@@ -1,4 +1,4 @@
-// HP6 fixed-damage tactical prototype. One common finite supply for P3 stances.
+// HP6 fixed-damage tactical prototype. P3 ammunition belongs to artillery and mage-family healers.
 export const RELEASE = '0.8.0';
 export const RULES = {
   maxHp: 6, heal: 2, emergencyCap: 0.5,
@@ -7,17 +7,18 @@ export const RULES = {
 };
 export const CLASSES = {
   shooter: {label:'シューター',glyph:'砲',hp:6,atk:2,def:0,move:3,range:[2,3],skill:'support',charges:2},
-  shield: {label:'盾槍隊',glyph:'盾',hp:6,atk:2,def:1,move:4,range:[1,1],skill:'support',charges:2},
-  sword: {label:'剣士隊',glyph:'剣',hp:6,atk:2,def:0,move:5,range:[1,1],skill:'support',charges:2},
-  bow: {label:'長弓隊',glyph:'弓',hp:6,atk:2,def:0,move:4,range:[2,2],skill:'support',charges:2},
-  mage: {label:'魔道隊',glyph:'術',hp:6,atk:2,def:0,move:4,range:[1,2],skill:'support',charges:2},
+  shield: {label:'盾槍隊',glyph:'盾',hp:6,atk:2,def:1,move:4,range:[1,1],skill:'none',charges:0},
+  sword: {label:'剣士隊',glyph:'剣',hp:6,atk:2,def:0,move:5,range:[1,1],skill:'none',charges:0},
+  bow: {label:'長弓隊',glyph:'弓',hp:6,atk:2,def:0,move:4,range:[2,2],skill:'none',charges:0},
+  mage: {label:'魔道隊',glyph:'術',hp:6,atk:2,def:0,move:4,range:[1,2],skill:'heal',charges:2},
   healer: {label:'祈祷隊',glyph:'祈',hp:6,atk:2,def:0,move:4,range:[1,1],skill:'heal',charges:2},
   medic: {label:'救護隊',glyph:'癒',hp:6,atk:2,def:0,move:4,range:[1,1],skill:'heal',charges:2},
-  horse: {label:'騎兵隊',glyph:'騎',hp:6,atk:2,def:0,move:7,range:[1,1],skill:'support',charges:2},
+  horse: {label:'騎兵隊',glyph:'騎',hp:6,atk:2,def:0,move:7,range:[1,1],skill:'none',charges:0},
 };
 export const SKILLS = {
-  support:{label:'待機攻撃',text:'その場で待機してP2の反撃を放棄し、P3に通常射程内の敵1隊へ攻撃。命中した時だけ弾薬1を消費。本陣付近で毎ターン1補給。'},
-  heal:{label:'待機回復',text:'その場で待機してP2の反撃を放棄し、P3に隣接する負傷味方1隊へHP2回復。効果時だけ弾薬1消費。'},
+  none:{label:'通常兵種',text:'P1で移動・攻撃・待機。P2は射程内なら反撃。P3行動はありません。'},
+  support:{label:'砲撃準備',text:'砲兵専用。P1で動かず待機するとP3に射程内の敵1隊を砲撃。P1通常攻撃とP2反撃はできません。命中時だけ弾薬1消費。'},
+  heal:{label:'治療準備',text:'魔術師系専用。P1で動かず待機するとP3に隣接する負傷味方1隊をHP2回復。P1通常攻撃とP2反撃はできません。効果時だけ弾薬1消費。'},
 };
 export const PROMOTIONS = {
   guard:{label:'護衛',text:'待機中、受けるダメージを1軽減（最低1）'},
