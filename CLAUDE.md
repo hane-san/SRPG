@@ -12,5 +12,6 @@ transcript or another assistant's private memory.
 
 Follow the approved issue for implementation and independent evidence for review.
 Use the actual available model in Claude Code; this file does not select one.
-Never push directly to main, force-push or enable auto-merge. Record unverified
-checks and leave main integration to the human producer after CI and playtest.
+Never push directly to main, force-push or enable GitHub auto-merge. Record unverified
+checks. During the nonstop prototype phase (AGENTS.md, from 2026-10-21) the daily
+afternoon run merges PRs that pass the merge gate; other sessions leave merging to it.

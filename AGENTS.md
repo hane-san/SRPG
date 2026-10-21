@@ -6,6 +6,18 @@ This is the canonical `hane-san/SRPG-01-FEstyle` repository (formerly `hane-san/
 
 Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/input-performance-0.7.0.md](docs/input-performance-0.7.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
 
+## Nonstop prototype phase (human instruction 2026-10-21)
+
+The human producer wants ideas thrown in at lunch to be playable on GitHub Pages by the evening. Until the human declares a stabilization phase, this section overrides the merge-approval wording elsewhere in this file, in `CLAUDE.md` and in `docs/DEVELOPMENT.md`.
+
+- **Daily afternoon run**: every day at about 15:00 JST a Claude Code run audits, fixes, implements and **merges** work in `hane-san/ARPG-02-retrostyle` and `hane-san/SRPG-01-FEstyle`. Procedure: `.claude/skills/steward/SKILL.md` (section 「毎日15時の昼ラン」).
+- **Adopted work** = open Issues and PRs created by the owner account (including GPT/Codex acting for the owner), unless the title starts with 「提案」, the body says 未採用/保留/マージ保留, or it carries a `hold`/`proposal` label. Proposals are never implemented on their own initiative.
+- **Merge gate** (all required, checked on the exact head SHA): `rules` and `browser` Actions succeed; no conflict with latest `main`; the run's own audit has no BLOCK; no `hold` label. Merge with a normal merge commit through the PR, then confirm the `main` Actions and the Pages build. If `main` or Pages breaks, open and merge a revert PR in the same run.
+- Human approval, independent audit and iPhone playtests are **batched to the evening play session**. Record them as unverified in the PR; never call them done.
+- Still prohibited: direct push to `main`, force-push or history rewrite, GitHub's auto-merge feature, PR approvals, repository Settings changes, deleting or weakening tests, renaming the repository/display title/storage keys, and touching other repositories. Game invariants below stay binding; a change that breaks them needs an explicit Issue from the human.
+- Only the afternoon run merges. The dawn patrol and other sessions keep reviewing and fixing PR branches without merging.
+- SRPG specifics during this phase: HP6 rules, the P1→P4 order, determinism and save compatibility (`save.js`) stay binding. Run `npm run simulate` when rules, numbers or maps change and record the result. A change to the save format needs a migration test in the same PR.
+
 ## Shared AI development contract
 - Scope work to this repository and the approved issue. The human producer decides game specifications, playtest acceptance and integration into main.
 - Read [docs/DESIGN.md](docs/DESIGN.md), [docs/DECISIONS.md](docs/DECISIONS.md) and the issue before editing. Distinguish approved, proposed, deferred, superseded and unverified items. Do not invent missing chat context; surface contradictions between approved specs, code and tests.
