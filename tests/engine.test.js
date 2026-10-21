@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as E from '../engine.js';
 import {unit,MAPS,ROSTER} from '../data.js';
 import {RULES} from '../config.js';
+import {attackTargets,tacticalRanges,slideDraft} from '../ui-model.js';
 function fixture(){const s=E.createGame();s.map.tiles=Array(20).fill('.'.repeat(12));s.map.spawns=[];s.map.base=null;s.map.goal={x:11,y:0};s.map.camp={x:2,y:17};s.units=[];return s;}
 const add=(s,type,x,y,team='ally',id=type,rank='lower')=>{const u=unit({id,name:id,type,x,y,rank},team);s.units.push(u);return u;};
 const cmd=(s,u,action,t,dest=u)=>E.act(s,u.id,{x:dest.x,y:dest.y},action,t?.id);
@@ -148,4 +149,15 @@ test('no targets, no ammo and no second activation do not produce support',()=>{
  mage.charges=0;cmd(s,shooter,'wait');cmd(s,mage,'wait');assert.equal(mage.command,null);
  E.prepareEnemy(s);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(shooter.charges,1);assert.equal(mage.charges,0);
  E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(shooter.charges,1);
+});
+
+test('UI attack targeting and overlays never advertise specialist P1 attacks',()=>{
+ for(const type of ['shooter','mage','healer','medic']){
+  const s=fixture(),u=add(s,type,3,5),foe=add(s,'sword',3,3,'enemy');
+  assert.equal(attackTargets(s,u).length,0);
+  assert.equal(tacticalRanges(s,u).attacks.size,0);
+  const draft=slideDraft(s,u,foe);
+  assert.equal(draft.target,null);
+  assert(draft.attackError.includes('P3'));
+ }
 });
