@@ -39,7 +39,7 @@ test('v0.2 saves migrate without losing actions; corrupt nested data is rejected
  const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
  const s=E.createGame();Object.assign(s.units[0],{deployed:true,x:6,y:16});E.act(s,'a1',{x:5,y:14},'wait');writeSave(storage,'0.2.0',s,true);
  const migrated=readSave(storage,'0.3.0',MAPS);assert(migrated.campaign);assert.equal(migrated.state.units[0].y,14);assert(migrated.state.units[0].acted);
- for(const corrupt of [s=>s.metrics.deaths=null,s=>s.metrics.commands=-1,s=>s.warnings=[{kind:'cannon',turn:2,cells:null}],s=>s.units[0].acted=null,s=>s.units[0].alive=false,s=>Object.assign(s.units[1],{x:5,y:14})]){
+ for(const corrupt of [s=>s.metrics.deaths=null,s=>s.metrics.commands=-1,s=>s.warnings=[{kind:'cannon',turn:2,cells:null}],s=>s.units[0].acted=null,s=>s.units[0].alive=false,s=>Object.assign(s.units[1],{deployed:true,x:s.units[0].x,y:s.units[0].y})]){
   const damaged=structuredClone(s);corrupt(damaged);writeSave(storage,'0.3.0',damaged,true);assert.equal(readSave(storage,'0.3.0',MAPS),null);
  }
  assert(values.get(STORAGE));
