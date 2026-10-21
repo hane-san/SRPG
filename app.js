@@ -191,7 +191,8 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
   // on the way to a ranged target; release away from endpoint/enemy cancels.
   if(anchor&&!enemy&&(lockAnchor||!release)){
    if(!hold.armed)hold.reset();
-   view.cursor={...point};draw();return;
+   if(lockAnchor){view.target=null;view.attackError=null;view.menu=false;}
+   view.cursor={...point};placeOrders();draw();return;
   }
   const wasMenu=view.menu,oldTarget=view.target,legal=draftMove(u,point,enemy?anchor:null);
   view.menu=legal&&(!!view.target||!!view.attackError);
