@@ -1,13 +1,14 @@
+import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0';
 import {MAPS} from './data.js?v=0.8.0-issue17';
 import * as E from './engine.js?v=0.8.0-issue17';
-import {render,mini} from './render.js?v=0.8.0-position22';
+import {render,mini} from './render.js?v=0.8.0-gems28';
 import {bindMapInput} from './ui-input.js?v=0.8.0';
 import {readSave,writeSave} from './save.js?v=0.8.0';
 import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22';
-import {createAudio} from './audio.js?v=0.8.0-issue17';
+import {createAudio} from './audio.js?v=0.8.0-gems28';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
-import {createPlayback} from './playback.js?v=0.8.0-issue17';
+import {createPlayback} from './playback.js?v=0.8.0-gems28';
 import {DISPLAY_NAME} from './display-name.js?v=0.8.0-display-2fb0ebb2368b';
 const $=id=>document.getElementById(id),canvas=$('battlefield'),vp=$('mapViewport');
 let s,campaign=false,settings={mode:'classic',healing:'H1',enemyAttack:0},zoom=0,locked=false;
@@ -320,6 +321,7 @@ function showMenu(){if(locked)return;modal(`<h2>戦場を選ぶ</h2><div id="map
  function getSettings(){settings={mode:$('mode').value,enemyAttack:Number($('difficulty').value)};}
  for(const m of MAPS){const card=document.createElement('div');card.className='map-card'+(s.map.id===m.id?' active':'');card.innerHTML=`<div><strong>${m.title}</strong><small>${m.subtitle}</small></div>`;card.append(button('開始',()=>{getSettings();requestStart(m.id);}));$('maps').append(card);}
  $('campaignStart').append(button('第1〜3章を連戦（離脱を引き継ぐ）',()=>{getSettings();requestStart(0,true);},'primary wide'));
+ $('utility').append(button('💎 宝石の破砕音を試す',()=>openGemDemo({modal,sound,button}),'subtle'));
  $('utility').append(button('この戦闘を再試行',()=>confirmRestart(s.map.id)),button('最新版を確認',async()=>{try{const r=await fetch(`./version.json?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const v=await r.json();if(v.version===RELEASE)modal(`<h2>最新版です</h2><p>現在 v${RELEASE}。</p>`);else{modal(`<h2>新しい版があります</h2><p>互換性のある保存は引き継ぎます。ルールが変わる更新では新規開始になる場合があります。</p><div id="update"></div>`);$('update').append(button('更新して再起動',()=>{location.href=`./?v=${Date.now()}`;},'primary wide'));}}catch{modal('<p>更新確認ができませんでした。接続を確かめてください。</p>');}}));
 }
 $('menuBtn').onclick=showMenu;
