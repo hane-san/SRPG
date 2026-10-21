@@ -12,7 +12,9 @@ try{
   for(const map of MAPS){
    await t.reset(E.createGame(map.id));
    const first=await t.state();
-   assert.equal(first.units.filter(u=>u.team==='ally'&&u.deployed).length,2);
+   assert.equal(first.units.filter(u=>u.team==='ally'&&u.deployed).length,0);
+   assert.equal(E.reserves(first).length,first.units.filter(u=>u.team==='ally').length);
+   assert.equal(E.deploymentLimit(first),2);
    assert(first.units.every(u=>u.maxHp===6));
    const deploy=page.locator('#orders button').filter({hasText:'出撃'});
    assert.equal(await deploy.count(),1);
@@ -33,12 +35,21 @@ try{
    assert(dest,'a legal sortie route should exist');
    await t.tap(dest);await t.settled();
    const deployed=await t.state();
-   assert.equal(E.alive(deployed,'ally').length,3);
+   assert.equal(E.alive(deployed,'ally').length,1);
    assert.equal(deployed.deployedThisTurn,1);
-   assert.equal(E.reserves(deployed).length,first.units.filter(u=>u.team==='ally').length-3);
-   assert(!E.canDeploy(deployed),'only one sortie per turn');
+   assert.equal(E.reserves(deployed).length,first.units.filter(u=>u.team==='ally').length-1);
+   assert(E.canDeploy(deployed),'first turn still permits a second sortie');
    await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);
    assert.deepEqual(await t.state(),deployed,'the sortie survives reload');
+   const next=E.reserves(deployed)[0],virtual2=E.sortieUnit(deployed,next.id);
+   const dest2=E.reachable(deployed,virtual2).find(p=>E.dist(p,virtual2)>0&&!E.alive(deployed,'enemy').some(e=>E.inRange({...virtual2,...p},e)));
+   assert(dest2,'a second opening sortie route exists');
+   await page.locator('#orders button').filter({hasText:'出撃'}).click();
+   await page.locator('#deploymentList button').first().click();
+   await t.tap(dest2);await t.settled();
+   const second=await t.state();
+   assert.equal(E.alive(second,'ally').length,2);assert.equal(second.deployedThisTurn,2);
+   assert(!E.canDeploy(second),'opening sortie limit reached');
    const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,app:document.querySelector('#app').getBoundingClientRect().height>innerHeight+1,end:document.querySelector('#endTurn').getBoundingClientRect().bottom>innerHeight+1}));
    assert.deepEqual(geometry,{overflow:false,app:false,end:false});
    await t.endTurn();const after=await t.state();assert(after.turn===2||after.status!=='playing');
