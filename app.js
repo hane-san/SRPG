@@ -43,7 +43,7 @@ function refresh(){
  const warning=[weather,s.warnings.map(w=>`T${w.turn} ${w.kind==='cannon'?`終了時：赤枠に砲撃 −${RULES.barrageDamage}`:'終了時：紫枠に増援'}`).join(' ／ ')].filter(Boolean).join(' ／ ');
  $('forecast').hidden=!warning;$('forecast').textContent=warning;
  const ready=E.alive(s,'ally').filter(u=>!u.acted).length;
- $('moveUndo').hidden=locked||!pendingUndo||s.phase!==1||s.status!=='playing';
+ $('moveUndo').hidden=locked||!!view.dragging||!pendingUndo||s.phase!==1||s.status!=='playing';
  $('endTurn').disabled=locked||view.dragging||s.status!=='playing';$('endTurn').textContent=locked?'進行中…':`命令終了 (${ready}) →`;
  $('nextUnit').disabled=locked||view.dragging||s.status!=='playing'||!ready;
  $('soundBtn').textContent=sound.enabled?'SE ON':'SE OFF';$('soundBtn').setAttribute('aria-pressed',String(sound.enabled));
