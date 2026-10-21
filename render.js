@@ -1,3 +1,4 @@
+import {impactFrame,landingFrame} from './combat-fx.js?v=0.8.0-fx39';
 import {tacticalRanges,attackTargets} from './ui-model.js?v=0.8.0-position22-p3-26';
 import {RULES} from './config.js?v=0.8.0-p3-26';
 import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0-p3-26-sortie29';
@@ -105,7 +106,8 @@ export function render(canvas,s,view){
   const jewel=view.jewel?.id===u.id?view.jewel:null;
   const character=motion?{...u,x:motion.x,y:motion.y-(motion.bob||0),acted:false}:u;
   if(jewel)character.hp=jewel.hp;
-  if(jewel?.hitStop&&jewel.heavy){c.save();c.translate((1-jewel.progress)*2,0);drawUnit(c,character);c.restore();}
+  const hit=view.impact?.id===u.id&&view.impact.kind!=='heal'?view.impact:null;
+  if(hit){const recoil=impactFrame(hit.style,hit.progress).recoil;c.save();c.translate(hit.dx*recoil,hit.dy*recoil);drawUnit(c,character);c.restore();}
   else drawUnit(c,character);
  }
  if(view.sortieEntrance){
@@ -142,9 +144,54 @@ export function render(canvas,s,view){
   }else{c.fillStyle=heal?'#b8ffe0':type==='mage'?'#e4b3ff':'#ffe2a2';c.shadowColor=c.fillStyle;c.shadowBlur=6;c.beginPath();c.arc(0,0,heal?4:5,0,Math.PI*2);c.fill();}
   c.restore();
  }
+ if(view.stepLanding)drawLandingDust(c,view.stepLanding);
+ if(view.impact)drawCrystalImpact(c,view.impact);
  if(view.jewel&&!view.jewel.hitStop)drawGemFragments(c,s.units.find(u=>u.id===view.jewel.id),view.jewel);
  if(view.flash){const t=s.units.find(u=>u.id===view.flash.id);if(t){c.fillStyle=view.flash.heal?`rgba(132,255,194,${view.flash.amount*.45})`:`rgba(255,247,220,${view.flash.amount*.7})`;c.fillRect(t.x*32+3,t.y*32+3,26,27);}}
  if(view.effect){const e=view.effect;c.save();c.globalAlpha=1-e.progress*.4;c.font='bold 12px system-ui';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#132b32';c.fillStyle=e.heal?'#b8ffd0':'#fff2c2';const x=e.x*32+16,y=e.y*32+5-e.progress*13;c.strokeText(e.text,x,y);c.fillText(e.text,x,y);c.restore();}
+}
+// Lightweight screen-space marks drawn into the already-existing canvas.
+// Never touch battlefield camera, map surfaces or command dock geometry.
+function drawCrystalImpact(c,fx){
+ const {alpha,ring,glow,rays}=impactFrame(fx.style,fx.progress);
+ if(alpha<=0)return;
+ const x=fx.x*32+16,y=fx.y*32+15,heal=fx.kind==='heal',armour=fx.style.armoured&&!heal;
+ c.save();
+ c.globalAlpha=alpha*(heal?.75:.83);
+ c.strokeStyle=heal?'#abf7d3':armour?'#d3b99d':'#fff1bd';
+ c.lineWidth=armour?2:heal?1.5:fx.style.heavy?2.5:1.5;
+ c.beginPath();c.arc(x,y,ring,0,Math.PI*2);c.stroke();
+ // A shield absorbs the sharp edge: short, broad brass scratches.
+ if(armour){
+  c.strokeStyle='#e0b989';c.lineWidth=2;
+  c.beginPath();c.moveTo(x-8,y-4);c.lineTo(x+3,y-8);
+  c.moveTo(x-7,y+1);c.lineTo(x+5,y-3);c.stroke();
+ }else{
+  const lines=heal?4:rays,reach=heal?2:fx.style.heavy?5:3;
+  c.strokeStyle=heal?'#d4ffeb':'#fff2d3';c.lineWidth=1;
+  c.beginPath();
+  for(let k=0;k<lines;k++){
+   const a=2*Math.PI*k/lines-Math.PI/2,inner=ring+1,outer=inner+reach;
+   c.moveTo(x+Math.cos(a)*inner,y+Math.sin(a)*inner);
+   c.lineTo(x+Math.cos(a)*outer,y+Math.sin(a)*outer);
+  }c.stroke();
+ }
+ if(glow>0){
+  c.globalAlpha=Math.min(.42,glow*.58);
+  c.fillStyle=heal?'#c8ffde':armour?'#f4d9ab':'#fff3cd';
+  c.beginPath();c.arc(x,y,heal?3:2.5,0,Math.PI*2);c.fill();
+ }
+ c.restore();
+}
+function drawLandingDust(c,step){
+ const {alpha,spread}=landingFrame(step.progress);
+ if(alpha<=0)return;
+ const x=step.x*32+16,y=step.y*32+29;
+ c.save();c.globalAlpha=alpha;c.fillStyle='#f3e7c4';
+ for(const dir of [-1,1]){
+  c.beginPath();c.ellipse(x+dir*spread,y,2+step.progress*1.5,1.25,0,0,Math.PI*2);c.fill();
+ }
+ c.restore();
 }
 // Pixel-sized, deterministic diamond chips: one burst per actual HP point.
 function drawGemFragments(c,u,frame){
