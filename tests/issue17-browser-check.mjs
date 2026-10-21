@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import * as E from '../engine.js';
-import {unit,MAPS} from '../data.js';
+import {unit,MAPS,positions} from '../data.js';
 import {RULES} from '../config.js';
 import {launch,setup} from './browser-helpers.mjs';
 const probe=process.argv.includes('--probe'),browser=await launch(),results=[];
@@ -50,7 +50,7 @@ try{
  for(const [width,height]of [[320,568],[360,740],[390,844],[844,390]]){
   await page.setViewportSize({width,height});
   for(const map of MAPS){
-   const state=E.createGame(map.id);await t.reset(state);const camera=await t.camera();
+   const state=E.createGame(map.id),p=positions(map.id);state.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:p[i+1][0],y:p[i+1][1]}));await t.reset(state);const camera=await t.camera();
    await t.select('a1');const selected=await t.camera();
    const metrics=await page.evaluate(()=>{const v=document.querySelector('#mapViewport').getBoundingClientRect(),d=document.querySelector('#commandDock').getBoundingClientRect();return {width:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth,dock:d.height,overlap:d.top<v.bottom-1,buttons:[...document.querySelectorAll('#orders button')].map(e=>{const r=e.getBoundingClientRect();return {text:e.textContent,w:r.width,h:r.height,onScreen:r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight};})};});
    check(!metrics.overflow&&!metrics.overlap&&metrics.buttons.every(b=>b.w>=44&&b.h>=44&&b.onScreen),'44px dock controls '+width+' map '+(map.id+1),metrics);
