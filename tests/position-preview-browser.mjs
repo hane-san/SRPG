@@ -76,9 +76,8 @@ try{
   const before=await t.draft(),virtual=before.sortieUnit,p=E.reachable(sortie,virtual).find(p=>p.y===virtual.y&&E.dist(p,virtual)===1);
   await t.slide(virtual,p,{end:false});const held=await t.draft();assert(held.dragging&&!held.destinationPress);assert((await page.locator('#commandHint').innerText()).includes('コスト 1/4'));await t.touch('touchCancel',[]);
   assert.deepEqual(await t.draft(),before);assert.deepEqual(await t.state(),sortie);
-  await t.slide(virtual,p);assert((await t.draft()).menu);assert.deepEqual(await t.state(),sortie);
   const expected=structuredClone(sortie);assert(E.deployAndAct(expected,virtual.id,p,'wait').ok);
-  await page.locator('#waitOrder').click();await t.settled();assert.deepEqual(await t.state(),expected);
+  await t.slide(virtual,p);await t.settled();assert.deepEqual(await t.state(),expected,'releasing a castle drag commits the sortie without another button');
   await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.deepEqual(await t.state(),expected);
  }
  assert.deepEqual(t.errors,[]);writeFileSync('test-results/position22-browser-results.json',JSON.stringify({results,rendering,errors:t.errors},null,2));
