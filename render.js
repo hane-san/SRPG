@@ -152,9 +152,10 @@ function drawGemFragments(c,u,frame){
  const x=u.x*32+4+frame.index*4+1.5,y=u.y*32+29.5,p=frame.progress;
  const colors=frame.heal?['#e6fff3','#8cd8bf','#baffdf']:frame.armoured?['#f3d9a0','#c3b4c0','#b3a1a0']:u.team==='ally'?['#f4ecff','#d9cbf0','#f5d99e']:['#fff1d6','#ffd0ac','#f7c58d'];
  c.save();c.globalAlpha=Math.max(0,1-p);c.lineWidth=.75;
- const scale=frame.heavy?1.5:1;
- for(let k=0;k<4;k++){
-  const a=(k*Math.PI/2)+.3,spread=scale*(2+p*9),dx=Math.cos(a)*spread,dy=Math.sin(a)*spread;
+ const double=!frame.heal&&frame.count===2;
+ const scale=frame.heavy?1.5:double?1.34:1;
+ for(let k=0;k<(double?6:4);k++){
+  const a=(k*Math.PI*2/(double?6:4))+.3,spread=scale*(2+p*9),dx=Math.cos(a)*spread,dy=Math.sin(a)*spread;
   c.fillStyle=colors[k%colors.length];c.beginPath();
   c.moveTo(x+dx,y+dy-2);c.lineTo(x+dx+2,y+dy);c.lineTo(x+dx,y+dy+2);c.lineTo(x+dx-2,y+dy);c.closePath();c.fill();
  }
