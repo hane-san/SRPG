@@ -33,7 +33,7 @@ function layers(canvas,s,view){
   }
   cache.rangeKey=rangeKey;cache.rangeBuilds++;
  }
- const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,s.warnings,s.map.goal,s.map.base,s.map.camp,s.map.south,s.southTaken]);
+ const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,!!view.target,s.warnings,s.map.goal,s.map.base,s.map.camp,s.map.south,s.southTaken]);
  if(cache.boardKey!==boardKey){
   if(!cache.board||cache.board.width!==cache.terrain.width||cache.board.height!==cache.terrain.height)cache.board=surface(s);
   const c=cache.board.getContext('2d');c.clearRect(0,0,cache.board.width,cache.board.height);c.drawImage(cache.terrain,0,0);
@@ -56,6 +56,7 @@ function paintTerrain(c,s){
  }
 }
 function paintTactics(c,s,view,selected,{moves,attacks,danger}){
+ const showAttackHalo=!!view.target;
  for(let y=0;y<s.map.h;y++)for(let x=0;x<s.map.w;x++){
   const t=s.map.tiles[y][x],px=x*32,py=y*32;
   if(danger.has(`${x},${y}`)){c.fillStyle='#b4445548';c.fillRect(px,py,32,32);}
@@ -66,11 +67,11 @@ function paintTactics(c,s,view,selected,{moves,attacks,danger}){
    if(t==='f'){c.moveTo(px+3,py+25);c.lineTo(px+7,py+17);c.lineTo(px+11,py+25);c.closePath();c.moveTo(px+7,py+25);c.lineTo(px+7,py+29);}
    else if(t==='='||t==='+'){c.moveTo(px+3,py+27);c.lineTo(px+11,py+27);c.moveTo(px+3,py+24);c.lineTo(px+11,py+24);}
    else if(t==='c'||t==='v'){c.rect(px+3,py+21,8,7);c.moveTo(px+3,py+21);c.lineTo(px+7,py+17);c.lineTo(px+11,py+21);}c.stroke();
-  }else if(attacks.has(`${x},${y}`)){c.fillStyle='#5edcfa70';c.fillRect(px,py,32,32);}
+  }else if(showAttackHalo&&attacks.has(`${x},${y}`)){c.fillStyle='#5edcfa70';c.fillRect(px,py,32,32);}
   if(['bow','shooter'].includes(selected?.type)&&view.menu&&view.dest&&key(view.dest)===key(selected)&&inRange(selected,{x,y},supportRange(selected))){c.strokeStyle='#e5c5ffbb';c.lineWidth=1.5;c.setLineDash([3,3]);c.strokeRect(px+2,py+2,28,28);c.setLineDash([]);}
   if(selected?.skill==='heal'&&view.dest&&key(view.dest)===key(selected)&&Math.abs(selected.x-x)+Math.abs(selected.y-y)===1){c.strokeStyle='#b5ffe0';c.lineWidth=2;c.strokeRect(px+2,py+2,28,28);}
  }
- if(moves.size){outline(c,new Set([...moves,...attacks]),'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
+ if(moves.size){outline(c,showAttackHalo?new Set([...moves,...attacks]):moves,'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
  // Gold corners identify ordinary P1 targets from this exact destination.
  // They do not extend the blue movement field or promise a future P3 attack.
  if(selected?.team==='ally'&&!selected.acted&&view.dest){
@@ -106,6 +107,9 @@ export function render(canvas,s,view){
  if(view.ghost){c.globalAlpha=view.ghost.alpha;drawUnit(c,view.ghost.unit);c.globalAlpha=1;}
  if(selected?.alive&&view.dest&&(view.dest.x!==selected.x||view.dest.y!==selected.y)){c.globalAlpha=.55;drawUnit(c,{...selected,...view.dest});c.globalAlpha=1;}
  if(view.dest&&selected&&view.selected)cursor(c,view.dest,'#fff1ad');
+ if(view.moveArmed&&view.dest&&selected?.team==='ally'){
+  const x=view.dest.x*32,y=view.dest.y*32;c.save();c.strokeStyle='#ffedbe';c.lineWidth=3;c.shadowColor='#ffe1a0';c.shadowBlur=7;c.strokeRect(x+3,y+3,26,26);c.restore();
+ }
  if(view.cursor&&(!selected||(view.keyboard&&key(view.cursor)!==key(view.dest||selected))))cursor(c,view.cursor,'#fff1ad');
  if(view.active&&!view.motion){const actor=s.units.find(u=>u.id===view.active);if(actor?.alive)cursor(c,actor,'#f4cea1');}
  if(view.target){const t=s.units.find(u=>u.id===view.target);if(t){c.strokeStyle='#ffe5a6';c.lineWidth=2;c.strokeRect(t.x*32+1,t.y*32+1,30,30);}}
