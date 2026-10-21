@@ -31,22 +31,22 @@ test('P1 bow and foot attack plus P2 counter reach lethal 6 without RNG',()=>{
  E.prepareEnemy(s);E.enemyPhase(s);assert.equal(foe.alive,false);assert.equal(foot.hp,2);
 });
 test('stationary stance gives up counter; activates once, spends ammo on effect only',()=>{
- const s=fixture(),bow=add(s,'bow',3,5),foe=add(s,'sword',3,3,'enemy');foe.ai='hold';
- assert(cmd(s,bow,'wait').ok);assert.equal(bow.command,'support');E.prepareEnemy(s);
- E.enemyPhase(s);assert.equal(foe.hp,6);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(bow.charges,1);
- E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(bow.charges,1);
- const empty=fixture(),u=add(empty,'bow',3,5);cmd(empty,u,'wait');E.prepareEnemy(empty);E.supportPhase(empty);assert.equal(u.charges,2);
+ const s=fixture(),cannon=add(s,'shooter',3,5),foe=add(s,'sword',3,3,'enemy');foe.ai='hold';
+ assert(cmd(s,cannon,'wait').ok);assert.equal(cannon.command,'support');E.prepareEnemy(s);
+ E.enemyPhase(s);assert.equal(foe.hp,6);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(cannon.charges,1);
+ E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(cannon.charges,1);
+ const empty=fixture(),u=add(empty,'shooter',3,5);cmd(empty,u,'wait');E.prepareEnemy(empty);E.supportPhase(empty);assert.equal(u.charges,2);
 });
 test('healing costs one supply and restores two to one adjacent ally',()=>{
- const s=fixture(),h=add(s,'healer',3,5),a=add(s,'shield',4,5),b=add(s,'shield',3,4);a.hp=3;b.hp=1;
+ const s=fixture(),h=add(s,'mage',3,5),a=add(s,'shield',4,5),b=add(s,'shield',3,4);a.hp=3;b.hp=1;
  cmd(s,h,'wait');E.prepareEnemy(s);E.supportPhase(s);
  assert.equal([a.hp,b.hp].filter(x=>x>3).length,0);assert.equal(a.hp+b.hp,6);assert.equal(h.charges,1);
 });
-test('castle resupplies one ammo per turn, and a spent unit can still counter',()=>{
- const s=fixture(),a=add(s,'sword',2,16),e=add(s,'sword',3,16,'enemy');e.ai='hold';a.charges=0;
+test('only specialists receive castle supply; ordinary waiting keeps P2 counter',()=>{
+ const s=fixture(),a=add(s,'sword',2,16),cannon=add(s,'shooter',2,15),e=add(s,'sword',3,16,'enemy');e.ai='hold';cannon.charges=0;
  assert(cmd(s,a,'wait').ok);assert.equal(a.command,null);E.prepareEnemy(s);E.enemyPhase(s);assert.equal(e.hp,4);
- E.supportPhase(s);E.eventPhase(s);E.nextTurn(s);assert.equal(a.charges,1);
- E.nextTurn(s);assert.equal(a.charges,2);E.nextTurn(s);assert.equal(a.charges,2);
+ E.supportPhase(s);E.eventPhase(s);E.nextTurn(s);assert.equal(a.charges,0);assert.equal(cannon.charges,1);
+ E.nextTurn(s);assert.equal(cannon.charges,2);E.nextTurn(s);assert.equal(cannon.charges,2);
 });
 test('castle deployment: one per P1, active cap five, no bench target or premature action',()=>{
  const s=E.createGame(),r=E.reserves(s),before=E.alive(s,'ally').length;
@@ -110,4 +110,42 @@ test('stationary castle sortie still emits a deployment event before a hit',()=>
  assert.deepEqual(events.map(e=>e.kind),['deploy','hit','hit']);
  assert.equal(E.at(s,s.map.camp)?.id,reserve.id);assert.equal(s.deployedThisTurn,1);
  assert.equal(foe.hp,4);assert.equal(reserve.hp,4);
+});
+
+test('normal foot, bow, horse cannot arm P3; specialist P1 attacks are rejected without mutation',()=>{
+ const s=fixture(),ordinary=['sword','shield','bow','horse'],special=['mage','healer','medic','shooter'];
+ ordinary.forEach((type,i)=>{const u=add(s,type,1+i*2,10,'ally',type);assert.equal(u.charges,0);assert.equal(E.waitCommand(u),null);});
+ const foe=add(s,'sword',6,6,'enemy','foe');
+ for(const type of special){
+  const u=add(s,type,6,8,'ally',type);
+  const before=structuredClone(s);const r=cmd(s,u,'attack',foe);
+  assert.equal(r.ok,false,`${type} should not attack in P1`);assert.deepEqual(s,before);
+  s.units.pop();
+ }
+ for(const u of E.alive(s,'ally'))assert(cmd(s,u,'wait').ok);
+ E.prepareEnemy(s);E.supportPhase(s);assert.equal(foe.hp,6);
+});
+test('stationary mage-family healers and shooter arm P3, moving cancels the ability',()=>{
+ for(const type of ['mage','healer','medic','shooter']){
+  const s=fixture(),u=add(s,type,3,5),t=type==='shooter'?add(s,'sword',3,3,'enemy','target'):add(s,'shield',4,5,'ally','target');
+  if(type!=='shooter')t.hp=2;
+  assert.equal(E.waitCommand(u),type==='shooter'?'support':'heal');
+  assert(cmd(s,u,'wait',null,{...u,x:2,y:5}).ok);
+  assert.equal(u.command,null);E.prepareEnemy(s);E.supportPhase(s);
+  assert.equal(t.hp,type==='shooter'?6:2);
+  assert.equal(u.charges,2);
+ }
+});
+test('P3 specialists do not counter even without a prepared stance or with zero charges',()=>{
+ for(const type of ['shooter','mage','healer','medic']){
+  const s=fixture(),u=add(s,type,3,5),foe=add(s,'sword',3,4,'enemy','foe');foe.ai='hold';u.charges=0;
+  assert(cmd(s,u,'wait').ok);E.prepareEnemy(s);E.enemyPhase(s);
+  assert.equal(u.hp,4);assert.equal(foe.hp,6);
+ }
+});
+test('no targets, no ammo and no second activation do not produce support',()=>{
+ const s=fixture(),shooter=add(s,'shooter',3,5),mage=add(s,'mage',5,5),foe=add(s,'sword',3,3,'enemy');foe.ai='hold';
+ mage.charges=0;cmd(s,shooter,'wait');cmd(s,mage,'wait');assert.equal(mage.command,null);
+ E.prepareEnemy(s);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(shooter.charges,1);assert.equal(mage.charges,0);
+ E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(shooter.charges,1);
 });
