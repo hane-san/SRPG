@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import * as E from '../engine.js';
-import {MAPS,unit} from '../data.js';
+import {unit,MAPS,positions} from '../data.js';
 import {RULES} from '../config.js';
 import {launch,setup} from './browser-helpers.mjs';
 const browser=await launch(),results=[];
@@ -16,7 +16,7 @@ try{
  for(const [width,height]of [[320,568],[360,740],[390,844],[844,390]]){
   await page.setViewportSize({width,height});
   for(const map of MAPS){
-   const s=E.createGame(map.id);if(map.id===4)s.turn=4;
+   const s=E.createGame(map.id);const p=positions(map.id);s.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:p[i+1][0],y:p[i+1][1]}));if(map.id===4)s.turn=4;
    await t.reset(s);await t.select('a1');const camera=await t.camera(),u=E.alive(s,'ally')[0];
    const p=E.reachable(s,u).find(p=>p.y===u.y&&E.dist(p,u)===1&&(!s.map.camp||E.dist(p,s.map.camp)>0));assert(p);
    await t.slide(u,p,{end:false});const draft=await t.draft();assert(draft.dragging);assert(await page.locator('#orders').isHidden());
@@ -71,7 +71,7 @@ try{
  assert.equal(rendering.adjacent,0);assert(rendering.inRange>0);assert.equal(rendering.dead,0);assert.deepEqual(rendering.initial,rendering.steady);assert(rendering.labels.includes(`P4 −${RULES.barrageDamage}`));
  // Castle sortie still originates at the castle; cancellation never spends a slot.
  for(const occupied of [false,true]){
-  const sortie=E.createGame();if(occupied)Object.assign(sortie.units[0],sortie.map.camp);
+  const sortie=E.createGame();if(occupied)Object.assign(sortie.units[0],sortie.map.camp,{deployed:true});
   await t.reset(sortie);await page.locator('#orders button').filter({hasText:'出撃可'}).click();await page.locator('#deploymentList button').first().click();
   const before=await t.draft(),virtual=before.sortieUnit,p=E.reachable(sortie,virtual).find(p=>p.y===virtual.y&&E.dist(p,virtual)===1);
   await t.slide(virtual,p,{end:false});const held=await t.draft();assert(held.dragging&&!held.destinationPress);assert((await page.locator('#commandHint').innerText()).includes('コスト 1/4'));await t.touch('touchCancel',[]);
