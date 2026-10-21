@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {gemPlan,gemHP,gemSchedule} from '../gem-effects.js';
+import {createAudio} from '../audio.js';
 test('each real lost HP breaks one, and only one, of the six gems',()=>{
  for(const damage of [1,2,3,4,5,6]){
   const p=gemPlan(6,6-damage,damage);
@@ -29,5 +30,32 @@ test('fast and reduced motion shorten animation without changing jewel counts',(
   const p=options.heal?gemPlan(2,6,4,options):gemPlan(6,2,4,options),normal=gemSchedule(p),quick=gemSchedule(p,true),reduced=gemSchedule(p,false,true);
   assert(quick.intervalMs<normal.intervalMs);assert(reduced.intervalMs<normal.intervalMs);
   assert.equal(quick.hitStopMs,0);assert.equal(reduced.hitStopMs,0);assert.equal(p.count,4);
+ }
+});
+
+test('two-point impacts have a stronger attack body and exactly two jewel transients',()=>{
+ const original=globalThis.AudioContext,events=[];
+ class FakeAudioContext{
+  constructor(){this.currentTime=0;this.sampleRate=22050;this.state='running';this.destination={};}
+  createOscillator(){return {frequency:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},start(){},stop(){},disconnect(){}};}
+  createGain(){return {gain:{setValueAtTime(v){events.push({kind:'gain',v});},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},disconnect(){}};}
+  createBuffer(_channels,len){return {getChannelData(){return new Float32Array(len);}};}
+  createBufferSource(){events.push({kind:'burst'});return {connect(){},start(){},stop(){},disconnect(){}};}
+  createBiquadFilter(){return {frequency:{value:0},connect(){},disconnect(){}};}
+ }
+ try{
+  globalThis.AudioContext=FakeAudioContext;
+  const audio=createAudio({getItem:()=>null,setItem(){}});
+  audio.unlock();audio.play('gem-impact',1);
+  const normalPeak=Math.max(...events.filter(e=>e.kind==='gain').map(e=>e.v));
+  events.length=0;audio.play('gem-impact',2);
+  const doublePeak=Math.max(...events.filter(e=>e.kind==='gain').map(e=>e.v));
+  assert(doublePeak>normalPeak,'ordinary 2-point strikes have a distinct punchier attack');
+  events.length=0;audio.play('gem-chain',2,false,{intervalMs:74});
+  assert.equal(events.filter(e=>e.kind==='burst').length,2,'two damage must contain exactly two crack transients');
+  events.length=0;audio.play('gem-chain',1,false,{intervalMs:74});
+  assert.equal(events.filter(e=>e.kind==='burst').length,1);
+ }finally{
+  if(original===undefined)delete globalThis.AudioContext;else globalThis.AudioContext=original;
  }
 });
