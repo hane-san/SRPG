@@ -16,6 +16,13 @@ The human producer wants ideas thrown in at lunch to be playable on GitHub Pages
 - Human approval, independent audit and iPhone playtests are **batched to the evening play session**. Record them as unverified in the PR; never call them done.
 - Still prohibited: direct push to `main`, force-push or history rewrite, GitHub's auto-merge feature, PR approvals, repository Settings changes, deleting or weakening tests, renaming the repository/display title/storage keys, and touching other repositories. Game invariants below stay binding; a change that breaks them needs an explicit Issue from the human.
 - Only the afternoon run merges. The dawn patrol and other sessions keep reviewing and fixing PR branches without merging.
+- **Daily loop and roles**:
+  1. Morning and lunch — the human throws improvement ideas at the GPT chat, which files Issues (or small PRs).
+  2. About 15:00 — the Claude Code afternoon run turns everything adopted into playable builds and merges them.
+  3. Evening — the human plays on Pages and talks impressions over.
+  4. Night — broader direction (abstract improvements, scenario/world direction) is discussed in the GPT chat and filed as Issues; Codex turns them into proper PRs. Codex never merges, never pushes to `main` and leaves its PRs ready for review (Draft is fine) with `Closes #n`, the tests it ran and what is unverified.
+  5. Next 15:00 — the afternoon run reconciles the night's Codex PRs with the morning/lunch Issues and PRs **as a whole**: it resolves overlaps and contradictions, keeps one coherent direction, and merges.
+- **Scenario and direction documents**: story/world direction lives in `docs/DIRECTION.md` (created by the first PR that needs it). Direction PRs may be docs-only; the afternoon run merges them and implements only the parts the human adopted. Unadopted brainstorms stay marked 「提案」.
 - SRPG specifics during this phase: HP6 rules, the P1→P4 order, determinism and save compatibility (`save.js`) stay binding. Run `npm run simulate` when rules, numbers or maps change and record the result. A change to the save format needs a migration test in the same PR.
 
 ## Shared AI development contract
