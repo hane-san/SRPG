@@ -162,14 +162,14 @@ function draftMove(u,p,anchor=null){
 }
 function mapTap(clientX,clientY){
  if(locked||s.status!=='playing'||$('modal').open)return;
- const p=mapPoint(clientX,clientY);if(!E.terrain(s,p))return;if(s.map.camp&&E.dist(p,s.map.camp)===0){openDeployment();return;}view.cursor={...p};view.keyboard=false;vp.focus({preventScroll:true});
+ const p=mapPoint(clientX,clientY);if(!E.terrain(s,p))return;if(s.map.camp&&E.dist(p,s.map.camp)===0&&(!E.at(s,p)||view.selected===E.at(s,p)?.id)){openDeployment();return;}view.cursor={...p};view.keyboard=false;vp.focus({preventScroll:true});
  const u=E.at(s,p),a=selected();
  if(a?.team==='ally'&&!a.acted&&(!u||u.team==='enemy'||u.id===a.id)){if(draftMove(a,p))openDraft();return;}
  if(u)selectUnit(u,true);else{resetSelection();refresh();}
 }
 bindMapInput(vp,mapTap,(clientX,clientY)=>{
  if(locked||s.status!=='playing'||$('modal').open)return {pan:true};
- const p=mapPoint(clientX,clientY),sortieOrigin=!!view.sortie&&!!s.map.camp&&E.dist(p,s.map.camp)===0,pressed=sortieOrigin?null:E.at(s,p);if(!sortieOrigin&&s.map.camp&&E.dist(p,s.map.camp)===0)return {pan:true,tap:()=>setTimeout(openDeployment,150)};
+ const p=mapPoint(clientX,clientY),sortieOrigin=!!view.sortie&&!!s.map.camp&&E.dist(p,s.map.camp)===0,pressed=sortieOrigin?null:E.at(s,p);if(!sortieOrigin&&s.map.camp&&E.dist(p,s.map.camp)===0&&(!pressed||view.selected===pressed.id))return {pan:true,tap:()=>setTimeout(openDeployment,150)};
  const before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
  const destinationPress=!!(ready&&!sortieOrigin&&!pressed&&E.routeTo(s,u,p).length);

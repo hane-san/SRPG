@@ -6,17 +6,18 @@ import {unit} from '../data.js';
 import {launch,setup} from './browser-helpers.mjs';
 
 const browser=await launch(),cases=[];
+// Units start off the castle tile: since Issue #29 a castle press always opens the sortie roster.
 const fixture=()=>{
  const s=E.createGame();
  s.units=[
-  unit({id:'a',name:'先鋒',type:'sword',x:5,y:16},'ally'),
+  unit({id:'a',name:'先鋒',type:'sword',x:4,y:16},'ally'),
   unit({id:'b',name:'予備守備',type:'shield',x:3,y:16},'ally'),
-  unit({id:'e',name:'敵弓兵',type:'bow',x:6,y:13,ai:'hold'},'enemy')
+  unit({id:'e',name:'敵弓兵',type:'bow',x:5,y:13,ai:'hold'},'enemy')
  ];
  return s;
 };
 try{
- const t=await setup(browser),{page}=t,origin={x:5,y:16},step={x:5,y:15},firing={x:5,y:13},enemy={x:6,y:13};
+ const t=await setup(browser),{page}=t,origin={x:4,y:16},step={x:4,y:15},firing={x:4,y:13},enemy={x:5,y:13};
  await t.reset(fixture());
  const original=await t.state(),camera=await t.camera();
  await t.slide(origin,step,{end:false});
@@ -43,7 +44,7 @@ try{
  // The locked endpoint must survive intermediate empty cells on the way to a target.
  await t.reset(fixture());await t.slide(origin,step,{end:false});
  await page.waitForFunction(()=>window.srpgDebug.draft().moveArmed===true);
- const next=await t.point({x:5,y:14});await t.touch('touchMove',[next]);
+ const next=await t.point({x:4,y:14});await t.touch('touchMove',[next]);
  assert.equal((await t.draft()).moveArmed,true,'an armed route stays fixed');
  assert.deepEqual((await t.draft()).dest,step);
  await t.touch('touchEnd',[]);
@@ -67,21 +68,22 @@ try{
  assert(await page.locator('#moveUndo').isHidden(),'an attack must not be undoable');
  cases.push('endpoint lock + continued enemy flick = immediate single attack with pre-release HP');
  // Ranged attacks cross intermediate empty cells without changing the fixed firing tile.
- const shooter=fixture();shooter.units[0]=unit({id:'a',name:'射手',type:'shooter',x:5,y:16},'ally');
- await t.reset(shooter);await t.slide(origin,step,{end:false});
+ // Issue #26 removed P1 attacks from shooters, so the bow (range 2) carries this case.
+ const archer=fixture(),archerStep={x:4,y:14};archer.units[0]=unit({id:'a',name:'弓兵',type:'bow',x:4,y:16},'ally');
+ await t.reset(archer);await t.slide(origin,archerStep,{end:false});
  await page.waitForFunction(()=>window.srpgDebug.draft().moveArmed===true);
- await t.touch('touchMove',[await t.point({x:5,y:14})]);
- assert.deepEqual((await t.draft()).dest,step,'passing another empty cell preserves the firing position');
+ await t.touch('touchMove',[await t.point({x:3,y:14})]);
+ assert.deepEqual((await t.draft()).dest,archerStep,'passing another empty cell preserves the firing position');
  await t.touch('touchMove',[await t.point(enemy)]);
- assert.deepEqual((await t.draft()).dest,step);
+ assert.deepEqual((await t.draft()).dest,archerStep);
  assert.equal((await t.draft()).target,'e');
  await t.touch('touchEnd',[]);await t.settled();
- const shooterExpected=structuredClone(shooter);assert(E.act(shooterExpected,'a',step,'attack','e').ok);
- assert.deepEqual(await t.state(),shooterExpected);
- cases.push('shooter crosses intervening empty tiles while keeping exact ranged attack origin');
+ const archerExpected=structuredClone(archer);assert(E.act(archerExpected,'a',archerStep,'attack','e').ok);
+ assert.deepEqual(await t.state(),archerExpected);
+ cases.push('bow crosses intervening empty tiles while keeping exact ranged attack origin');
 
  // Bow minimum range may not silently select another approach or cause a strike.
- const bow=fixture();bow.units[0]=unit({id:'a',name:'弓兵',type:'bow',x:5,y:16},'ally');
+ const bow=fixture();bow.units[0]=unit({id:'a',name:'弓兵',type:'bow',x:4,y:16},'ally');
  await t.reset(bow);await t.slide(origin,firing,{end:false});
  await page.waitForFunction(()=>window.srpgDebug.draft().moveArmed===true);
  await t.touch('touchMove',[await t.point(enemy)]);
@@ -108,6 +110,16 @@ try{
  await page.locator('#waitOrder').click();await t.settled();
  assert(await page.locator('#moveUndo').isHidden());
  cases.push('undo expires after another committed command');
+
+ // A deployed unit standing on the castle stays selectable; a second tap opens the sortie roster.
+ const gate=fixture();gate.units[0]=unit({id:'a',name:'先鋒',type:'sword',x:5,y:16},'ally');
+ await t.reset(gate);await t.tap({x:5,y:16});await page.waitForTimeout(250);
+ assert.equal((await t.draft()).selected,'a','tapping a unit on the castle selects it');
+ assert.equal(await page.locator('#modal').evaluate(m=>m.open),false);
+ await t.tap({x:5,y:16});await page.waitForFunction(()=>document.getElementById('modal').open);
+ assert(await page.locator('#deploymentList').count());
+ await page.locator('#closeModal').click();
+ cases.push('castle occupant can be selected, then the castle opens the sortie roster');
 
  // Both columns have identical row geometry even on narrow phones.
  for(const width of [320,390]){
