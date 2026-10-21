@@ -85,7 +85,7 @@ try{
  cases.push('under-200ms continuous legal destination → enemy release, no attack menu');
 
  // A previously previewed route can be continued by a second quick flick.
- await t.reset(fixture());await t.select('a');await t.tap(firing);
+ await t.reset(fixture());await t.slide(origin,firing);
  assert.deepEqual((await t.draft()).dest,firing);
  assert.deepEqual(await t.state(),preFlick);
  await t.slide(firing,enemy);await t.settled();
