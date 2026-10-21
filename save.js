@@ -22,6 +22,13 @@ export function readSave(storage,release,maps){
     if(typeof u.acted!=='boolean'||typeof u.spend!=='boolean'||!Number.isInteger(u.charges)||!Number.isInteger(u.move)||u.move<0||u.move>m.w*m.h||u.maxHp<=0||u.alive!==(u.hp>0)||![null,'support','heal'].includes(u.command)||!(u.focus===null||typeof u.focus==='string')||![u.guard].every(Number.isFinite))return null;
    if(u.alive&&u.deployed!==false){const tile=m.tiles[u.y][u.x],key=`${u.x},${u.y}`;if(['~','#'].includes(tile)||occupied.has(key))return null;occupied.add(key);}
   }
+  // Preserve HP, positions, named identities and turn progress from v0.8 saves.
+  // Old general-purpose P3 stances are not legal under the specialist playtest.
+  for(const u of s.units){
+   const cls=CLASSES[u.type];
+   if(u.skill!==cls.skill){u.skill=cls.skill;u.command=null;}
+   if(u.team==='ally'&&cls.skill==='none'){u.charges=0;u.maxCharges=0;u.command=null;}
+  }
   // Map rules come from the current release, never from saved or partially edited JSON.
   s.map=structuredClone(m);return {state:s,campaign:!!saved.campaign};
  }catch{return null;}
