@@ -1,6 +1,6 @@
-import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo,key,movement,weatherAt,WEATHER} from './engine.js?v=0.8.0-issue17';
+import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo,key,movement,weatherAt,WEATHER,canNormalAttack} from './engine.js?v=0.8.0-issue17';
 
-export const attackTargets=(s,u,dest=u)=>alive(s,'enemy').filter(t=>inRange({...u,...dest},t));
+export const attackTargets=(s,u,dest=u)=>canNormalAttack(u)?alive(s,'enemy').filter(t=>inRange({...u,...dest},t)):[];
 // Read the engine's chosen route, including terrain costs and this turn's rain.
 // Call on draft changes, not on animation frames.
 export function routeSummary(s,u,dest=u,route=routeTo(s,u,dest)){
@@ -32,6 +32,7 @@ export function actionMessage(before,after,actor){
 export function slideDraft(s,u,p,current=u,{preserve=false,route:chosenRoute=null}={}){
  const target=at(s,p);
  if(target?.team==='enemy'){
+  if(!canNormalAttack(u))return {dest:{x:current.x,y:current.y},route:chosenRoute||routeTo(s,u,current),target:null,attackError:'この兵種はP3専用です'};
   let dest=current;
   if(!inRange({...u,...dest},target)){
    if(preserve||dist(current,u)>0){const route=chosenRoute||routeTo(s,u,current);return {dest:{x:current.x,y:current.y},route,target:null,attackError:rangeError(u,target,current)};}
@@ -51,6 +52,7 @@ export function slideDraft(s,u,p,current=u,{preserve=false,route:chosenRoute=nul
 // Movement/normal-attack regions share the exact legal movement field.
 export function tacticalRanges(s,u,cells=reachable(s,u)){
  const moves=new Set(cells.map(key)),attacks=new Set(),friends=new Set(alive(s,'ally').map(key));
+ if(!canNormalAttack(u))return {moves,attacks};
  // Clip loops to map bounds even for future long-range abilities or bad old data.
  for(const p of cells)for(let y=Math.max(0,p.y-u.range[1]);y<=Math.min(s.map.h-1,p.y+u.range[1]);y++)
   for(let x=Math.max(0,p.x-u.range[1]);x<=Math.min(s.map.w-1,p.x+u.range[1]);x++){
