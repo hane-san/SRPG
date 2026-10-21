@@ -61,3 +61,16 @@ export function bindMapInput(viewport,onTap,begin=()=>({pan:true})){
  window.addEventListener('blur',reset);document.addEventListener('visibilitychange',()=>{if(document.hidden)reset();});
  return {reset};
 }
+
+/** A destination is armed only after it remains the current legal tile for delay ms.
+ * Changing tile or cancelling invalidates the timer (including late callbacks). */
+export function createHoldLock(delay=200,onArm=()=>{}){
+ let timer=null,cell=null,armed=false;
+ const reset=()=>{if(timer!==null)clearTimeout(timer);timer=null;cell=null;armed=false;};
+ const enter=next=>{
+  if(next===cell)return;
+  reset();if(next===null)return;cell=next;
+  timer=setTimeout(()=>{timer=null;if(cell!==next)return;armed=true;onArm(next);},delay);
+ };
+ return {enter,reset,get armed(){return armed;},get cell(){return cell;}};
+}
