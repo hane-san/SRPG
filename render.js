@@ -218,7 +218,12 @@ function drawUnit(c,u){const x=u.x*32,y=u.y*32,blue=u.team==='ally',spent=blue&&
  rect(0,0,10,11,'#172f35e6');c.font='bold 8px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(u.glyph,x+5,y+8);
  // High-contrast HP6 pips, visible even when zoomed out.
  rect(2,26,28,6,'#15202a');
- for(let i=0;i<6;i++)rect(4+i*4,27,3,5,i<u.hp?(u.hp<=2?'#ffd078':blue?'#c0eabe':'#ffc1a3'):'#45505b');
+ for(let i=0;i<6;i++){
+  const px=4+i*4,filled=i<u.hp,color=filled?(u.hp<=2?'#ffd078':blue?'#c0eabe':'#ffc1a3'):'#45505b';
+  // A 3×5 faceted diamond silhouette reads as one distinct HP jewel.
+  rect(px,28,3,3,color);rect(px+1,27,1,1,filled?'#fff7dc':'#606978');
+  rect(px+1,31,1,1,filled?blue?'#8faebc':'#cd877a':'#343d48');
+ }
  // The palette communicates allegiance; a dot still distinguishes spent allies.
  if(spent){rect(26,3,4,4,'#f6e6b1');rect(27,4,2,2,ink);}
 }
