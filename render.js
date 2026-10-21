@@ -100,10 +100,14 @@ export function render(canvas,s,view){
  if(view.route?.length>1)drawRoute(c,view.route);
  for(const u of alive(s)){
   const motion=view.motion?.id===u.id?view.motion:null;
-  drawUnit(c,motion?{...u,x:motion.x,y:motion.y-(motion.bob||0),acted:false}:u);
+  const jewel=view.jewel?.id===u.id?view.jewel:null;
+  const character=motion?{...u,x:motion.x,y:motion.y-(motion.bob||0),acted:false}:u;
+  if(jewel)character.hp=jewel.hp;
+  if(jewel?.hitStop&&jewel.heavy){c.save();c.translate((1-jewel.progress)*2,0);drawUnit(c,character);c.restore();}
+  else drawUnit(c,character);
  }
  if(view.sortieUnit){c.save();c.globalAlpha=.83;drawUnit(c,view.sortieUnit);c.restore();}
- if(view.ghost){c.globalAlpha=view.ghost.alpha;drawUnit(c,view.ghost.unit);c.globalAlpha=1;}
+ if(view.ghost){c.save();c.globalAlpha=view.ghost.alpha;if(view.ghost.shatter)drawGemCollapse(c,view.ghost.unit,view.ghost.progress);else drawUnit(c,view.ghost.unit);c.restore();}
  if(selected?.alive&&view.dest&&(view.dest.x!==selected.x||view.dest.y!==selected.y)){c.globalAlpha=.55;drawUnit(c,{...selected,...view.dest});c.globalAlpha=1;}
  if(view.dest&&selected&&view.selected)cursor(c,view.dest,'#fff1ad');
  if(view.cursor&&(!selected||(view.keyboard&&key(view.cursor)!==key(view.dest||selected))))cursor(c,view.cursor,'#fff1ad');
@@ -121,8 +125,37 @@ export function render(canvas,s,view){
   }else{c.fillStyle=heal?'#b8ffe0':type==='mage'?'#e4b3ff':'#ffe2a2';c.shadowColor=c.fillStyle;c.shadowBlur=6;c.beginPath();c.arc(0,0,heal?4:5,0,Math.PI*2);c.fill();}
   c.restore();
  }
+ if(view.jewel&&!view.jewel.hitStop)drawGemFragments(c,s.units.find(u=>u.id===view.jewel.id),view.jewel);
  if(view.flash){const t=s.units.find(u=>u.id===view.flash.id);if(t){c.fillStyle=view.flash.heal?`rgba(132,255,194,${view.flash.amount*.45})`:`rgba(255,247,220,${view.flash.amount*.7})`;c.fillRect(t.x*32+3,t.y*32+3,26,27);}}
  if(view.effect){const e=view.effect;c.save();c.globalAlpha=1-e.progress*.4;c.font='bold 12px system-ui';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#132b32';c.fillStyle=e.heal?'#b8ffd0':'#fff2c2';const x=e.x*32+16,y=e.y*32+5-e.progress*13;c.strokeText(e.text,x,y);c.fillText(e.text,x,y);c.restore();}
+}
+// Pixel-sized, deterministic diamond chips: one burst per actual HP point.
+function drawGemFragments(c,u,frame){
+ if(!u||frame.progress>=1)return;
+ const x=u.x*32+4+frame.index*4+1.5,y=u.y*32+29.5,p=frame.progress;
+ const colors=frame.heal?['#e6fff3','#8cd8bf','#baffdf']:frame.armoured?['#f3d9a0','#c3b4c0','#b3a1a0']:u.team==='ally'?['#f4ecff','#d9cbf0','#f5d99e']:['#fff1d6','#ffd0ac','#f7c58d'];
+ c.save();c.globalAlpha=Math.max(0,1-p);c.lineWidth=.75;
+ const scale=frame.heavy?1.5:1;
+ for(let k=0;k<4;k++){
+  const a=(k*Math.PI/2)+.3,spread=scale*(2+p*9),dx=Math.cos(a)*spread,dy=Math.sin(a)*spread;
+  c.fillStyle=colors[k%colors.length];c.beginPath();
+  c.moveTo(x+dx,y+dy-2);c.lineTo(x+dx+2,y+dy);c.lineTo(x+dx,y+dy+2);c.lineTo(x+dx-2,y+dy);c.closePath();c.fill();
+ }
+ c.restore();
+}
+// Defeat reads as the same crystal language, not an unrelated explosion.
+function drawGemCollapse(c,u,progress=0){
+ if(!u)return;
+ const x=u.x*32+16,y=u.y*32+16,p=Math.min(1,Math.max(0,progress));
+ const shards=[[-9,-10],[-2,-14],[7,-10],[-11,-2],[-3,0],[7,0],[-8,10],[5,9]];
+ c.save();
+ for(let i=0;i<shards.length;i++){
+  const [dx,dy]=shards[i],a=(i+.3)*Math.PI/4,dist=3+p*13;
+  const px=x+dx+Math.cos(a)*dist,py=y+dy+Math.sin(a)*dist+p*7;
+  c.fillStyle=i%3===0?'#fff1c9':u.team==='ally'?'#b3d9f0':'#f0a6a5';
+  c.beginPath();c.moveTo(px,py-4);c.lineTo(px+3,py);c.lineTo(px,py+4);c.lineTo(px-3,py);c.closePath();c.fill();
+ }
+ c.restore();
 }
 function outline(c,cells,color,width,glow){
  c.save();c.strokeStyle=color;c.lineWidth=width;c.lineJoin='round';c.shadowColor=color;c.shadowBlur=glow;c.beginPath();
