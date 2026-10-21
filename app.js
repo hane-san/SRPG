@@ -1,10 +1,10 @@
-import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0';
-import {MAPS} from './data.js?v=0.8.0-issue17';
-import * as E from './engine.js?v=0.8.0-issue17';
-import {render,mini} from './render.js?v=0.8.0-position22';
+import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26';
+import {MAPS} from './data.js?v=0.8.0-issue17-p3-26';
+import * as E from './engine.js?v=0.8.0-issue17-p3-26';
+import {render,mini} from './render.js?v=0.8.0-position22-p3-26';
 import {bindMapInput} from './ui-input.js?v=0.8.0';
-import {readSave,writeSave} from './save.js?v=0.8.0';
-import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22';
+import {readSave,writeSave} from './save.js?v=0.8.0-p3-26';
+import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26';
 import {createAudio} from './audio.js?v=0.8.0-issue17';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0-issue17';
