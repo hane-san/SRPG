@@ -269,3 +269,20 @@ a{color:#e4c8f0}
 #commandDock #orders .combat-forecast .forecast-side .hp-track{height:10px;margin:0;align-self:center}
 #commandDock #orders .combat-forecast .forecast-side small{font-size:13px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
 @media(max-width:340px){#commandDock #orders .combat-forecast{gap:8px}#commandDock #orders .combat-forecast .forecast-side span{font-size:13px}}
+/* Issue #28: six responsive HP jewels in the in-game sound/motion audition. */
+.gem-demo-board{margin:10px 0 14px;padding:15px 12px;background:#201d29;border:1px solid #9e8d9d;border-radius:10px;text-align:center;overflow:hidden}
+#gemDemoStatus{font-size:18px;font-weight:750;letter-spacing:.05em;font-variant-numeric:tabular-nums;color:#f1dfb2}
+.gem-demo-pips{display:flex;justify-content:center;gap:8px;margin:18px auto 13px}
+.gem-demo-jewel{position:relative;display:inline-block;width:28px;height:34px;flex:0 1 28px;clip-path:polygon(50% 0%,90% 29%,78% 75%,50% 100%,22% 75%,10% 29%);background:linear-gradient(135deg,#fff8dc,#f2c993 38%,#be819d 70%,#eadac2);filter:drop-shadow(0 2px 2px #0009);transition:background .1s,opacity .12s}
+.gem-demo-jewel.ally{background:linear-gradient(135deg,#eaf5ff,#b8c8e4 42%,#9883b9)}
+.gem-demo-jewel.gone{background:#464251;opacity:.47}
+.gem-demo-jewel.breaking{animation:gem-crack .16s ease-out both}
+.gem-demo-jewel.reforming{animation:gem-reform .16s ease-out both}
+.gem-demo-hitstop{outline:2px solid #dfb78d;transform:translateX(2px)}
+#gemDemoMessage{min-height:26px;font-size:14px;color:#e8d4bb;line-height:1.7}
+.gem-demo-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+.gem-demo-controls button{font-size:13px;line-height:1.3;padding:8px 5px;min-height:48px;white-space:normal}
+@media(max-width:340px){.gem-demo-pips{gap:4px}.gem-demo-jewel{width:23px;height:30px}}
+@media(prefers-reduced-motion:reduce){.gem-demo-jewel{transition:none}.gem-demo-jewel.breaking,.gem-demo-jewel.reforming{animation:none}.gem-demo-hitstop{transform:none}}
+@keyframes gem-crack{from{filter:brightness(2);transform:scale(1.16)}to{filter:brightness(.65);transform:scale(.82)}}
+@keyframes gem-reform{from{filter:brightness(1.7);transform:scale(.74)}to{filter:brightness(1);transform:scale(1)}}
