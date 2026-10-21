@@ -43,7 +43,7 @@ try{
  const waiting=E.createGame();waiting.units=[unit({id:'a',name:'剣士',type:'sword',x:4,y:16},'ally'),unit({id:'e',name:'敵',type:'sword',x:4,y:15,ai:'hold'},'enemy')];
  await t.reset(waiting);await t.select('a');check((await page.locator('#actionPreview').innerText()).includes('P2反撃なし')===false,'attack forecast remains a forecast');
  await t.slide({x:4,y:16},{x:3,y:16});await t.slide({x:3,y:16},{x:4,y:16});
- check((await page.locator('#waitOrder').innerText()).includes('無反撃')&&(await page.locator('#waitOrder').getAttribute('aria-label')).includes('P2反撃なし'),'stationary wait warns about giving up counter');
+ check(!(await page.locator('#waitOrder').innerText()).includes('無反撃')&&!(await page.locator('#waitOrder').getAttribute('aria-label')).includes('P2反撃なし'),'normal infantry wait retains P2 counter');
  const cannon=E.createGame(2);cannon.warnings=[{kind:'cannon',turn:1,cells:[{x:6,y:22}]}];
  await t.reset(cannon);check((await page.locator('#forecast').innerText()).includes('−'+RULES.barrageDamage),'artillery display uses actual damage, independent of HP6');
  // Four sizes x six maps: geometry cannot change with draft, warning or cancellation.
