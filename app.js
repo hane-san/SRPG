@@ -173,11 +173,13 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
  const before=structuredClone(view);let u=selected();
  const ready=u?.team==='ally'&&!u.acted,same=ready&&pressed?.id===u.id;
  const destinationPress=!!(ready&&!sortieOrigin&&!pressed&&E.routeTo(s,u,p).length);
- let anchor=before.route?.length>1&&(pressed?.team!=='ally'||same)?{dest:before.dest,route:before.route}:null;
+ // A previously chosen approach is reused only from the unit or the exact
+ // endpoint. A random empty map cell must never inherit a distant attack route.
+ const fromChosenEndpoint=before.route?.length>1&&before.dest&&E.key(p)===E.key(before.dest);
+ let anchor=before.route?.length>1&&(same||fromChosenEndpoint)?{dest:before.dest,route:before.route}:null;
  const existingArrow=!!anchor;
- // An explicit drag beginning on a friendly unit, the chosen endpoint, or the gate
- // may commit on enemy release. Merely touching an enemy never auto-attacks.
- const directAttackGesture=!!(pressed?.team==='ally'&&!pressed.acted||destinationPress||existingArrow||sortieOrigin);
+ // No enemy-start or unrelated-cell gesture is a direct attack confirmation.
+ const directAttackGesture=!!(pressed?.team==='ally'&&!pressed.acted||destinationPress||fromChosenEndpoint||sortieOrigin);
  if(pressed?.team==='ally'&&!pressed.acted){u=pressed;if(!anchor)selectUnit(u);}
  else if(!ready||(!destinationPress&&pressed?.team!=='enemy'&&!sortieOrigin&&!anchor))return {pan:true,tap:()=>{if(ready)cancelDraft();else mapTap(clientX,clientY);}};
  if(destinationPress&&!anchor){draftMove(u,p);anchor={dest:{...view.dest},route:[...view.route]};}
