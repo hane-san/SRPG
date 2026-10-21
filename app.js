@@ -1,11 +1,11 @@
 import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26-sortie29';
-import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29';
-import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29';
-import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28';
+import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29-map38';
+import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29-map38';
+import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28-map38';
 import {bindMapInput,createHoldLock} from './ui-input.js?v=0.8.0-issue24';
 import {readSave,writeSave} from './save.js?v=0.8.0-p3-26';
-import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26';
+import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26-map38';
 import {createAudio} from './audio.js?v=0.8.0-issue17-sortie29-issue24-gems28';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0-issue17-sortie29-gems28';
