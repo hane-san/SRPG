@@ -34,7 +34,7 @@ test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
 });
 test('enemy move events follow adjacent traversable tiles, one actor at a time',()=>{
  for(let id=0;id<MAPS.length;id++){
-  const s=E.createGame(id),events=[];E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
+  const s=E.createGame(id),events=[];assert(E.deploy(s,'a1').ok);assert(E.deploy(s,'a2').ok);E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
   for(const {event,actor,state} of events){assert(event.path.length>1);assert.deepEqual(event.path.at(-1),{x:actor.x,y:actor.y});for(let i=1;i<event.path.length;i++){assert.equal(E.dist(event.path[i-1],event.path[i]),1);assert(Number.isFinite(E.terrain(state,event.path[i]).cost));}}
   assert(events.length);
  }
