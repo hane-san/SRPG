@@ -43,7 +43,7 @@ export function createAudio(storage){
     if(heavy)note(68,.12+(tier-3)*.055,.015,'sine',32,.055+(tier-3)*.012);
     if(lethal){burst(.045,.10,2300);note(100,.15,.03,'triangle',37,.07);}
    }
-   else if(kind==='deploy'){note(330,.08,0,'triangle',440,.06);note(660,.12,.065,'triangle',880,.05);}
+   else if(kind==='deploy'){burst(.055,.08,1100);note(220,.11,0,'sawtooth',110,.085);note(1380,.09,.01,'triangle',510,.047);note(190,.12,.15,'sawtooth',95,.085);note(1100,.1,.16,'triangle',450,.052);}
    else if(kind==='defend'){burst(.035,.055,2600);note(1500,.07,0,'sine',900,.06);note(750,.06,.018,'triangle',580,.03);}
    else if(kind==='defeat'){burst(.09,.07,750);note(180,.24,0,'sawtooth',35,.045);note(75,.28,.02,'sine',25,.065);}
    else if(kind==='heal'){note(520,.12);note(650,.13,.06);note(780,.15,.12);}
