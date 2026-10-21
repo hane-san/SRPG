@@ -26,7 +26,7 @@ test('healing grows jewels one by one but never beyond HP6',()=>{
 });
 test('fast and reduced motion shorten animation without changing jewel counts',()=>{
  for(const options of [{},{armoured:true},{heal:true}]){
-  const p=gemPlan(6,2,4,options),normal=gemSchedule(p),quick=gemSchedule(p,true),reduced=gemSchedule(p,false,true);
+  const p=options.heal?gemPlan(2,6,4,options):gemPlan(6,2,4,options),normal=gemSchedule(p),quick=gemSchedule(p,true),reduced=gemSchedule(p,false,true);
   assert(quick.intervalMs<normal.intervalMs);assert(reduced.intervalMs<normal.intervalMs);
   assert.equal(quick.hitStopMs,0);assert.equal(reduced.hitStopMs,0);assert.equal(p.count,4);
  }
