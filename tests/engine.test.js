@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import * as E from '../engine.js';
 import {unit,MAPS,ROSTER} from '../data.js';
 import {RULES} from '../config.js';
+import {attackTargets,tacticalRanges,slideDraft} from '../ui-model.js';
 function fixture(){const s=E.createGame();s.map.tiles=Array(20).fill('.'.repeat(12));s.map.spawns=[];s.map.base=null;s.map.goal={x:11,y:0};s.map.camp={x:2,y:17};s.units=[];return s;}
 const add=(s,type,x,y,team='ally',id=type,rank='lower')=>{const u=unit({id,name:id,type,x,y,rank},team);s.units.push(u);return u;};
 const cmd=(s,u,action,t,dest=u)=>E.act(s,u.id,{x:dest.x,y:dest.y},action,t?.id);
 
-test('all six maps start with two active HP6 allies; reserves never occupy a tile',()=>{
- for(const m of MAPS){const s=E.createGame(m.id),cells=new Set();assert.equal(E.alive(s,'ally').length,2);assert.equal(E.reserves(s).length,ROSTER.length+(m.extraAllies?.length||0)-2);
+test('all six maps start with every ally in the castle reserve, with no initial board units',()=>{
+ for(const m of MAPS){const s=E.createGame(m.id),cells=new Set();assert.equal(E.alive(s,'ally').length,0);assert.equal(E.reserves(s).length,ROSTER.length+(m.extraAllies?.length||0));
   for(const u of s.units){assert.equal(u.maxHp,6);assert.equal(u.hp,6);assert(Number.isFinite(E.terrain(s,u)?.cost));if(u.deployed===false)continue;assert(!cells.has(E.key(u)));cells.add(E.key(u));}
   assert(E.deploymentCells(s).length>0);
  }
@@ -31,27 +32,27 @@ test('P1 bow and foot attack plus P2 counter reach lethal 6 without RNG',()=>{
  E.prepareEnemy(s);E.enemyPhase(s);assert.equal(foe.alive,false);assert.equal(foot.hp,2);
 });
 test('stationary stance gives up counter; activates once, spends ammo on effect only',()=>{
- const s=fixture(),bow=add(s,'bow',3,5),foe=add(s,'sword',3,3,'enemy');foe.ai='hold';
- assert(cmd(s,bow,'wait').ok);assert.equal(bow.command,'support');E.prepareEnemy(s);
- E.enemyPhase(s);assert.equal(foe.hp,6);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(bow.charges,1);
- E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(bow.charges,1);
- const empty=fixture(),u=add(empty,'bow',3,5);cmd(empty,u,'wait');E.prepareEnemy(empty);E.supportPhase(empty);assert.equal(u.charges,2);
+ const s=fixture(),cannon=add(s,'shooter',3,5),foe=add(s,'sword',3,3,'enemy');foe.ai='hold';
+ assert(cmd(s,cannon,'wait').ok);assert.equal(cannon.command,'support');E.prepareEnemy(s);
+ E.enemyPhase(s);assert.equal(foe.hp,6);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(cannon.charges,1);
+ E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(cannon.charges,1);
+ const empty=fixture(),u=add(empty,'shooter',3,5);cmd(empty,u,'wait');E.prepareEnemy(empty);E.supportPhase(empty);assert.equal(u.charges,2);
 });
 test('healing costs one supply and restores two to one adjacent ally',()=>{
- const s=fixture(),h=add(s,'healer',3,5),a=add(s,'shield',4,5),b=add(s,'shield',3,4);a.hp=3;b.hp=1;
+ const s=fixture(),h=add(s,'mage',3,5),a=add(s,'shield',4,5),b=add(s,'shield',3,4);a.hp=3;b.hp=1;
  cmd(s,h,'wait');E.prepareEnemy(s);E.supportPhase(s);
  assert.equal([a.hp,b.hp].filter(x=>x>3).length,0);assert.equal(a.hp+b.hp,6);assert.equal(h.charges,1);
 });
-test('castle resupplies one ammo per turn, and a spent unit can still counter',()=>{
- const s=fixture(),a=add(s,'sword',2,16),e=add(s,'sword',3,16,'enemy');e.ai='hold';a.charges=0;
+test('only specialists receive castle supply; ordinary waiting keeps P2 counter',()=>{
+ const s=fixture(),a=add(s,'sword',2,16),cannon=add(s,'shooter',2,17),e=add(s,'sword',3,16,'enemy');e.ai='hold';cannon.charges=0;
  assert(cmd(s,a,'wait').ok);assert.equal(a.command,null);E.prepareEnemy(s);E.enemyPhase(s);assert.equal(e.hp,4);
- E.supportPhase(s);E.eventPhase(s);E.nextTurn(s);assert.equal(a.charges,1);
- E.nextTurn(s);assert.equal(a.charges,2);E.nextTurn(s);assert.equal(a.charges,2);
+ E.supportPhase(s);E.eventPhase(s);E.nextTurn(s);assert.equal(a.charges,0);assert.equal(cannon.charges,1);
+ E.nextTurn(s);assert.equal(cannon.charges,2);E.nextTurn(s);assert.equal(cannon.charges,2);
 });
 test('castle deployment: one per P1, active cap five, no bench target or premature action',()=>{
  const s=E.createGame(),r=E.reserves(s),before=E.alive(s,'ally').length;
- assert(E.canDeploy(s));assert(!E.alive(s).some(u=>u.id===r[0].id));assert(E.deploy(s,r[0].id).ok);assert.equal(E.alive(s,'ally').length,before+1);
- assert(!E.deploy(s,r[1].id).ok);E.endTurn(s);if(s.status==='playing'){assert(E.canDeploy(s));assert(E.deploy(s,r[1].id).ok);}
+ assert(E.canDeploy(s));assert.equal(E.deploymentLimit(s),2);assert(!E.alive(s).some(u=>u.id===r[0].id));assert(E.deploy(s,r[0].id).ok);assert.equal(E.alive(s,'ally').length,before+1);
+ assert(E.deploy(s,r[1].id).ok);assert(!E.deploy(s,r[2].id).ok);E.endTurn(s);if(s.status==='playing'){assert.equal(E.deploymentLimit(s),1);assert(E.canDeploy(s));assert(E.deploy(s,r[2].id).ok);assert(!E.canDeploy(s));}
 });
 test('return to castle restores a slot but requires an unused adjacent unit',()=>{
  const s=fixture(),a=add(s,'sword',2,16);assert(E.returnToReserve(s,a.id).ok);assert.equal(E.alive(s,'ally').length,0);assert.equal(E.reserves(s).length,1);
@@ -64,7 +65,7 @@ test('named death is persistent, but its slot becomes a same-rank generic next c
  assert(!next.units.some(u=>u.id==='a2'));const generic=next.units.find(u=>u.id==='general-a2');
  assert(generic&&!generic.named&&generic.rank==='advanced'&&generic.specialty===null&&generic.atk===3);
  const hero=next.units.find(u=>u.id==='a1');assert.equal(hero.specialty,'guard');assert.equal(hero.atk,3);
- assert.equal(E.alive(next,'ally').length,2);assert.equal(E.reserves(next).length,7);assert(named.named);
+ assert.equal(E.alive(next,'ally').length,0);assert.equal(E.reserves(next).length,9);assert(named.named);
 });
 test('promotions are three mutually exclusive named-only extra abilities',()=>{
  const s=E.createGame(1);s.status='victory';
@@ -78,7 +79,7 @@ test('P4 warnings arrive after notification; waves cannot attack before next P2'
  E.eventPhase(s);const e=s.units.find(u=>u.id.startsWith('reinforcement'));assert(e&&e.hp===6&&!e.acted);assert.equal(s.phase,4);
 });
 test('four phases preserve terrain movement, weather and finite turn reset',()=>{
- const s=E.createGame(4),u=E.alive(s,'ally')[1];assert(E.routeTo(s,u,u).length);
+ const s=E.createGame(4),u=E.sortieUnit(s,E.reserves(s)[1].id);assert(E.routeTo(s,u,u).length);
  for(let i=0;i<5&&s.status==='playing';i++){assert.equal(s.phase,1);E.endTurn(s);assert.equal(s.phase,1);}
  assert(['clear','light','heavy'].includes(E.weatherAt(s)));
 });
@@ -110,4 +111,77 @@ test('stationary castle sortie still emits a deployment event before a hit',()=>
  assert.deepEqual(events.map(e=>e.kind),['deploy','hit','hit']);
  assert.equal(E.at(s,s.map.camp)?.id,reserve.id);assert.equal(s.deployedThisTurn,1);
  assert.equal(foe.hp,4);assert.equal(reserve.hp,4);
+});
+
+test('normal foot, bow, horse cannot arm P3; specialist P1 attacks are rejected without mutation',()=>{
+ const s=fixture(),ordinary=['sword','shield','bow','horse'],special=['mage','healer','medic','shooter'];
+ ordinary.forEach((type,i)=>{const u=add(s,type,1+i*2,10,'ally',type);assert.equal(u.charges,0);assert.equal(E.waitCommand(u),null);});
+ const foe=add(s,'sword',6,6,'enemy','foe');
+ for(const type of special){
+  const u=add(s,type,6,8,'ally',type);
+  const before=structuredClone(s);const r=cmd(s,u,'attack',foe);
+  assert.equal(r.ok,false,`${type} should not attack in P1`);assert.deepEqual(s,before);
+  s.units.pop();
+ }
+ for(const u of E.alive(s,'ally'))assert(cmd(s,u,'wait').ok);
+ E.prepareEnemy(s);E.supportPhase(s);assert.equal(foe.hp,6);
+});
+test('stationary mage-family healers and shooter arm P3, moving cancels the ability',()=>{
+ for(const type of ['mage','healer','medic','shooter']){
+  const s=fixture(),u=add(s,type,3,5),t=type==='shooter'?add(s,'sword',3,3,'enemy','target'):add(s,'shield',4,5,'ally','target');
+  if(type!=='shooter')t.hp=2;
+  assert.equal(E.waitCommand(u),type==='shooter'?'support':'heal');
+  assert(cmd(s,u,'wait',null,{...u,x:2,y:5}).ok);
+  assert.equal(u.command,null);E.prepareEnemy(s);E.supportPhase(s);
+  assert.equal(t.hp,type==='shooter'?6:2);
+  assert.equal(u.charges,2);
+ }
+});
+test('P3 specialists do not counter even without a prepared stance or with zero charges',()=>{
+ for(const type of ['shooter','mage','healer','medic']){
+  const s=fixture(),u=add(s,type,3,5),foe=add(s,'sword',3,4,'enemy','foe');foe.ai='hold';u.charges=0;
+  assert(cmd(s,u,'wait').ok);E.prepareEnemy(s);E.enemyPhase(s);
+  assert.equal(u.hp,4);assert.equal(foe.hp,6);
+ }
+});
+test('no targets, no ammo and no second activation do not produce support',()=>{
+ const s=fixture(),shooter=add(s,'shooter',3,5),mage=add(s,'mage',5,5),foe=add(s,'sword',3,3,'enemy');foe.ai='hold';
+ mage.charges=0;cmd(s,shooter,'wait');cmd(s,mage,'wait');assert.equal(mage.command,null);
+ E.prepareEnemy(s);E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(shooter.charges,1);assert.equal(mage.charges,0);
+ E.supportPhase(s);assert.equal(foe.hp,4);assert.equal(shooter.charges,1);
+});
+
+test('UI attack targeting and overlays never advertise specialist P1 attacks',()=>{
+ for(const type of ['shooter','mage','healer','medic']){
+  const s=fixture(),u=add(s,type,3,5),foe=add(s,'sword',3,3,'enemy');
+  assert.equal(attackTargets(s,u).length,0);
+  assert.equal(tacticalRanges(s,u).attacks.size,0);
+  const draft=slideDraft(s,u,foe);
+  assert.equal(draft.target,null);
+  assert(draft.attackError.includes('P3'));
+ }
+});
+
+test('castle deployment observes committed entrance before travel and any combat',()=>{
+ const s=E.createGame(),u=E.reserves(s)[0],base={...s.map.camp},virtual=E.sortieUnit(s,u.id);
+ assert.equal(E.alive(s,'ally').length,0);
+ const open=E.reachable(s,virtual).find(p=>E.dist(p,base)===1);
+ assert(open);const snapshot=structuredClone(s),events=[];
+ assert(!E.deployAndAct(s,u.id,open,'attack','non-existent').ok);
+ assert.deepEqual(s,snapshot,'invalid sortie cannot spend an action or expose a reserve');
+ assert(E.deployAndAct(s,u.id,open,'wait',undefined,(state,_actor,event)=>events.push({state:structuredClone(state),event})).ok);
+ assert.deepEqual(events.map(e=>e.event.kind),['deploy','move']);
+ assert.equal(events[0].event.line,'出撃する！');
+ assert.deepEqual(events[0].event.origin,base);
+ const entering=events[0].state.units.find(x=>x.id===u.id);
+ assert(entering.deployed);assert.deepEqual({x:entering.x,y:entering.y},base);
+ assert.equal(E.alive(s,'ally').length,1);assert.equal(s.deployedThisTurn,1);
+ assert(E.canDeploy(s),'one further sortie is permitted on the first turn');
+ assert.equal(E.reserves(s).length,ROSTER.length-1);
+});
+test('P3 specialists moving out of castle do not arm a P3 stance',()=>{
+ const s=E.createGame(),u=E.reserves(s).find(u=>u.type==='mage'),origin=E.sortieUnit(s,u.id);
+ const dest=E.reachable(s,origin).find(p=>E.dist(p,origin)===1);
+ assert(E.deployAndAct(s,u.id,dest,'wait').ok);
+ assert.equal(s.units.find(a=>a.id===u.id).command,null);
 });

@@ -7,15 +7,15 @@ import {readSave,writeSave,STORAGE} from '../save.js';
 
 test('forecast HP matches committed combat, including terrain and lethal counters',()=>{
  for(const lethal of [false,true]){
-  const s=E.createGame(),u=s.units.find(u=>u.id==='a4'),t=s.units.find(u=>u.id==='e1');u.deployed=true;
+  const s=E.createGame(),u=s.units.find(u=>u.id==='a2'),t=s.units.find(u=>u.id==='e1');Object.assign(u,{deployed:true,x:8,y:16});
   Object.assign(t,{x:8,y:17});s.map.tiles[17]=s.map.tiles[17].slice(0,7)+'f'+s.map.tiles[17].slice(8);if(lethal)u.hp=1;
   const forecast=battleForecast(s,u,t);assert.equal(forecast.terrain.def,0);assert(attackTargets(s,u).includes(t));
   E.act(s,u.id,u,'attack',t.id);assert.equal(u.hp,forecast.allyAfter);assert.equal(t.hp,forecast.enemyAfter);
  }
 });
 test('next ready unit wraps, ignores acted and dead units, and returns null when done',()=>{
- const s=E.createGame();assert.equal(nextReady(s).id,'a1');assert.equal(nextReady(s,'a9').id,'a1');
- s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a9'),null);assert(E.deploy(s,'a3').ok);assert.equal(nextReady(s,'a9').id,'a3');
+ const s=E.createGame();assert.equal(nextReady(s),null);assert(E.deploy(s,'a1').ok);assert(E.deploy(s,'a2').ok);assert.equal(nextReady(s).id,'a1');assert.equal(nextReady(s,'a9').id,'a1');
+ s.units[0].acted=true;s.units[1].alive=false;assert.equal(nextReady(s,'a9'),null);s.turn=2;s.deployedThisTurn=0;assert(E.deploy(s,'a3').ok);assert.equal(nextReady(s,'a9').id,'a3');
  for(const u of E.alive(s,'ally'))u.acted=true;assert.equal(nextReady(s,'a9'),null);
 });
 test('playback feedback reports the current hit/counter/heal and skips idle enemies',()=>{
@@ -37,9 +37,9 @@ test('action playback produces identical complete state to instantaneous resolut
 });
 test('v0.2 saves migrate without losing actions; corrupt nested data is rejected',()=>{
  const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
- const s=E.createGame();E.act(s,'a1',{x:5,y:14},'wait');writeSave(storage,'0.2.0',s,true);
+ const s=E.createGame();Object.assign(s.units[0],{deployed:true,x:6,y:16});E.act(s,'a1',{x:5,y:14},'wait');writeSave(storage,'0.2.0',s,true);
  const migrated=readSave(storage,'0.3.0',MAPS);assert(migrated.campaign);assert.equal(migrated.state.units[0].y,14);assert(migrated.state.units[0].acted);
- for(const corrupt of [s=>s.metrics.deaths=null,s=>s.metrics.commands=-1,s=>s.warnings=[{kind:'cannon',turn:2,cells:null}],s=>s.units[0].acted=null,s=>s.units[0].alive=false,s=>Object.assign(s.units[1],{x:5,y:14})]){
+ for(const corrupt of [s=>s.metrics.deaths=null,s=>s.metrics.commands=-1,s=>s.warnings=[{kind:'cannon',turn:2,cells:null}],s=>s.units[0].acted=null,s=>s.units[0].alive=false,s=>Object.assign(s.units[1],{deployed:true,x:s.units[0].x,y:s.units[0].y})]){
   const damaged=structuredClone(s);corrupt(damaged);writeSave(storage,'0.3.0',damaged,true);assert.equal(readSave(storage,'0.3.0',MAPS),null);
  }
  assert(values.get(STORAGE));

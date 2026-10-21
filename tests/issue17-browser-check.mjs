@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import * as E from '../engine.js';
-import {unit,MAPS} from '../data.js';
+import {unit,MAPS,positions} from '../data.js';
 import {RULES} from '../config.js';
 import {launch,setup} from './browser-helpers.mjs';
 const probe=process.argv.includes('--probe'),browser=await launch(),results=[];
@@ -43,14 +43,14 @@ try{
  const waiting=E.createGame();waiting.units=[unit({id:'a',name:'剣士',type:'sword',x:4,y:16},'ally'),unit({id:'e',name:'敵',type:'sword',x:4,y:15,ai:'hold'},'enemy')];
  await t.reset(waiting);await t.select('a');check((await page.locator('#actionPreview').innerText()).includes('P2反撃なし')===false,'attack forecast remains a forecast');
  await t.slide({x:4,y:16},{x:3,y:16});await t.slide({x:3,y:16},{x:4,y:16});
- check((await page.locator('#waitOrder').innerText()).includes('無反撃')&&(await page.locator('#waitOrder').getAttribute('aria-label')).includes('P2反撃なし'),'stationary wait warns about giving up counter');
+ check(!(await page.locator('#waitOrder').innerText()).includes('無反撃')&&!(await page.locator('#waitOrder').getAttribute('aria-label')).includes('P2反撃なし'),'normal infantry wait retains P2 counter');
  const cannon=E.createGame(2);cannon.warnings=[{kind:'cannon',turn:1,cells:[{x:6,y:22}]}];
  await t.reset(cannon);check((await page.locator('#forecast').innerText()).includes('−'+RULES.barrageDamage),'artillery display uses actual damage, independent of HP6');
  // Four sizes x six maps: geometry cannot change with draft, warning or cancellation.
  for(const [width,height]of [[320,568],[360,740],[390,844],[844,390]]){
   await page.setViewportSize({width,height});
   for(const map of MAPS){
-   const state=E.createGame(map.id);await t.reset(state);const camera=await t.camera();
+   const state=E.createGame(map.id),p=positions(map.id);state.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:p[i+1][0],y:p[i+1][1]}));await t.reset(state);const camera=await t.camera();
    await t.select('a1');const selected=await t.camera();
    const metrics=await page.evaluate(()=>{const v=document.querySelector('#mapViewport').getBoundingClientRect(),d=document.querySelector('#commandDock').getBoundingClientRect();return {width:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth,dock:d.height,overlap:d.top<v.bottom-1,buttons:[...document.querySelectorAll('#orders button')].map(e=>{const r=e.getBoundingClientRect();return {text:e.textContent,w:r.width,h:r.height,onScreen:r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight};})};});
    check(!metrics.overflow&&!metrics.overlap&&metrics.buttons.every(b=>b.w>=44&&b.h>=44&&b.onScreen),'44px dock controls '+width+' map '+(map.id+1),metrics);

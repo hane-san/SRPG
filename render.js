@@ -1,6 +1,6 @@
-import {tacticalRanges,attackTargets} from './ui-model.js?v=0.8.0-position22';
-import {RULES} from './config.js?v=0.8.0';
-import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0';
+import {tacticalRanges,attackTargets} from './ui-model.js?v=0.8.0-position22-p3-26';
+import {RULES} from './config.js?v=0.8.0-p3-26';
+import {alive,reachable,inRange,key,terrain,supportRange,movement as moveBudget,weatherAt} from './engine.js?v=0.8.0-p3-26-sortie29';
 export const COLORS={'.':'#889968','=':'#baad7c',f:'#5c7957','~':'#688f9a','#':'#79827b','+':'#9c8157',c:'#8b9581',v:'#a69b71'};
 const PALETTES=[
  {'.':'#919e7b','=':'#beb792',f:'#627d68','~':'#769aab'},
@@ -33,7 +33,7 @@ function layers(canvas,s,view){
   }
   cache.rangeKey=rangeKey;cache.rangeBuilds++;
  }
- const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,s.warnings,s.map.goal,s.map.base,s.map.camp,s.map.south,s.southTaken]);
+ const boardKey=JSON.stringify([rangeKey,view.dest,!!view.menu,!!view.target,s.warnings,s.map.goal,s.map.base,s.map.camp,s.map.south,s.southTaken]);
  if(cache.boardKey!==boardKey){
   if(!cache.board||cache.board.width!==cache.terrain.width||cache.board.height!==cache.terrain.height)cache.board=surface(s);
   const c=cache.board.getContext('2d');c.clearRect(0,0,cache.board.width,cache.board.height);c.drawImage(cache.terrain,0,0);
@@ -56,6 +56,7 @@ function paintTerrain(c,s){
  }
 }
 function paintTactics(c,s,view,selected,{moves,attacks,danger}){
+ const showAttackHalo=!!view.target;
  for(let y=0;y<s.map.h;y++)for(let x=0;x<s.map.w;x++){
   const t=s.map.tiles[y][x],px=x*32,py=y*32;
   if(danger.has(`${x},${y}`)){c.fillStyle='#b4445548';c.fillRect(px,py,32,32);}
@@ -66,11 +67,11 @@ function paintTactics(c,s,view,selected,{moves,attacks,danger}){
    if(t==='f'){c.moveTo(px+3,py+25);c.lineTo(px+7,py+17);c.lineTo(px+11,py+25);c.closePath();c.moveTo(px+7,py+25);c.lineTo(px+7,py+29);}
    else if(t==='='||t==='+'){c.moveTo(px+3,py+27);c.lineTo(px+11,py+27);c.moveTo(px+3,py+24);c.lineTo(px+11,py+24);}
    else if(t==='c'||t==='v'){c.rect(px+3,py+21,8,7);c.moveTo(px+3,py+21);c.lineTo(px+7,py+17);c.lineTo(px+11,py+21);}c.stroke();
-  }else if(attacks.has(`${x},${y}`)){c.fillStyle='#5edcfa70';c.fillRect(px,py,32,32);}
-  if(['bow','shooter'].includes(selected?.type)&&view.menu&&view.dest&&key(view.dest)===key(selected)&&inRange(selected,{x,y},supportRange(selected))){c.strokeStyle='#e5c5ffbb';c.lineWidth=1.5;c.setLineDash([3,3]);c.strokeRect(px+2,py+2,28,28);c.setLineDash([]);}
+  }else if(showAttackHalo&&attacks.has(`${x},${y}`)){c.fillStyle='#5edcfa70';c.fillRect(px,py,32,32);}
+  if(selected?.type==='shooter'&&view.menu&&view.dest&&key(view.dest)===key(selected)&&inRange(selected,{x,y},supportRange(selected))){c.strokeStyle='#e5c5ffbb';c.lineWidth=1.5;c.setLineDash([3,3]);c.strokeRect(px+2,py+2,28,28);c.setLineDash([]);}
   if(selected?.skill==='heal'&&view.dest&&key(view.dest)===key(selected)&&Math.abs(selected.x-x)+Math.abs(selected.y-y)===1){c.strokeStyle='#b5ffe0';c.lineWidth=2;c.strokeRect(px+2,py+2,28,28);}
  }
- if(moves.size){outline(c,new Set([...moves,...attacks]),'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
+ if(moves.size){outline(c,showAttackHalo?new Set([...moves,...attacks]):moves,'#8eeaff',3,6);outline(c,moves,'#e6f3ff',3,0);outline(c,moves,'#3975e8',1,0);}
  // Gold corners identify ordinary P1 targets from this exact destination.
  // They do not extend the blue movement field or promise a future P3 attack.
  if(selected?.team==='ally'&&!selected.acted&&view.dest){
@@ -99,13 +100,33 @@ export function render(canvas,s,view){
  const selected=s.units.find(u=>u.id===view.selected);
  if(view.route?.length>1)drawRoute(c,view.route);
  for(const u of alive(s)){
+  if(view.sortieEntrance?.id===u.id)continue;
   const motion=view.motion?.id===u.id?view.motion:null;
-  drawUnit(c,motion?{...u,x:motion.x,y:motion.y-(motion.bob||0),acted:false}:u);
+  const jewel=view.jewel?.id===u.id?view.jewel:null;
+  const character=motion?{...u,x:motion.x,y:motion.y-(motion.bob||0),acted:false}:u;
+  if(jewel)character.hp=jewel.hp;
+  if(jewel?.hitStop&&jewel.heavy){c.save();c.translate((1-jewel.progress)*2,0);drawUnit(c,character);c.restore();}
+  else drawUnit(c,character);
+ }
+ if(view.sortieEntrance){
+  const intro=view.sortieEntrance,unit=s.units.find(u=>u.id===intro.id),p=intro.progress;
+  if(unit){c.save();c.globalAlpha=Math.max(.1,p);drawUnit(c,{...unit,x:intro.x,y:intro.y-.18*(1-p),acted:false});c.restore();}
+ }
+ if(view.sortieQuote){
+  const {x,y,line}=view.sortieQuote,text=String(line).slice(0,24);
+  c.save();c.font='bold 11px sans-serif';const w=Math.max(62,Math.ceil(c.measureText(text).width)+12);
+  const left=Math.max(2,Math.min(s.map.w*32-w-2,x*32+16-w/2)),top=Math.max(3,y*32-22);
+  c.fillStyle='rgba(30,37,44,.91)';c.strokeStyle='#e1cd91';c.lineWidth=1;
+  c.fillRect(left,top,w,19);c.strokeRect(left+.5,top+.5,w-1,18);
+  c.fillStyle='#fff6d7';c.textAlign='center';c.fillText(text,left+w/2,top+13);c.restore();
  }
  if(view.sortieUnit){c.save();c.globalAlpha=.83;drawUnit(c,view.sortieUnit);c.restore();}
- if(view.ghost){c.globalAlpha=view.ghost.alpha;drawUnit(c,view.ghost.unit);c.globalAlpha=1;}
+ if(view.ghost){c.save();c.globalAlpha=view.ghost.alpha;if(view.ghost.shatter)drawGemCollapse(c,view.ghost.unit,view.ghost.progress);else drawUnit(c,view.ghost.unit);c.restore();}
  if(selected?.alive&&view.dest&&(view.dest.x!==selected.x||view.dest.y!==selected.y)){c.globalAlpha=.55;drawUnit(c,{...selected,...view.dest});c.globalAlpha=1;}
  if(view.dest&&selected&&view.selected)cursor(c,view.dest,'#fff1ad');
+ if(view.moveArmed&&view.dest&&selected?.team==='ally'){
+  const x=view.dest.x*32,y=view.dest.y*32;c.save();c.strokeStyle='#ffedbe';c.lineWidth=3;c.shadowColor='#ffe1a0';c.shadowBlur=7;c.strokeRect(x+3,y+3,26,26);c.restore();
+ }
  if(view.cursor&&(!selected||(view.keyboard&&key(view.cursor)!==key(view.dest||selected))))cursor(c,view.cursor,'#fff1ad');
  if(view.active&&!view.motion){const actor=s.units.find(u=>u.id===view.active);if(actor?.alive)cursor(c,actor,'#f4cea1');}
  if(view.target){const t=s.units.find(u=>u.id===view.target);if(t){c.strokeStyle='#ffe5a6';c.lineWidth=2;c.strokeRect(t.x*32+1,t.y*32+1,30,30);}}
@@ -121,8 +142,37 @@ export function render(canvas,s,view){
   }else{c.fillStyle=heal?'#b8ffe0':type==='mage'?'#e4b3ff':'#ffe2a2';c.shadowColor=c.fillStyle;c.shadowBlur=6;c.beginPath();c.arc(0,0,heal?4:5,0,Math.PI*2);c.fill();}
   c.restore();
  }
+ if(view.jewel&&!view.jewel.hitStop)drawGemFragments(c,s.units.find(u=>u.id===view.jewel.id),view.jewel);
  if(view.flash){const t=s.units.find(u=>u.id===view.flash.id);if(t){c.fillStyle=view.flash.heal?`rgba(132,255,194,${view.flash.amount*.45})`:`rgba(255,247,220,${view.flash.amount*.7})`;c.fillRect(t.x*32+3,t.y*32+3,26,27);}}
  if(view.effect){const e=view.effect;c.save();c.globalAlpha=1-e.progress*.4;c.font='bold 12px system-ui';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#132b32';c.fillStyle=e.heal?'#b8ffd0':'#fff2c2';const x=e.x*32+16,y=e.y*32+5-e.progress*13;c.strokeText(e.text,x,y);c.fillText(e.text,x,y);c.restore();}
+}
+// Pixel-sized, deterministic diamond chips: one burst per actual HP point.
+function drawGemFragments(c,u,frame){
+ if(!u||frame.progress>=1)return;
+ const x=u.x*32+4+frame.index*4+1.5,y=u.y*32+29.5,p=frame.progress;
+ const colors=frame.heal?['#e6fff3','#8cd8bf','#baffdf']:frame.armoured?['#f3d9a0','#c3b4c0','#b3a1a0']:u.team==='ally'?['#f4ecff','#d9cbf0','#f5d99e']:['#fff1d6','#ffd0ac','#f7c58d'];
+ c.save();c.globalAlpha=Math.max(0,1-p);c.lineWidth=.75;
+ const scale=frame.heavy?1.5:1;
+ for(let k=0;k<4;k++){
+  const a=(k*Math.PI/2)+.3,spread=scale*(2+p*9),dx=Math.cos(a)*spread,dy=Math.sin(a)*spread;
+  c.fillStyle=colors[k%colors.length];c.beginPath();
+  c.moveTo(x+dx,y+dy-2);c.lineTo(x+dx+2,y+dy);c.lineTo(x+dx,y+dy+2);c.lineTo(x+dx-2,y+dy);c.closePath();c.fill();
+ }
+ c.restore();
+}
+// Defeat reads as the same crystal language, not an unrelated explosion.
+function drawGemCollapse(c,u,progress=0){
+ if(!u)return;
+ const x=u.x*32+16,y=u.y*32+16,p=Math.min(1,Math.max(0,progress));
+ const shards=[[-9,-10],[-2,-14],[7,-10],[-11,-2],[-3,0],[7,0],[-8,10],[5,9]];
+ c.save();
+ for(let i=0;i<shards.length;i++){
+  const [dx,dy]=shards[i],a=(i+.3)*Math.PI/4,dist=3+p*13;
+  const px=x+dx+Math.cos(a)*dist,py=y+dy+Math.sin(a)*dist+p*7;
+  c.fillStyle=i%3===0?'#fff1c9':u.team==='ally'?'#b3d9f0':'#f0a6a5';
+  c.beginPath();c.moveTo(px,py-4);c.lineTo(px+3,py);c.lineTo(px,py+4);c.lineTo(px-3,py);c.closePath();c.fill();
+ }
+ c.restore();
 }
 function outline(c,cells,color,width,glow){
  c.save();c.strokeStyle=color;c.lineWidth=width;c.lineJoin='round';c.shadowColor=color;c.shadowBlur=glow;c.beginPath();
@@ -185,7 +235,12 @@ function drawUnit(c,u){const x=u.x*32,y=u.y*32,blue=u.team==='ally',spent=blue&&
  rect(0,0,10,11,'#172f35e6');c.font='bold 8px sans-serif';c.textAlign='center';c.fillStyle='#fff3cf';c.fillText(u.glyph,x+5,y+8);
  // High-contrast HP6 pips, visible even when zoomed out.
  rect(2,26,28,6,'#15202a');
- for(let i=0;i<6;i++)rect(4+i*4,27,3,5,i<u.hp?(u.hp<=2?'#ffd078':blue?'#c0eabe':'#ffc1a3'):'#45505b');
+ for(let i=0;i<6;i++){
+  const px=4+i*4,filled=i<u.hp,color=filled?(u.hp<=2?'#ffd078':blue?'#c0eabe':'#ffc1a3'):'#45505b';
+  // A 3×5 faceted diamond silhouette reads as one distinct HP jewel.
+  rect(px,28,3,3,color);rect(px+1,27,1,1,filled?'#fff7dc':'#606978');
+  rect(px+1,31,1,1,filled?blue?'#8faebc':'#cd877a':'#343d48');
+ }
  // The palette communicates allegiance; a dot still distinguishes spent allies.
  if(spent){rect(26,3,4,4,'#f6e6b1');rect(27,4,2,2,ink);}
 }

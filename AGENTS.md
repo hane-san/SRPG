@@ -2,9 +2,21 @@
 
 This is the canonical `hane-san/SRPG-01-FEstyle` repository (formerly `hane-san/SRPG`). Do not modify the separate Nagi island game.
 
-**Current v0.8.0 rules supersede v0.7 examples below:** read [docs/hp6-campaign-design.md](docs/hp6-campaign-design.md) first. Main HP6 branch changes intentionally replace earlier shooter/healer/attrition contracts. Finale narrative is documentation only, not implemented.
+**Current v0.8.0 rules supersede v0.7 examples below:** read [docs/hp6-campaign-design.md](docs/hp6-campaign-design.md) first. The P3 specialist experiment on branch `feat/p3-specialists-26` is documented in [docs/p3-specialists-playtest.md](docs/p3-specialists-playtest.md); it supersedes only the former all-class P3 stance while under review. Main HP6 branch changes intentionally replace earlier shooter/healer/attrition contracts. Finale narrative is documentation only, not implemented.
 
 Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current findings: [docs/input-performance-0.7.0.md](docs/input-performance-0.7.0.md). Next work: [docs/ROADMAP.md](docs/ROADMAP.md). Claude Code imports this file from `CLAUDE.md`; keep one rules contract.
+
+## Nonstop prototype phase (human instruction 2026-10-21)
+
+The human producer wants ideas thrown in at lunch to be playable on GitHub Pages by the evening. Until the human declares a stabilization phase, this section overrides the merge-approval wording elsewhere in this file, in `CLAUDE.md` and in `docs/DEVELOPMENT.md`.
+
+- **Daily afternoon run**: every day at about 15:00 JST a Claude Code run audits, fixes, implements and **merges** work in `hane-san/ARPG-02-retrostyle` and `hane-san/SRPG-01-FEstyle`. Procedure: `.claude/skills/steward/SKILL.md` (section 「毎日15時の昼ラン」).
+- **Adopted work** = open Issues and PRs created by the owner account (including GPT/Codex acting for the owner), unless the title starts with 「提案」, the body says 未採用/保留/マージ保留, or it carries a `hold`/`proposal` label. Proposals are never implemented on their own initiative.
+- **Merge gate** (all required, checked on the exact head SHA): `rules` and `browser` Actions succeed; no conflict with latest `main`; the run's own audit has no BLOCK; no `hold` label. Merge with a normal merge commit through the PR, then confirm the `main` Actions and the Pages build. If `main` or Pages breaks, open and merge a revert PR in the same run.
+- Human approval, independent audit and iPhone playtests are **batched to the evening play session**. Record them as unverified in the PR; never call them done.
+- Still prohibited: direct push to `main`, force-push or history rewrite, GitHub's auto-merge feature, PR approvals, repository Settings changes, deleting or weakening tests, renaming the repository/display title/storage keys, and touching other repositories. Game invariants below stay binding; a change that breaks them needs an explicit Issue from the human.
+- Only the afternoon run merges. The dawn patrol and other sessions keep reviewing and fixing PR branches without merging.
+- SRPG specifics during this phase: HP6 rules, the P1→P4 order, determinism and save compatibility (`save.js`) stay binding. Run `npm run simulate` when rules, numbers or maps change and record the result. A change to the save format needs a migration test in the same PR.
 
 ## Shared AI development contract
 - Scope work to this repository and the approved issue. The human producer decides game specifications, playtest acceptance and integration into main.
@@ -40,13 +52,19 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `save.js`: optional local storage, validation, P1/finished-state restore.
 - Read `docs/balance.md` before changing balance; preserve open hypotheses rather than calling them resolved.
 
+## Issue #29 castle-opening experiment (not on main)
+- All allied characters begin in the castle reserve; zero on-board allies at map start. Players tap castle, choose the glyph/name, and gesture from the castle to their destination. Turn 1 permits two voluntary sorties; later turns permit one, board maximum remains five. No resource, state, or save changes before command validation.
+- Only committed `deployAndAct` emits a `deploy` observer with the opening line; playback reveals the actor at the gate, sounds two short metallic clanks, shows a one-line subtitle, and *then* replays movement/combat. Disable/shorten animation in Fast/Reduced Motion modes, preserve input lock and save atomicity. The actual line is a provisional plain string, not spoken audio.
+- Existing P3 specialist rules from PR #27 still apply. PR #31 is stacked on that branch and must not be merged independently into main.
+- Historical 2-ally placement tests can seed old positions explicitly; production `createGame` must start with no deployed ally.
+
 ## Invariants
 1. P1 ally action -> P2 enemy -> P3 ally support -> P4 announced events.
 2. No enemy general-unit P3 skills, hit/miss RNG, hidden lethal events, squad attrition resources or asset reuse from Fire Emblem.
-3. P3 requires no move; no P2 counter when preparing support; no consumption if no valid target.
-4. Public commands are attack/wait only. Stationary wait arms each unit’s finite P3 attack/heal; moved wait and P1 attack never arm P3. Attack skill at zero charges waits normally and may counter. Healers keep H1/H0/H2 emergency healing. Omitted units at phase-end wait in place.
+3. P3 requires no move; the only P3 specialist allies are shooter (single-target artillery) and mage/healer/medic (temporary mage-family single-target healing). No P2 counter from any ally specialist, even without ammo; no consumption if no valid target.
+4. Public commands are attack/wait only. Normal ally classes (shield/sword/bow/horse) use P1 attack, P2 counter, no P3. Allied specialist units (shooter and mage family) cannot P1 normal attack or P2 counter; stationary wait arms finite P3 artillery/healing when charged. Moved wait never arms P3. Omitted units wait in place. H1/H0/H2 settings are legacy/unused in HP6.
 5. All deployed and reserve combatants have maxHP6. Normal damage is deterministic and minimum1, basic attack2, advanced melee3, shield innate damage reduction1/2, shooter range3 deals1. P3 stationary support attacks one valid target, no counter, one supply on successful effect only. Rain map05 cycles clear/clear/light/heavy/light; movement reduction is foot2/horse3 for light, foot3/horse4 for heavy, minimum1 on both teams. All reach/routes/AI/threats must use engine.movement without altering base stats.
-6. P3 heal affects one wounded ally at Manhattan distance1 for +2 (no self/diagonal). Each deployed ally has maximum two stance supplies, replenished by one at start of ally turn near its castle. Moving prevents P3. No emergency healing at zero supply. Full-HP units are unaffected.
+6. Mage-family P3 heal affects one wounded ally at Manhattan distance1 for +2 (no self/diagonal). Only P3 specialists carry up to two stance supplies, replenished by one at start of ally turn near its castle. Moving prevents P3. No emergency healing at zero supply. Full-HP units are unaffected.
 7. Announce artillery at prior P4; spawned units first act at next P2.
 8. Classic named death is permanent, but the same army slot gets a generic soldier of equal basic class/rank next chapter. Generic units lack named-only choice skills. There is no repair/penalty reward deduction for death. Retry restores chapter-start state; Casual returns named units next chapter.
 9. After selecting an ally, tapping a legal empty destination with no attack targets immediately commits move + ordinary wait. An attack-capable destination press anchors that tile: slide onto an enemy, release to the forecast, then choose Attack once. Releasing without a target restores the pre-press draft. Tapping the selected unit or an invalid destination cancels. Dragging from the unit still opens Attack / Wait / Back and allows an explicit wait in an attack-capable tile. Choices are disabled while the route finger is still held; after release, choosing Attack or Wait commits immediately; do not add a separate command/confirm step. Back/cancel/multitouch never consumes an action. Save the complete resolved P1 command before its presentation, never an intermediate visual/playing phase; finished outcomes may persist at their final phase.

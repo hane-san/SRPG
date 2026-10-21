@@ -1,3 +1,4 @@
+import {gemPlan,gemHP,gemSchedule} from './gem-effects.js?v=0.8.0-gems28';
 // Only presentation lives here; all rules have already resolved synchronously.
 export function tween(duration,update){
  if(!duration||document.hidden){update(1);return Promise.resolve();}
@@ -14,7 +15,7 @@ export function tween(duration,update){
 }
 export function createPlayback({getState,setState,view,draw,sound,isFast,isReduced,onMessage=()=>{},onCombat=()=>{}}){
  const duration=(normal,quick=0,still=0)=>document.hidden||isFast()?quick:isReduced()?still:normal;
- const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation'])view[k]=null;};
+ const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation','sortieEntrance','sortieQuote','jewel'])view[k]=null;};
  async function play(frames){
   let lastActor=null;
   for(const {state,event} of frames){
@@ -25,7 +26,15 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
     view.animation={...event,stage:'ready',progress:0};draw();await tween(duration(60,0,30),()=>{});lastActor=event.actor;
    }
    if(event.kind==='deploy'){
-    setState(state);sound.play('deploy');onMessage(`${actor.name}が本城から出撃`);draw();
+    // A committed sortie is presented at the gate before any travel or attack.
+    // Scene changes happen only in playback; combat and charges were settled by engine.
+    const entrant=state.units.find(u=>u.id===event.actor),line=event.line||'出撃する！';
+    setState(state);sound.play('deploy');onMessage(`${entrant.name}、本城より出撃！`);
+    await tween(duration(210,30,80),p=>{view.sortieEntrance={id:entrant.id,x:event.origin.x,y:event.origin.y,progress:p};draw();});
+    view.sortieEntrance=null;view.sortieQuote={id:entrant.id,x:event.origin.x,y:event.origin.y,line};
+    onMessage(`${entrant.name}「${line}」`);draw();
+    await tween(duration(440,60,130),()=>{});
+    view.sortieQuote=null;draw();
    }else if(event.kind==='move'){
     setState(state);onMessage(`${actor.name}が移動`);
     for(let i=1;i<event.path.length;i++){
@@ -44,15 +53,51 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
      if(actor&&!ranged)view.motion={id:actor.id,x:actor.x+dx/length*.23*p,y:actor.y+dy/length*.23*p};
      else if(actor)view.projectile={from:actor,to:target,progress:p,heal,type:actor.type};draw();
     });
-    setState(state);onCombat(before,state,event,'impact');view.projectile=null;sound.play(heal?'heal':'hit',event.amount,!state.units.find(u=>u.id===target.id)?.alive);
-    const defeated=!state.units.find(u=>u.id===target.id)?.alive;
-    if(defeated){sound.play('defeat');view.ghost={unit:target,alpha:1};}
-    else if(!heal&&(target.def||target.guard||target.specialty==='guard'&&target.command))sound.play('defend');
-    await tween(duration(380,isReduced()?35:20,220),p=>{
-     view.animation={...event,stage:'impact',progress:p};view.flash={id:target.id,amount:1-p,heal};view.effect={x:target.x,y:target.y,text:`${heal?'+':'−'}${event.amount}`,progress:p,heal};
-     if(actor&&!ranged)view.motion={id:actor.id,x:actor.x+dx/length*.23*(1-p),y:actor.y+dy/length*.23*(1-p)};
-     if(view.ghost)view.ghost.alpha=1-p;draw();
-    });
+    view.projectile=null;
+    const afterTarget=state.units.find(u=>u.id===target.id);
+    const armoured=!heal&&!!(target.def||target.guard||target.specialty==='guard'&&target.command);
+    const plan=gemPlan(target.hp,afterTarget?.hp??target.hp,event.amount,{heal,armoured,ally:target.team==='ally'});
+    const speed=gemSchedule(plan,isFast(),isReduced());
+    const animate=ms=>tween(document.hidden?0:ms,()=>{});
+    // Hit-stop interrupts the first impact, not the per-jewel rhythm.
+    if(!heal){
+     sound.play('gem-impact',event.amount,plan.lethal,{heavy:plan.heavy,armoured:plan.armoured,ally:plan.ally});
+     if(speed.hitStopMs){
+      await tween(document.hidden?0:speed.hitStopMs,p=>{
+       view.animation={...event,stage:'hitstop',progress:p};
+       view.jewel={id:target.id,hp:plan.start,index:-1,progress:p,hitStop:true,heavy:true,armoured};
+       view.flash={id:target.id,amount:Math.max(0,.6-p*.3),heal:false};draw();
+      });
+     }
+    }
+    if(plan.count){
+     await animate(speed.firstDelayMs);
+     sound.play('gem-chain',plan.count,plan.lethal,{...plan,intervalMs:speed.intervalMs});
+     for(let i=1;i<=plan.count;i++){
+      const hp=gemHP(plan,i),visual={...before,units:before.units.map(u=>u.id===target.id?{...u,hp}:u)};
+      onCombat(before,visual,event,'shard');
+      await tween(document.hidden?0:speed.intervalMs,p=>{
+       view.animation={...event,stage:heal?'reform':'shatter',index:i,progress:p};
+       view.jewel={id:target.id,hp,index:heal?plan.start+i-1:plan.start-i,progress:p,heal,heavy:plan.heavy,armoured,ally:plan.ally};
+       view.flash={id:target.id,amount:isReduced()?0:Math.max(0,(1-p)*(plan.heavy?.42:.25)),heal};
+       view.effect={x:target.x,y:target.y,text:`${heal?'+':'−'}${event.amount}`,progress:(i-1+p)/plan.count,heal};
+       draw();
+      });
+     }
+    }
+    setState(state);onCombat(before,state,event,'impact');view.jewel=null;
+    view.flash=null;view.effect=null;
+    if(plan.lethal){
+     sound.play('gem-finish',plan.count,true,{ally:plan.ally,heavy:plan.heavy});
+     view.ghost={unit:{...target,hp:0},alpha:1,shatter:true,progress:0};
+     await tween(document.hidden?0:speed.finishMs+48,p=>{
+      view.animation={...event,stage:'collapse',progress:p};
+      view.ghost.progress=p;view.ghost.alpha=1-p;draw();
+     });
+    }else if(plan.count){
+     await animate(speed.finishMs);
+    }
+
    }
    clear();draw();await tween(duration(25,0,20),()=>{});
   }

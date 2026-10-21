@@ -9,10 +9,15 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[]){const s
   const enemyReach=enemies.map(e=>({e,positions:E.reachable(s,e,e.ai==='hold'?0:E.movement(s,e),{threat:true})}));
   function risk(p,u){return enemyReach.reduce((v,{e,positions})=>v+(positions.some(n=>E.inRange({...e,...n},p))?E.damage(s,e,{...u,...p}):0),0);}
   // Fighters first, healers after movement to recover them. Bow before melee where possible.
-  const allies=E.alive(s,'ally').sort((a,b)=>Number(['healer','medic'].includes(a.type))-Number(['healer','medic'].includes(b.type))||Number(b.type==='bow')-Number(a.type==='bow')||a.id.localeCompare(b.id));
-  for(const u of allies){if(!u.alive||s.status!=='playing')continue;
-   if(policy==='garrison'&&mapId===1&&garrison.includes(u.id)){E.act(s,u.id,u,'wait',undefined,observe);continue;}
-   if(policy==='hold'){E.act(s,u.id,u,'wait',undefined,observe);continue;}
+  // Issue #29: everyone starts in the castle reserve. Sortie candidates are planned
+  // from the castle and committed through deployAndAct, exactly like the UI.
+  const sortied=[];for(const r of E.reserves(s).slice(0,Math.max(0,E.deploymentLimit(s)-s.deployedThisTurn)))if(E.canDeploy(s)&&E.sortieUnit(s,r.id))sortied.push(r.id);
+  const allies=[...E.alive(s,'ally'),...sortied.map(id=>s.units.find(u=>u.id===id))].sort((a,b)=>Number(['healer','medic'].includes(a.type))-Number(['healer','medic'].includes(b.type))||Number(b.type==='bow')-Number(a.type==='bow')||a.id.localeCompare(b.id));
+  for(const unit of allies){if(!unit.alive||s.status!=='playing')continue;
+   const sortie=unit.deployed===false;if(sortie&&!E.canDeploy(s))continue;const u=sortie?E.sortieUnit(s,unit.id):unit;
+   const command=(p,a,t)=>sortie?E.deployAndAct(s,u.id,p,a,t,observe):E.act(s,u.id,p,a,t,observe);
+   if(!sortie&&policy==='garrison'&&mapId===1&&garrison.includes(u.id)){command(u,'wait');continue;}
+   if(policy==='hold'&&!sortie){command(u,'wait');continue;}
    let goal=s.map.goal;
    if(policy==='east'&&mapId===1&&['horse','sword'].includes(u.type)&&u.y>3)goal={x:13,y:Math.max(2,u.y-5)};
    if(policy==='south'&&mapId===1&&!s.southTaken)goal=s.map.south;
@@ -32,7 +37,7 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[]){const s
     if(!moved&&['heal','support'].includes(u.skill)){const ts=E.supportTargets(s,u);if(ts.length){const benefit=ts.reduce((sum,t)=>sum+(u.skill==='heal'?E.healAmount(s,u,t)*2+8:E.damage(s,u,t)*1.5+(E.damage(s,u,t)>=t.hp?24:0)),0);if(u.skill==='heal'||u.charges>0)choices.push({p,a:'wait',score:score+benefit});}}
    }
    choices.sort((a,b)=>b.score-a.score||a.p.cost-b.p.cost||a.p.y-b.p.y||a.p.x-b.p.x);
-   for(const c of choices)if(E.act(s,u.id,c.p,c.a,c.t?.id,observe).ok)break;
+   for(const c of choices)if((!sortie||E.dist(c.p,u)>0)&&command(c.p,c.a,c.t?.id).ok)break;
    if(u.x>=12)reachedEast=true;
   }
   if(E.prepareEnemy(s)){E.enemyPhase(s,observe);E.supportPhase(s,observe);E.eventPhase(s,observe);E.nextTurn(s);}

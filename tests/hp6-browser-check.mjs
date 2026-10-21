@@ -12,7 +12,9 @@ try{
   for(const map of MAPS){
    await t.reset(E.createGame(map.id));
    const first=await t.state();
-   assert.equal(first.units.filter(u=>u.team==='ally'&&u.deployed).length,2);
+   assert.equal(first.units.filter(u=>u.team==='ally'&&u.deployed).length,0);
+   assert.equal(E.reserves(first).length,first.units.filter(u=>u.team==='ally').length);
+   assert.equal(E.deploymentLimit(first),2);
    assert(first.units.every(u=>u.maxHp===6));
    const deploy=page.locator('#orders button').filter({hasText:'出撃'});
    assert.equal(await deploy.count(),1);
@@ -31,14 +33,23 @@ try{
    const virtual={...next,...first.map.camp,deployed:true};
    const dest=E.reachable(first,virtual).filter(p=>E.dist(p,virtual)>0&&!E.alive(first,'enemy').some(e=>E.inRange({...virtual,...p},e))).sort((a,b)=>a.cost-b.cost)[0];
    assert(dest,'a legal sortie route should exist');
-   await t.tap(dest);await t.settled();
+   await t.slide(first.map.camp,dest);await t.settled();
    const deployed=await t.state();
-   assert.equal(E.alive(deployed,'ally').length,3);
+   assert.equal(E.alive(deployed,'ally').length,1);
    assert.equal(deployed.deployedThisTurn,1);
-   assert.equal(E.reserves(deployed).length,first.units.filter(u=>u.team==='ally').length-3);
-   assert(!E.canDeploy(deployed),'only one sortie per turn');
+   assert.equal(E.reserves(deployed).length,first.units.filter(u=>u.team==='ally').length-1);
+   assert(E.canDeploy(deployed),'first turn still permits a second sortie');
    await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);
    assert.deepEqual(await t.state(),deployed,'the sortie survives reload');
+   const nextReserve=E.reserves(deployed)[0],virtual2=E.sortieUnit(deployed,nextReserve.id);
+   const dest2=E.reachable(deployed,virtual2).find(p=>E.dist(p,virtual2)>0&&!E.alive(deployed,'enemy').some(e=>E.inRange({...virtual2,...p},e)));
+   assert(dest2,'a second opening sortie route exists');
+   await page.locator('#orders button').filter({hasText:'出撃'}).click();
+   await page.locator('#deploymentList button').first().click();
+   await t.slide(deployed.map.camp,dest2);await t.settled();
+   const second=await t.state();
+   assert.equal(E.alive(second,'ally').length,2);assert.equal(second.deployedThisTurn,2);
+   assert(!E.canDeploy(second),'opening sortie limit reached');
    const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,app:document.querySelector('#app').getBoundingClientRect().height>innerHeight+1,end:document.querySelector('#endTurn').getBoundingClientRect().bottom>innerHeight+1}));
    assert.deepEqual(geometry,{overflow:false,app:false,end:false});
    await t.endTurn();const after=await t.state();assert(after.turn===2||after.status!=='playing');
@@ -60,12 +71,12 @@ try{
  assert((await page.locator('#orders').innerText()).includes('HP 6 →'));
  cases.push({scenario:'fixed six HP strike/counter, no extra confirmation'});
  const support=E.createGame();support.units=[
-  unit({id:'archer',name:'弓手',type:'bow',x:5,y:16},'ally'),
+  unit({id:'cannon',name:'砲兵',type:'shooter',x:5,y:16},'ally'),
   unit({id:'target',name:'標的',type:'sword',x:5,y:14,ai:'hold'},'enemy')];
- await t.reset(support);await t.select('archer');await page.locator('#waitOrder').click();await t.settled();
+ await t.reset(support);await t.select('cannon');assert.equal(await page.locator('#attackOrder').isDisabled(),true);await page.locator('#waitOrder').click();await t.settled();
  await t.endTurn();const p3=await t.state();assert.equal(p3.units.find(u=>u.id==='target').hp,4);
- assert.equal(p3.units.find(u=>u.id==='archer').charges,2,'P3 spent one, castle resupplied one');
- cases.push({scenario:'P3 consumes ammunition; castle replenishes at next turn'});
+ assert.equal(p3.units.find(u=>u.id==='cannon').charges,2,'P3 spent one, castle resupplied one');
+ cases.push({scenario:'stationary cannon P3 consumes ammo; castle replenishes at next turn'});
  const promotion=E.createGame(1);promotion.status='victory';
  await t.reset(promotion,'0.8.0',true);
  await page.getByRole('button',{name:'上級職の技能を選ぶ'}).click();

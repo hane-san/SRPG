@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import * as E from '../engine.js';
-import {MAPS,unit} from '../data.js';
+import {unit,MAPS,positions} from '../data.js';
 import {RULES} from '../config.js';
 import {launch,setup} from './browser-helpers.mjs';
 const browser=await launch(),results=[];
@@ -16,7 +16,7 @@ try{
  for(const [width,height]of [[320,568],[360,740],[390,844],[844,390]]){
   await page.setViewportSize({width,height});
   for(const map of MAPS){
-   const s=E.createGame(map.id);if(map.id===4)s.turn=4;
+   const s=E.createGame(map.id);const openingPositions=positions(map.id);s.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:openingPositions[i+1][0],y:openingPositions[i+1][1]}));if(map.id===4)s.turn=4;
    await t.reset(s);await t.select('a1');const camera=await t.camera(),u=E.alive(s,'ally')[0];
    const p=E.reachable(s,u).find(p=>p.y===u.y&&E.dist(p,u)===1&&(!s.map.camp||E.dist(p,s.map.camp)>0));assert(p);
    await t.slide(u,p,{end:false});const draft=await t.draft();assert(draft.dragging);assert(await page.locator('#orders').isHidden());
@@ -24,7 +24,7 @@ try{
    if(map.id===4)assert(text.includes('大雨'));
    const geometry=await page.locator('#commandHint').evaluate(e=>{const dock=e.parentElement.getBoundingClientRect();return {dock:dock.height,children:[...e.children].map(c=>{const r=c.getBoundingClientRect();return {top:r.top>=dock.top,bottom:r.bottom<=dock.bottom,left:r.left>=dock.left,right:r.right<=dock.right,font:parseFloat(getComputedStyle(c).fontSize)};})};});
    assert.equal(geometry.dock,144);assert(geometry.children.every(c=>c.top&&c.bottom&&c.left&&c.right),JSON.stringify({width,map:map.id,geometry}));assert(geometry.children.slice(0,2).every(c=>c.font>=14));
-   assert.deepEqual(await t.state(),s);await t.touch('touchEnd',[]);assert.deepEqual(await t.state(),s);
+   assert.deepEqual(await t.state(),s);await t.touch('touchCancel',[]);assert.deepEqual(await t.state(),s);
    assert.deepEqual(await t.camera(),camera);await page.keyboard.press('Escape');assert.deepEqual(await t.camera(),camera);
    results.push({width,map:map.id+1,weather:E.weatherAt(s),cost:p.cost,budget:E.movement(s,u)});
   }
@@ -71,14 +71,13 @@ try{
  assert.equal(rendering.adjacent,0);assert(rendering.inRange>0);assert.equal(rendering.dead,0);assert.deepEqual(rendering.initial,rendering.steady);assert(rendering.labels.includes(`P4 −${RULES.barrageDamage}`));
  // Castle sortie still originates at the castle; cancellation never spends a slot.
  for(const occupied of [false,true]){
-  const sortie=E.createGame();if(occupied)Object.assign(sortie.units[0],sortie.map.camp);
+  const sortie=E.createGame();if(occupied)Object.assign(sortie.units[0],sortie.map.camp,{deployed:true});
   await t.reset(sortie);await page.locator('#orders button').filter({hasText:'出撃可'}).click();await page.locator('#deploymentList button').first().click();
   const before=await t.draft(),virtual=before.sortieUnit,p=E.reachable(sortie,virtual).find(p=>p.y===virtual.y&&E.dist(p,virtual)===1);
-  await t.slide(virtual,p,{end:false});const held=await t.draft();assert(held.dragging&&!held.destinationPress);assert((await page.locator('#commandHint').innerText()).includes('コスト 1/4'));await t.touch('touchCancel',[]);
+  await t.slide(virtual,p,{end:false});const held=await t.draft();assert(held.dragging&&!held.destinationPress);assert((await page.locator('#commandHint').innerText()).includes(`コスト ${p.cost}/${E.movement(sortie,virtual)}`));await t.touch('touchCancel',[]);
   assert.deepEqual(await t.draft(),before);assert.deepEqual(await t.state(),sortie);
-  await t.slide(virtual,p);assert((await t.draft()).menu);assert.deepEqual(await t.state(),sortie);
   const expected=structuredClone(sortie);assert(E.deployAndAct(expected,virtual.id,p,'wait').ok);
-  await page.locator('#waitOrder').click();await t.settled();assert.deepEqual(await t.state(),expected);
+  await t.slide(virtual,p);await t.settled();assert.deepEqual(await t.state(),expected,'releasing a castle drag commits the sortie without another button');
   await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.deepEqual(await t.state(),expected);
  }
  assert.deepEqual(t.errors,[]);writeFileSync('test-results/position22-browser-results.json',JSON.stringify({results,rendering,errors:t.errors},null,2));

@@ -26,7 +26,7 @@ test('presentation events separate legal movement, attack and counter HP changes
 });
 test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
  for(const support of [false,true]){
-  const s=E.createGame();s.units=[unit({id:'a',name:'a',type:'sword',x:3,y:5},'ally'),unit({id:'e',name:'e',type:'sword',x:3,y:4,ai:'hold'},'enemy')];
+  const s=E.createGame();s.units=[unit({id:'a',name:'a',type:support?'shooter':'sword',x:3,y:5},'ally'),unit({id:'e',name:'e',type:'sword',x:3,y:support?3:4,ai:'hold'},'enemy')];
   const hits=[];if(support){E.act(s,'a',s.units[0],'wait');E.prepareEnemy(s);E.supportPhase(s,(_s,_u,e)=>{if(e.kind==='hit')hits.push(e);});}
   else{s.units[1].hp=1;E.act(s,'a',s.units[0],'attack','e',(_s,_u,e)=>hits.push(e));}
   assert.equal(hits.length,1);assert(!hits[0].counter);
@@ -34,7 +34,7 @@ test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
 });
 test('enemy move events follow adjacent traversable tiles, one actor at a time',()=>{
  for(let id=0;id<MAPS.length;id++){
-  const s=E.createGame(id),events=[];E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
+  const s=E.createGame(id),events=[];assert(E.deploy(s,'a1').ok);assert(E.deploy(s,'a2').ok);E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
   for(const {event,actor,state} of events){assert(event.path.length>1);assert.deepEqual(event.path.at(-1),{x:actor.x,y:actor.y});for(let i=1;i<event.path.length;i++){assert.equal(E.dist(event.path[i-1],event.path[i]),1);assert(Number.isFinite(E.terrain(state,event.path[i]).cost));}}
   assert(events.length);
  }

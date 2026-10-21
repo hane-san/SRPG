@@ -1,5 +1,5 @@
-import {RULES,TERRAINS,PROMOTIONS} from './config.js?v=0.8.0';
-import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17';
+import {RULES,TERRAINS,PROMOTIONS} from './config.js?v=0.8.0-p3-26-sortie29';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17-p3-26';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
@@ -18,14 +18,14 @@ export function createGame(mapId=0,opts={},lost=[],progress={}){
  const allies=specs.map((r,i)=>{
   const missing=lost.includes(r.id)&&settings.mode==='classic';
   const spec=missing?{...r,id:`general-${r.id}`,name:`補充兵 ${i+1}`,named:false}:r;
-  const spawn=i<2?pos[i+1]:pos[i];
-  return unit({...spec,x:spawn[0],y:spawn[1],rank:mapId>=2?'advanced':'lower',specialty:missing?null:specialties[r.id]||null,deployed:i<2},'ally',settings);
+  const spawn=pos[i];
+  return unit({...spec,x:spawn[0],y:spawn[1],rank:mapId>=2?'advanced':'lower',specialty:missing?null:specialties[r.id]||null,deployed:false},'ally',settings);
  });
  const s={version:2,map,settings,units:[...allies,...map.enemies.map(e=>unit(e,'enemy',settings))],
   turn:1,phase:1,status:'playing',lost:[...lost],specialties:{...specialties},deployedThisTurn:0,
   log:[],warnings:[],southTaken:false,
   metrics:{commands:0,supports:0,misfires:0,charges:0,deaths:[],turns:0},events:[]};
- log(s,map.briefing);log(s,`初期配備 ${Math.min(2,allies.length)}隊・予備 ${reserves(s).length}隊。自軍本城から各ターン1隊を出撃可能`);return s;
+ log(s,map.briefing);log(s,`全${reserves(s).length}隊が本城で出撃待機。初ターンは${RULES.openingDeployments}隊、以降は毎ターン${RULES.deploymentsPerTurn}隊まで出撃可能`);return s;
 }
 export function deploymentCells(s){
  const base=s.map.camp;if(!base)return [];
@@ -36,8 +36,9 @@ export function deploymentCells(s){
  }
  return candidates.sort((a,b)=>dist(a,base)-dist(b,base)||a.y-b.y||a.x-b.x);
 }
+export const deploymentLimit=s=>s.turn===1?RULES.openingDeployments:RULES.deploymentsPerTurn;
 export function canDeploy(s){
- return s.status==='playing'&&s.phase===1&&s.deployedThisTurn<RULES.deploymentsPerTurn&&alive(s,'ally').length<RULES.maxDeployed&&reserves(s).length>0&&deploymentCells(s).length>0;
+ return s.status==='playing'&&s.phase===1&&s.deployedThisTurn<deploymentLimit(s)&&alive(s,'ally').length<RULES.maxDeployed&&reserves(s).length>0&&deploymentCells(s).length>0;
 }
 export function deploy(s,id,p=deploymentCells(s)[0]){
  if(!canDeploy(s))return {ok:false,error:'このターンは出撃できません'};
@@ -60,7 +61,7 @@ export function deployAndAct(s,id,dest,action,targetId,observe=()=>{}){
  Object.assign(u,{x:base.x,y:base.y,deployed:true,acted:false,command:null});
  const error=validateAction(s,id,dest,action,targetId);
  if(error){Object.assign(u,original);return {ok:false,error};}
- observe(s,u,{kind:'deploy',actor:u.id,origin:{...base}});
+ observe(s,u,{kind:'deploy',actor:u.id,origin:{...base},line:'出撃する！'});
  const result=act(s,id,dest,action,targetId,observe);
  if(!result.ok){Object.assign(u,original);return result;}
  s.deployedThisTurn++;
@@ -105,16 +106,19 @@ export function routeTo(s,u,dest){
  return path.reverse();
 }
 export const supportRange=u=>u.range;
+const mageFamily=u=>['mage','healer','medic'].includes(u.type);
+// Enemy casters retain existing P2 AI for this first ally-side P3 playtest.
+export const canNormalAttack=u=>u.team!=='ally'||(!mageFamily(u)&&u.type!=='shooter');
 export function waitCommand(u,dest=u){
- if(dist(u,dest)>0)return null;
- return u.charges>0&&(u.skill==='heal'||u.skill==='support')?u.skill:null;
+ if(dist(u,dest)>0||u.charges<=0)return null;
+ return u.type==='shooter'?'support':mageFamily(u)?'heal':null;
 }
 export function damage(s,a,b,bonus=0){
  const distance=dist(a,b),power=a.type==='shooter'&&distance>=3?1:a.atk;
  const stance=b.specialty==='guard'&&b.command?1:0;
  return Math.max(1,power+bonus-(b.def||0)-stance-(b.guard||0));
 }
-export function prediction(s,u,target,position=u,bonus=0){const a={...u,...position};const dealt=damage(s,a,target,bonus);return {damage:dealt,counter:dealt>=target.hp||target.command==='support'||target.command==='heal'||!inRange(target,a)?0:damage(s,target,a,target.specialty==='counter'?1:0)};}
+export function prediction(s,u,target,position=u,bonus=0){const a={...u,...position};const dealt=damage(s,a,target,bonus);return {damage:dealt,counter:dealt>=target.hp||target.command==='support'||target.command==='heal'||!canNormalAttack(target)||!inRange(target,a)?0:damage(s,target,a,target.specialty==='counter'?1:0)};}
 export function threatAt(s,p,u){return alive(s,'enemy').filter(e=>reachable(s,e,e.ai==='hold'?0:movement(s,e),{threat:true}).some(n=>inRange({...e,...n},p))).reduce((sum,e)=>sum+damage(s,e,{...u,...p}),0);}
 function hurt(s,u,n,reason){u.hp=Math.max(0,u.hp-n);if(u.hp===0&&u.alive){u.alive=false;u.command=null;s.metrics.deaths.push({turn:s.turn,id:u.id,reason});if(u.team==='ally'&&u.named&&s.settings.mode==='classic'&&!s.lost.includes(u.id))s.lost.push(u.id);log(s,`${u.name} ${u.team==='enemy'?'撃破':s.settings.mode==='classic'?'永久離脱':'撤退（次章復帰）'}`);}}
 const noop=()=>{};
@@ -126,7 +130,7 @@ function moveUnit(s,u,dest,observe){
 function strike(s,a,b,bonus=0,counter=true,observe=noop){
  const n=damage(s,a,b,bonus);log(s,`${a.name} → ${b.name} ${n}ダメージ`);hurt(s,b,n,a.id);
  observe(s,a,{kind:'hit',actor:a.id,target:b.id,amount:n,counter:false});
- if(counter&&b.alive&&a.alive&&b.command!=='support'&&b.command!=='heal'&&inRange(b,a)){
+ if(counter&&b.alive&&a.alive&&b.command!=='support'&&b.command!=='heal'&&canNormalAttack(b)&&inRange(b,a)){
   const c=damage(s,b,a,b.specialty==='counter'?1:0);log(s,`${b.name}の反撃 ${c}`);hurt(s,a,c,b.id);
   observe(s,b,{kind:'hit',actor:b.id,target:a.id,amount:c,counter:true});
  }
@@ -136,7 +140,7 @@ export function healAmount(s,h,t){
  return h.charges>0?Math.min(t.maxHp-t.hp,RULES.heal):0;
 }
 export function supportTargets(s,u){
- const ranged=u.skill==='support';let targets=alive(s,ranged?'enemy':'ally').filter(t=>ranged?inRange(u,t,supportRange(u)):t.id!==u.id&&dist(u,t)===1&&healAmount(s,u,t)>0);
+ const ranged=u.type==='shooter';let targets=alive(s,ranged?'enemy':'ally').filter(t=>ranged?inRange(u,t,supportRange(u)):t.id!==u.id&&dist(u,t)===1&&healAmount(s,u,t)>0);
  targets.sort((a,b)=>Number(b.id===u.focus)-Number(a.id===u.focus)||(ranged?Number(b.hp<=damage(s,u,b))-Number(a.hp<=damage(s,u,a))||b.atk-a.atk:a.hp/a.maxHp-b.hp/b.maxHp)||a.y-b.y||a.x-b.x||a.id.localeCompare(b.id));
  return targets.slice(0,1);
 }
@@ -146,6 +150,7 @@ export function validateAction(s,id,dest,action,targetId){
  if(s.status!=='playing'||s.phase!==1||!u?.alive||u.team!=='ally'||u.deployed===false||u.acted)return 'この部隊は行動できません';
  if(!dest||!reachable(s,u).some(p=>p.x===dest.x&&p.y===dest.y))return '移動できない地点です';
  if(!['attack','wait'].includes(action))return '命令は攻撃か待機を選んでください';
+ if(action==='attack'&&!canNormalAttack(u))return '砲兵・魔術師系はP3専用です。移動せず待機してください';
  if(action==='attack'&&(!t?.alive||t.team!=='enemy'||!inRange({...u,...dest},t)))return '射程内の敵を選んでください';
  return null;
 }
@@ -191,12 +196,12 @@ export function enemyPhase(s,observe=()=>{}){
 export function distanceField(s,goal,team){const costs=new Map([[key(goal),0]]),q=[{...goal,c:0}];while(q.length){q.sort((a,b)=>a.c-b.c);const p=q.shift();if(p.c!==costs.get(key(p)))continue;for(const [dx,dy]of [[0,-1],[-1,0],[1,0],[0,1]]){const n={x:p.x+dx,y:p.y+dy},t=terrain(s,n);if(!t)continue;const occ=at(s,n);if(occ&&occ.team!==team&&dist(n,goal)!==0)continue;const c=p.c+(terrain(s,p)?.cost||1);if(c>=(costs.get(key(n))??Infinity)||!Number.isFinite(c))continue;costs.set(key(n),c);q.push({...n,c});}}return costs;}
 export function supportPhase(s,observe=()=>{}){
  if(s.status!=='playing')return;s.phase=3;log(s,'味方待機支援');
- for(const u of alive(s,'ally'))if(['support','heal'].includes(u.command)){
+ for(const u of alive(s,'ally'))if(u.command&&u.command===waitCommand(u)){
   if(u.supportTurn===s.turn)continue;
   if(u.charges<=0||!u.spend){s.metrics.misfires++;continue;}
   const target=supportTarget(s,u);if(!target){s.metrics.misfires++;log(s,`${u.name}：対象なし・弾薬温存`);continue;}
   charge(s,u);u.supportTurn=s.turn;
-  if(u.skill==='support')strike(s,u,target,0,false,observe);
+  if(u.command==='support')strike(s,u,target,0,false,observe);
   else{const n=healAmount({...s}, {...u,charges:1},target);target.hp+=n;
    log(s,`${u.name} → ${target.name} 回復＋${n}`);observe(s,u,{kind:'heal',actor:u.id,target:target.id,amount:n});}
   s.metrics.supports++;checkOutcome(s);observe(s,u,{kind:'settled',actor:u.id});
@@ -218,7 +223,7 @@ export function eventPhase(s,observe=noop){if(s.status!=='playing')return;s.phas
 export function nextTurn(s){
  if(s.status!=='playing')return;s.turn++;s.metrics.turns++;s.phase=1;s.deployedThisTurn=0;
  for(const u of alive(s)){u.acted=false;u.guard=0;u.command=null;
-  if(u.team==='ally'&&s.map.camp&&dist(u,s.map.camp)<=RULES.supplyRadius&&u.charges<u.maxCharges){
+  if(u.team==='ally'&&(u.type==='shooter'||mageFamily(u))&&s.map.camp&&dist(u,s.map.camp)<=RULES.supplyRadius&&u.charges<u.maxCharges){
    u.charges++;log(s,`${u.name}が本城で待機弾薬を1補給（${u.charges}/${u.maxCharges}）`);
   }
  }

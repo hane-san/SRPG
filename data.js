@@ -1,4 +1,4 @@
-import {CLASSES,RULES,PROMOTIONS} from './config.js?v=0.8.0';
+import {CLASSES,RULES,PROMOTIONS} from './config.js?v=0.8.0-p3-26-sortie29';
 const row = (w,h) => Array.from({length:h},()=>Array(w).fill('.'));
 function path(g,x,y0,y1,t='='){for(let y=y0;y<=y1;y++)g[y][x]=t;}
 function patch(g,x,y,w,h,t){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)g[j][i]=t;}
@@ -90,7 +90,7 @@ export function unit(spec,team,options={}){
  return {...c,...spec,rank,named,specialty,team,maxHp:hp,hp,
   atk:Math.min(5,Math.max(1,(spec.atk??baseAtk)+(team==='enemy'?(options.enemyAttack||0):0))),
   def:spec.def??def,move:(spec.move??c.move)+(specialty==='advance'?1:0),
-  charges:options.charges??RULES.ammo,maxCharges:options.charges??RULES.ammo,
+  charges:options.charges??c.charges,maxCharges:options.charges??c.charges,
   alive:true,deployed:spec.deployed??true,acted:false,command:null,spend:true,focus:null,guard:0};
 }
 export function positions(id){
