@@ -28,7 +28,7 @@ test('issue17 playback keeps deploy, hit and counter ordered and dispatches dist
    assert(E.deployAndAct(s,'r',s.map.camp,'attack','e',(state,_a,event)=>frames.push({state:structuredClone(state),event})).ok);
    let shown=initial;const cues=[],impacts=[],view={};
    const playback=createPlayback({getState:()=>shown,setState:v=>shown=v,view,draw:()=>{},sound:{play:k=>cues.push(k)},isFast:()=>true,isReduced:()=>true,onCombat:(_b,_a,e,stage)=>{if(stage==='impact')impacts.push(e.counter?'counter':'hit');}});
-   await playback.play(frames);assert.deepEqual(shown.units,s.units);assert.deepEqual(impacts,lethal?['hit']:['hit','counter']);assert.equal(cues[0],'deploy');assert(cues.includes(lethal?'defeat':'defend'));
+   await playback.play(frames);assert.deepEqual(shown.units,s.units);assert.deepEqual(impacts,lethal?['hit']:['hit','counter']);assert.equal(cues[0],'deploy');assert(cues.includes('gem-impact')&&cues.includes('gem-chain'),'every hit has a separate impact and jewel count');assert(cues.includes(lethal?'gem-finish':'gem-impact'),'only the lethal case has the final-jewel cue');
   }
  }finally{if(previous)Object.defineProperty(globalThis,'document',previous);else delete globalThis.document;}
 });
