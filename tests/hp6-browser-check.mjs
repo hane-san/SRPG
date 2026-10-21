@@ -60,12 +60,12 @@ try{
  assert((await page.locator('#orders').innerText()).includes('HP 6 →'));
  cases.push({scenario:'fixed six HP strike/counter, no extra confirmation'});
  const support=E.createGame();support.units=[
-  unit({id:'archer',name:'弓手',type:'bow',x:5,y:16},'ally'),
+  unit({id:'cannon',name:'砲兵',type:'shooter',x:5,y:16},'ally'),
   unit({id:'target',name:'標的',type:'sword',x:5,y:14,ai:'hold'},'enemy')];
- await t.reset(support);await t.select('archer');await page.locator('#waitOrder').click();await t.settled();
+ await t.reset(support);await t.select('cannon');assert.equal(await page.locator('#attackOrder').isDisabled(),true);await page.locator('#waitOrder').click();await t.settled();
  await t.endTurn();const p3=await t.state();assert.equal(p3.units.find(u=>u.id==='target').hp,4);
- assert.equal(p3.units.find(u=>u.id==='archer').charges,2,'P3 spent one, castle resupplied one');
- cases.push({scenario:'P3 consumes ammunition; castle replenishes at next turn'});
+ assert.equal(p3.units.find(u=>u.id==='cannon').charges,2,'P3 spent one, castle resupplied one');
+ cases.push({scenario:'stationary cannon P3 consumes ammo; castle replenishes at next turn'});
  const promotion=E.createGame(1);promotion.status='victory';
  await t.reset(promotion,'0.8.0',true);
  await page.getByRole('button',{name:'上級職の技能を選ぶ'}).click();
