@@ -26,7 +26,7 @@ test('presentation events separate legal movement, attack and counter HP changes
 });
 test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
  for(const support of [false,true]){
-  const s=E.createGame();s.units=[unit({id:'a',name:'a',type:'sword',x:3,y:5},'ally'),unit({id:'e',name:'e',type:'sword',x:3,y:4,ai:'hold'},'enemy')];
+  const s=E.createGame();s.units=[unit({id:'a',name:'a',type:support?'shooter':'sword',x:3,y:5},'ally'),unit({id:'e',name:'e',type:'sword',x:3,y:support?3:4,ai:'hold'},'enemy')];
   const hits=[];if(support){E.act(s,'a',s.units[0],'wait');E.prepareEnemy(s);E.supportPhase(s,(_s,_u,e)=>{if(e.kind==='hit')hits.push(e);});}
   else{s.units[1].hp=1;E.act(s,'a',s.units[0],'attack','e',(_s,_u,e)=>hits.push(e));}
   assert.equal(hits.length,1);assert(!hits[0].counter);
