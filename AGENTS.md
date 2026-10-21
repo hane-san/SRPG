@@ -40,6 +40,12 @@ Shared setup / handoff: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Current find
 - `save.js`: optional local storage, validation, P1/finished-state restore.
 - Read `docs/balance.md` before changing balance; preserve open hypotheses rather than calling them resolved.
 
+## Issue #29 castle-opening experiment (not on main)
+- All allied characters begin in the castle reserve; zero on-board allies at map start. Players tap castle, choose the glyph/name, and gesture from the castle to their destination. Turn 1 permits two voluntary sorties; later turns permit one, board maximum remains five. No resource, state, or save changes before command validation.
+- Only committed `deployAndAct` emits a `deploy` observer with the opening line; playback reveals the actor at the gate, sounds two short metallic clanks, shows a one-line subtitle, and *then* replays movement/combat. Disable/shorten animation in Fast/Reduced Motion modes, preserve input lock and save atomicity. The actual line is a provisional plain string, not spoken audio.
+- Existing P3 specialist rules from PR #27 still apply. PR #31 is stacked on that branch and must not be merged independently into main.
+- Historical 2-ally placement tests can seed old positions explicitly; production `createGame` must start with no deployed ally.
+
 ## Invariants
 1. P1 ally action -> P2 enemy -> P3 ally support -> P4 announced events.
 2. No enemy general-unit P3 skills, hit/miss RNG, hidden lethal events, squad attrition resources or asset reuse from Fire Emblem.
