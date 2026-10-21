@@ -181,6 +181,9 @@ bindMapInput(vp,mapTap,(clientX,clientY)=>{
   // Keep controls hidden until the release has been fully classified.
   update(x,y,true);view.dragging=false;view.destinationPress=false;
   if(view.invalid||(destinationPress&&!existingArrow&&!view.target&&!view.attackError)){sound.play('cancel');restore();return;}
+  // A clean drag starting at the castle confirms a move+wait directly.
+  // A chosen attack target still goes through the normal target confirmation.
+  if(sortieOrigin&&view.sortie&&!view.target&&!view.attackError&&E.dist(view.dest,u)>0){commit('wait');return;}
   openDraft();
  };
  const tap=(x,y)=>{
