@@ -78,8 +78,8 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
       onCombat(before,visual,event,'shard');
       await tween(document.hidden?0:speed.intervalMs,p=>{
        view.animation={...event,stage:heal?'reform':'shatter',index:i,progress:p};
-       view.jewel={id:target.id,hp,index:heal?plan.start+i-1:plan.start-i,progress:p,heal,heavy:plan.heavy,armoured,ally:plan.ally};
-       view.flash={id:target.id,amount:isReduced()?0:Math.max(0,(1-p)*(plan.heavy?.42:.25)),heal};
+       view.jewel={id:target.id,hp,index:heal?plan.start+i-1:plan.start-i,progress:p,heal,heavy:plan.heavy,armoured,ally:plan.ally,count:plan.count};
+       view.flash={id:target.id,amount:isReduced()?0:Math.max(0,(1-p)*(plan.heavy?.42:plan.count===2?.37:.25)),heal};
        view.effect={x:target.x,y:target.y,text:`${heal?'+':'−'}${event.amount}`,progress:(i-1+p)/plan.count,heal};
        draw();
       });
