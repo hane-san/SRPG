@@ -254,3 +254,8 @@ a{color:#e4c8f0}
 .sound-room-actions button{text-align:left}
 /* Menu links (source, balance notes) keep a 44px touch target like the other controls. */
 #modalBody a{display:inline-flex;align-items:center;min-height:44px}
+
+/* Castle sortie roster: readable class icons without shrinking mobile tap targets. */
+#deploymentList .sortie-choice{display:flex;align-items:center;text-align:left;gap:11px;min-height:49px;padding:6px 9px}
+.sortie-choice-icon{display:grid;place-items:center;flex:0 0 35px;height:35px;border-radius:7px;background:#294d50;color:#fff2c7;font-size:20px;font-weight:700}
+.sortie-choice-copy{flex:1;min-width:0;line-height:1.35;font-size:13px}
