@@ -66,6 +66,31 @@ try{
  assert.equal((await t.state()).metrics.commands,1);
  assert(await page.locator('#moveUndo').isHidden(),'an attack must not be undoable');
  cases.push('endpoint lock + continued enemy flick = immediate single attack with pre-release HP');
+ // Ranged attacks cross intermediate empty cells without changing the fixed firing tile.
+ const shooter=fixture();shooter.units[0]=unit({id:'a',name:'射手',type:'shooter',x:5,y:16},'ally');
+ await t.reset(shooter);await t.slide(origin,step,{end:false});
+ await page.waitForFunction(()=>window.srpgDebug.draft().moveArmed===true);
+ await t.touch('touchMove',[await t.point({x:5,y:14})]);
+ assert.deepEqual((await t.draft()).dest,step,'passing another empty cell preserves the firing position');
+ await t.touch('touchMove',[await t.point(enemy)]);
+ assert.deepEqual((await t.draft()).dest,step);
+ assert.equal((await t.draft()).target,'e');
+ await t.touch('touchEnd',[]);await t.settled();
+ const shooterExpected=structuredClone(shooter);assert(E.act(shooterExpected,'a',step,'attack','e').ok);
+ assert.deepEqual(await t.state(),shooterExpected);
+ cases.push('shooter crosses intervening empty tiles while keeping exact ranged attack origin');
+
+ // Bow minimum range may not silently select another approach or cause a strike.
+ const bow=fixture();bow.units[0]=unit({id:'a',name:'弓兵',type:'bow',x:5,y:16},'ally');
+ await t.reset(bow);await t.slide(origin,firing,{end:false});
+ await page.waitForFunction(()=>window.srpgDebug.draft().moveArmed===true);
+ await t.touch('touchMove',[await t.point(enemy)]);
+ assert.equal((await t.draft()).target,null);
+ assert((await page.locator('#commandHint').innerText()).includes('近すぎます'));
+ await t.touch('touchEnd',[]);
+ assert.deepEqual(await t.state(),bow,'illegal bow target never spends an action');
+ assert(await page.locator('#attackOrder').isDisabled());
+ cases.push('illegal adjacent bow contact remains a preview, never auto-attacks');
 
  // An armed route interrupted by a second finger must restore the draft.
  await t.reset(fixture());await t.slide(origin,step,{end:false});
