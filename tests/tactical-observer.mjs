@@ -6,7 +6,7 @@ export function createTacticalObserver(initial){
  let current;
  const start=s=>{
   current={turn:s.turn,commands:0,attacks:0,waits:0,deployments:0,p3:0,hits:0,enemyAttacks:0,movementSteps:0,advanceSteps:0,
-   incomingCannon:s.warnings.filter(w=>w.kind==='cannon'&&w.turn===s.turn).flatMap(w=>w.cells),warnedUnits:[],escapedBeforeImpact:0,cannonHits:0};
+   incomingCannon:s.warnings.filter(w=>w.kind==='cannon'&&w.turn===s.turn).flatMap(w=>w.cells),warnedUnits:[],escapedBeforeImpact:0,cannonHits:0,allyCannonHits:0};
   current.warnedUnits=E.alive(s,'ally').filter(u=>current.incomingCannon.some(c=>E.dist(c,u)===0)).map(u=>u.id);
   turns.push(current);
  };
@@ -16,7 +16,8 @@ export function createTacticalObserver(initial){
   if(event.kind==='hit'){
    current.hits++;
    if(s.phase===2&&actor?.team==='enemy'&&!event.counter)current.enemyAttacks++;
-   if(s.phase===4&&event.actor===null)current.cannonHits++;
+   // The barrage also strikes enemies standing in the cells, so count allies separately.
+   if(s.phase===4&&event.actor===null){current.cannonHits++;if(actor?.team==='ally')current.allyCannonHits++;}
   }
   if(s.phase===3&&['hit','heal'].includes(event.kind))current.p3++;
   if(event.kind==='move'&&actor?.team==='ally'){
@@ -45,7 +46,7 @@ export function createTacticalObserver(initial){
   capture:s.status==='victory'?{turn:s.turn,commands:s.metrics.commands}:null,
   base:s.map.base?{heldThroughTurn:turns.filter(t=>t.baseHeld).at(-1)?.turn??0,fallen:s.status==='defeat'&&E.alive(s,'enemy').some(u=>E.dist(u,s.map.base)===0)}:null,
   warnedAllyTurns:turns.reduce((n,t)=>n+t.warnedUnits.length,0),escapedBeforeImpact:turns.reduce((n,t)=>n+t.escapedBeforeImpact,0),
-  cannonHitEvents:turns.reduce((n,t)=>n+t.cannonHits,0),allyDeaths:s.metrics.deaths.filter(d=>s.units.find(u=>u.id===d.id)?.team==='ally'),
+  cannonHitEvents:turns.reduce((n,t)=>n+t.cannonHits,0),allyCannonHitEvents:turns.reduce((n,t)=>n+t.allyCannonHits,0),allyDeaths:s.metrics.deaths.filter(d=>s.units.find(u=>u.id===d.id)?.team==='ally'),
   bridgeCells:[...bridges].sort(),unmeasured:['humanEnjoyment','touchOperationCount','optimalStrategy','storyFlags','counterfactualGarrisonBenefit']
  });
  return {beginTurn:start,observe,command,beforeEvents,finishTurn,summary,turns};
