@@ -1,4 +1,4 @@
-import {riskCue,hasAnnouncedCannon,combatCue,thumbSide} from './tactical-ui.js?v=0.8.0-ui55';
+import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedThreat} from './tactical-ui.js?v=0.8.0-ui55';
 import {hudSignals,routeIntent} from './ui-hud.js?v=0.8.0-hud50';
 import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
 import {appendChapter,chronicleLines} from './chronicle.js?v=0.8.0-war43';
@@ -26,13 +26,16 @@ function applyThumb(){
  $('mapViewport').setAttribute('aria-label',`戦場。部隊から移動先へ滑らせ、敵上で離すと攻撃。移動だけなら0.2秒保持。直前の移動は${thumb==='left'?'左下':'右下'}から取り消せます`);
 }
 applyThumb();
-let riskCacheState=null,riskCacheTurn=-1,riskCache=new Map();
+let riskCacheState=null,riskCacheTurn=-1,riskCache=new Map(),riskIndex=[];
 function focusedRisk(unit,dest){
- if(riskCacheState!==s||riskCacheTurn!==s.turn){riskCacheState=s;riskCacheTurn=s.turn;riskCache.clear();}
- const key=`${unit.id}:${unit.hp}:${dest.x},${dest.y}`;
+ if(riskCacheState!==s||riskCacheTurn!==s.turn){
+  riskCacheState=s;riskCacheTurn=s.turn;riskCache.clear();
+  riskIndex=buildThreatIndex(s,E);
+ }
+ const key=`${unit.id}:${unit.hp}:${unit.command||''}:${dest.x},${dest.y}`;
  if(!riskCache.has(key)){
   if(riskCache.size>128)riskCache.clear();
-  riskCache.set(key,E.threatAt(s,dest,unit));
+  riskCache.set(key,indexedThreat(s,riskIndex,unit,dest,E));
  }
  return riskCache.get(key);
 }
