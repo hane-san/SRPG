@@ -11,6 +11,7 @@ test('P1 to P4 display exactly one current phase while battles run',()=>{
 });
 test('a cannon strike overrides reinforcements and weather in the warning hierarchy',()=>{
  assert.equal(hudSignals({weatherCycle:[1]}).level,'weather');
+ assert.equal(hudSignals({map:{weatherCycle:['light','heavy']}}).level,'weather','real state nests the cycle on map');
  assert.equal(hudSignals({warnings:[{kind:'reinforce'}],weatherCycle:[1]}).level,'reinforcement');
  assert.equal(hudSignals({warnings:[{kind:'reinforcement'}]}).level,'reinforcement');
  assert.equal(hudSignals({warnings:[{kind:'reinforce'},{kind:'cannon'}],weatherCycle:[1]}).level,'cannon');
