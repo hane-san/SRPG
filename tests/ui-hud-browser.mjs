@@ -30,7 +30,7 @@ try{
   observations.push({width,height,metrics});
  }
  await page.setViewportSize({width:390,height:844});
- for(const [kind,level] of [['cannon','cannon'],['reinforce','reinforcement']]){
+ for(const [kind,level] of [['cannon','cannon'],['spawn','reinforcement']]){
   const s=fixture();s.warnings=[{kind,turn:s.turn,cells:[{x:0,y:14}]}];
   await t.reset(s);
   assert.equal(await page.locator('#forecast').getAttribute('data-level'),level);
