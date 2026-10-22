@@ -38,6 +38,9 @@ test('map02: guarded counteroffensive can complete while thoughtless full offens
  assert(revised.turn<=16,'more than sixteen turns would erase the intended tempo gain');
  assert(revised.tactical.allyDeaths.length<=2,'early named losses should not be the price of the rescue');
  assert.equal(careful.status,'victory','defending cautiously must have a viable outcome');
+ const replacement=play(1,'advance',{},32,['a1']);
+ assert.equal(replacement.result.status,'victory','losing the named shield before chapter 2 should not erase this known route');
+ assert(replacement.s.units.some(u=>u.id==='general-a1'),'a generic unit must replace the named shield');
  assert.equal(reckless.status,'defeat','abandoning the central base should remain dangerous');
  assert.equal(reckless.tactical.base.fallen,true);
 });
