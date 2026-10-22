@@ -153,7 +153,10 @@ function presentCombat(before,after,event,stage){
  const label=event.kind==='heal'?'回復':event.counter?'反撃':!actor?'砲撃':s.phase===3?'待機攻撃':actor.team==='enemy'?'敵の攻撃':'攻撃';
  battleCard.title=`${label}${stage==='impact'?` ${event.kind==='heal'?'+':'−'}${event.amount}`:''} · ${actor?.name||'城砲'} → ${target?.name||''}`;
  for(const u of battleCard.units)u.hp=after.units.find(a=>a.id===u.id)?.hp??u.hp;
- if(stage==='shard'||stage==='impact'){
+ // The "impact" callback may already reflect the last shard's HP.
+ // The final acknowledgement must not replace "2 shattered" with "0".
+ if(stage==='windup')battleCard.cue='';
+ if(stage==='shard'||(stage==='impact'&&!battleCard.cue)){
   const current=after.units.find(u=>u.id===event.target);
   battleCard.cue=combatCue(event,target?.hp,current?.hp,target);
  }
