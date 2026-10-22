@@ -286,3 +286,52 @@ a{color:#e4c8f0}
 @media(prefers-reduced-motion:reduce){.gem-demo-jewel{transition:none}.gem-demo-jewel.breaking,.gem-demo-jewel.reforming{animation:none}.gem-demo-hitstop{transform:none}}
 @keyframes gem-crack{from{filter:brightness(2);transform:scale(1.16)}to{filter:brightness(.65);transform:scale(.82)}}
 @keyframes gem-reform{from{filter:brightness(1.7);transform:scale(.74)}to{filter:brightness(1);transform:scale(1)}}
+
+
+/* Issue #50: a single glance communicates where the army is in its four phases.
+   Absolutely positioned: never steals map pixels or changes the 52px header. */
+#battleHeader{position:relative;padding-bottom:6px}
+#phaseRail{position:absolute;left:7px;right:7px;bottom:1px;height:4px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;pointer-events:none}
+#phaseRail span{display:block;height:4px;border-radius:3px;background:#645968;box-shadow:inset 0 1px 1px #170f2266}
+#phaseRail span.past{background:#9d8a79}
+#phaseRail span.current{background:#f5ddb0;box-shadow:0 0 5px #f5d9a088}
+#phaseRail[data-phase="2"] span.current{background:#e8aaa2}
+#phaseRail[data-phase="3"] span.current{background:#b7d9cf}
+#phaseRail[data-phase="4"] span.current{background:#dfb7e0}
+#battleHeader .mission-link{min-width:0;max-width:38%;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:340px){#battleHeader .mission-link{max-width:32%}}
+
+/* Emergency first, weather second. Warning content remains selectable/readable. */
+#forecast{z-index:5;border-bottom:1px solid #a78c85;border-left:4px solid #a49cb1;border-radius:0 0 5px 5px;background:#332c3a;color:#eee3e5;font-size:13px;line-height:1.45;padding:7px 10px;overflow:auto;max-height:72px;box-shadow:0 3px 10px #17121d75}
+#forecast[data-level="weather"]{background:#302d3a;color:#e2d8eb;border-left-color:#9ca7bf}
+#forecast[data-level="reinforcement"]{background:#372a3e;color:#f2dced;border-left-color:#dab2ee}
+#forecast[data-level="cannon"]{background:#4c2832;color:#fff3e6;border-left-color:#f0b381;border-bottom-color:#bf6973;box-shadow:0 3px 12px #2a121acc}
+#forecast[data-level="cannon"]::before{content:"砲撃警戒";font-weight:850;letter-spacing:.05em;color:#ffdb9c;margin-right:9px}
+#forecast[data-level="reinforcement"]::before{content:"増援予告";font-weight:800;color:#efc4f1;margin-right:9px}
+#forecast[data-level="weather"]::before{content:"戦場状況";font-weight:750;color:#bdc9e5;margin-right:8px}
+
+/* Exact numerical HP stays visible. Cuts are a six-gem rhythm superimposed
+   over the existing authoritative engine-driven percentage fill. */
+#commandDock .hp-track{position:relative;isolation:isolate;border:1px solid #968296;background-color:#41384a;overflow:hidden;border-radius:3px}
+#commandDock .hp-track i{height:100%;border-radius:0;background-image:linear-gradient(180deg,#fff3d9 0%,#d5af80 48%,#966c5a 100%);box-shadow:inset 0 1px 1px #fff9df65}
+#commandDock .hp-track.ally i{background-image:linear-gradient(180deg,#f5eafc,#c6addb 48%,#7d6998)}
+#commandDock .hp-track.enemy i{background-image:linear-gradient(180deg,#fff0d2,#d8ae70 48%,#9d6849)}
+#commandDock .hp-track::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(16.66667% - 2px),#292330 calc(16.66667% - 2px),#292330 16.66667%)}
+#commandDock .combat-forecast .forecast-side{min-width:0;border-left:2px solid #b6a5bb;padding-left:7px}
+#commandDock .combat-forecast .forecast-side.ally{border-color:#b9a5d8}
+#commandDock .combat-forecast .forecast-side.enemy{border-color:#e4bf88}
+#commandDock .combat-forecast .forecast-side span{font-weight:700}
+#commandDock .combat-forecast .forecast-side .fatal{color:#ffdcaa}
+
+/* One command hierarchy while the finger is on the field. No layout shift. */
+#commandHint{border-left:3px solid transparent;padding-inline:13px}
+#commandHint[data-intent="attack"]{border-left-color:#e4bc83;background:#322934}
+#commandHint[data-intent="locked"]{border-left-color:#a7d8c4;background:#29353a}
+#commandHint[data-intent="invalid"]{border-left-color:#f0a3a5;background:#402d3a}
+#commandHint[data-intent="attack"] .route-intent{color:#fff1c9;font-weight:750}
+#commandHint[data-intent="locked"] .route-help{color:#c4ebd6;font-weight:750}
+#commandHint[data-intent="invalid"] .route-intent{color:#ffd1c9;font-weight:750}
+#commandHint .route-readout{font-variant-numeric:tabular-nums}
+#commandDock #orders.battle-report .report-title{font-weight:850;letter-spacing:.025em}
+#nextUnit:not(:disabled){border-color:#c1a7c7;box-shadow:inset 0 2px 0 #c1a7c73d}
+@media(prefers-reduced-motion:reduce){#phaseRail span,#commandDock .hp-track i{transition:none}}
