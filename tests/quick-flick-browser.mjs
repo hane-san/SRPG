@@ -67,6 +67,90 @@ try{
  assert.equal((await t.state()).metrics.commands,1);
  assert(await page.locator('#moveUndo').isHidden(),'an attack must not be undoable');
  cases.push('endpoint lock + continued enemy flick = immediate single attack with pre-release HP');
+ // New #35 input: a fluid attack must not require the 200ms movement lock.
+ await t.reset(fixture());
+ const preFlick=await t.state();
+ await t.slide(origin,firing,{end:false});
+ assert.equal((await t.draft()).moveArmed,false,'immediate drag has not passed the movement dwell');
+ await t.touch('touchMove',[await t.point(enemy)]);
+ assert.equal((await t.draft()).target,'e','enemy is previewed without the attack menu');
+ assert.deepEqual((await t.draft()).dest,firing,'explicit endpoint must be preserved');
+ assert(await page.locator('#orders').isHidden(),'command buttons stay hidden while aiming');
+ assert((await page.locator('#commandHint').innerText()).includes('離して攻撃'));
+ assert.deepEqual(await t.state(),preFlick,'aiming alone must not mutate the game');
+ await t.touch('touchEnd',[]);await t.settled();
+ assert.deepEqual(await t.state(),attackExpected,'enemy release immediately resolves the explicit attack');
+ assert.equal((await t.state()).metrics.commands,1,'one pointer release means one action');
+ assert(await page.locator('#moveUndo').isHidden());
+ cases.push('under-200ms continuous legal destination → enemy release, no attack menu');
+
+ // A previously previewed route can be continued by a second quick flick.
+ await t.reset(fixture());await t.slide(origin,firing);
+ assert.deepEqual((await t.draft()).dest,firing);
+ assert.deepEqual(await t.state(),preFlick);
+ await t.slide(firing,enemy);await t.settled();
+ assert.deepEqual(await t.state(),attackExpected);
+ cases.push('second quick flick from previewed endpoint commits without attack button');
+
+ // Passing over an enemy does not confirm when the finger leaves elsewhere.
+ await t.reset(fixture());await t.slide(origin,firing,{end:false});
+ await t.touch('touchMove',[await t.point(enemy)]);
+ assert.equal((await t.draft()).target,'e');
+ await t.touch('touchMove',[await t.point({x:6,y:14})]);
+ assert.equal((await t.draft()).target,null,'leaving an enemy clears attack intent');
+ await t.touch('touchEnd',[]);
+ assert.deepEqual(await t.state(),preFlick,'release outside enemy is not an attack');
+ cases.push('enemy pass-through and release on another cell does not attack');
+
+ // A direct enemy tap is still only a preview, not an implicit attack.
+ await t.reset(fixture());await t.select('a');await t.tap(enemy);
+ assert.deepEqual(await t.state(),preFlick);
+ assert.equal((await t.draft()).target,'e');
+ cases.push('enemy tap preserves the explicit fallback command');
+
+ // P3-only units cannot acquire a P1 attack by using the fast path.
+ const support=fixture();support.units[0]=unit({id:'a',name:'砲兵',type:'shooter',x:4,y:16},'ally');
+ await t.reset(support);await t.slide(origin,firing,{end:false});
+ await t.touch('touchMove',[await t.point(enemy)]);
+ assert.equal((await t.draft()).target,null);
+ await t.touch('touchEnd',[]);
+ assert.deepEqual(await t.state(),support);
+ cases.push('P3-only shooter never attacks by drag');
+ // Explicit target selection among two enemies is the end of the pointer,
+ // not the first reachable target or whichever was last previewed.
+ const choices=fixture();choices.units.push(unit({id:'e2',name:'別の敵',type:'sword',x:3,y:13,ai:'hold'},'enemy'));
+ await t.reset(choices);await t.slide(origin,firing,{end:false});
+ await t.touch('touchMove',[await t.point(enemy)]);
+ assert.equal((await t.draft()).target,'e');
+ await t.touch('touchMove',[await t.point({x:3,y:13})]);
+ assert.equal((await t.draft()).target,'e2');
+ await t.touch('touchEnd',[]);await t.settled();
+ const choicesExpected=structuredClone(choices);assert(E.act(choicesExpected,'a',firing,'attack','e2').ok);
+ assert.deepEqual(await t.state(),choicesExpected);
+ assert.equal((await t.state()).metrics.commands,1);
+ cases.push('flick chooses the final explicit enemy among multiple targets');
+
+ // Newly selected castle reserve should not have to visit a menu after sliding
+ // from the castle through its exit and onto a legal enemy.
+ const sortie=E.createGame(),gatePoint=sortie.map.camp,exit={x:gatePoint.x-1,y:gatePoint.y},sortieEnemy={x:exit.x,y:exit.y-1};
+ sortie.units=[
+  unit({id:'a',name:'出撃剣士',type:'sword',x:gatePoint.x,y:gatePoint.y,deployed:false},'ally'),
+  unit({id:'e',name:'門前の敵',type:'shield',x:sortieEnemy.x,y:sortieEnemy.y,ai:'hold'},'enemy')
+ ];
+ assert(E.routeTo(sortie,E.sortieUnit(sortie,'a'),exit).length>0);
+ const sortieExpected=structuredClone(sortie);
+ assert(E.deployAndAct(sortieExpected,'a',exit,'attack','e').ok);
+ await t.reset(sortie);await t.tap(gatePoint);
+ await page.locator('#deploymentList button').first().click();
+ assert.equal((await t.draft()).sortie,true);
+ await t.slide(gatePoint,exit,{end:false});
+ await t.touch('touchMove',[await t.point(sortieEnemy)]);
+ assert.equal((await t.draft()).target,'e');
+ await t.touch('touchEnd',[]);await t.settled();
+ assert.deepEqual(await t.state(),sortieExpected,'castle→exit→enemy also attacks in one gesture');
+ cases.push('castle sortie can move and attack on one continued finger gesture');
+
+
  // Ranged attacks cross intermediate empty cells without changing the fixed firing tile.
  // Issue #26 removed P1 attacks from shooters, so the bow (range 2) carries this case.
  const archer=fixture(),archerStep={x:4,y:14};archer.units[0]=unit({id:'a',name:'弓兵',type:'bow',x:4,y:16},'ally');

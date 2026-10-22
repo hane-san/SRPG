@@ -12,7 +12,11 @@ function makeMap(id){
  if(id===0){
    patch(g,0,10,w,2,'~');patch(g,5,10,2,2,'+');patch(g,9,10,1,2,'+');path(g,9,4,17);g[10][9]=g[11][9]='+';
    g[6][6]='c';g[15][3]='v';
-   enemies=[enemy('e1','sword',6,12),enemy('e2','bow',5,8,'defend'),enemy('e3','shield',6,7,'defend'),enemy('e4','sword',9,7),enemy('e5','mage',7,4,'defend'),enemy('boss','shield',6,1,'hold')];
+   // Issue #38 first playable slice: widen the western approach without closing
+   // any old passable cell, so in-progress v0.8 positions remain legal.
+   patch(g,2,10,2,2,'+');path(g,3,4,17);g[10][3]=g[11][3]='+';
+   for(let x=3;x<=6;x++)g[4][x]='=';
+   enemies=[enemy('e1','sword',4,12,'hold'),enemy('e2','bow',7,8,'hold'),enemy('e3','shield',3,6,'hold'),enemy('e4','sword',6,5,'hold'),enemy('e5','mage',9,3,'hold'),enemy('boss','shield',6,1,'hold')];
  } else if(id===1){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
@@ -30,7 +34,7 @@ function makeMap(id){
   title:['01 霧河の渡し','02 二つの戦線','03 灰城の砲火'][id],
   subtitle:['正面突破 / 12 × 20','南北挟撃・東側機動 / 16 × 30','予告増援・城砲撃 / 14 × 26'][id],
   briefing:[
-   '北の城を制圧。中央の橋で盾と弓を連携させるか、東の細橋へ騎兵を送るか。自動回復は移動したターンには使えません。',
+   '北の城を制圧。西の広い渡しは見通しのよい迂回路。中央の橋は近道ですが、向こう岸の弓の射程を確かめましょう。盾で受け、剣と弓を続けて動かすと守備を崩せます。魔術師の回復は動かず待機したP3だけ。',
    '中央の青砦を守り、北城を制圧。本陣の守備役と隣接の回復役を残す配置。南城からT4・8・12に各1隊、制圧で停止。西の主力と東の騎兵を分け、北城を狙う。',
    '北城を制圧。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
   ][id]};

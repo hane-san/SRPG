@@ -11,22 +11,39 @@ try{
  const s=E.createGame();s.units=[unit({id:'a',name:'剣士',type:'sword',x:4,y:16},'ally'),unit({id:'e',name:'盾敵',type:'shield',x:6,y:14,ai:'hold'},'enemy'),unit({id:'far',name:'遠方',type:'sword',x:9,y:13,ai:'hold'},'enemy')];
  const origin={x:4,y:16},dest={x:5,y:14};
  const arrow=async()=>{await t.reset(s);await t.slide(origin,dest);return t.draft();};
- for(const [label,start]of [['endpoint',dest],['original unit',origin],['reachable empty',{x:4,y:15}],['outside movement empty',{x:0,y:14}]]){
+ const intended=structuredClone(s);assert(E.act(intended,'a',dest,'attack','e').ok);
+ // Issue #35: an explicitly drawn endpoint is now a confirmation source,
+ // not just a menu preview. Keyboard attempts during a held gesture still fail.
+ for(const [label,start]of [['endpoint',dest],['original unit',origin]]){
   const before=await arrow(),camera=await t.camera();
-  await t.touch('touchStart',[await t.point(start)]);await t.touch('touchMove',[await t.point({x:5,y:15})]);await t.touch('touchMove',[await t.point({x:6,y:14})]);
-  const held=await t.draft();check(held.dragging&&await page.locator('#orders').isHidden(),'controls hidden while held: '+label);
-  await page.keyboard.press('w');check((await t.state()).metrics.commands===0,'held keyboard cannot commit: '+label);
-  await t.touch('touchEnd',[]);const after=await t.draft();
-  check(JSON.stringify(after.dest)===JSON.stringify(before.dest)&&JSON.stringify(after.route)===JSON.stringify(before.route)&&after.target==='e','keep exact route from '+label,{dest:after.dest,target:after.target});
+  await t.touch('touchStart',[await t.point(start)]);
+  await t.touch('touchMove',[await t.point({x:5,y:15})]);
+  await t.touch('touchMove',[await t.point({x:6,y:14})]);
+  const held=await t.draft();
+  check(held.dragging&&held.target==='e'&&await page.locator('#orders').isHidden(),'controls hidden while held: '+label);
+  check(JSON.stringify(held.dest)===JSON.stringify(before.dest),'exact attack route preserved while held: '+label);
+  await page.keyboard.press('w');
+  check((await t.state()).metrics.commands===0,'held keyboard cannot commit: '+label);
+  await t.touch('touchEnd',[]);await t.settled();
+  check(JSON.stringify(await t.state())===JSON.stringify(intended),'enemy release commits exact chosen route: '+label);
   check(JSON.stringify(await t.camera())===JSON.stringify(camera),'stable camera: '+label);
-  check((await t.state()).metrics.commands===0,'flick is preview only: '+label);
+  check((await t.state()).metrics.commands===1,'flick commits only one action: '+label);
  }
+ // A different reachable tile must not silently reuse an earlier attack origin;
+ // an unreachable empty tile is map panning, never a combat command.
+ await arrow();await t.touch('touchStart',[await t.point({x:4,y:15})]);
+ await t.touch('touchMove',[await t.point({x:5,y:15})]);
+ await t.touch('touchMove',[await t.point({x:6,y:14})]);
+ await t.touch('touchEnd',[]);
+ check((await t.state()).metrics.commands===0,'different origin outside attack range does not commit');
+ await arrow();await t.slide({x:0,y:14},{x:6,y:14});
+ check((await t.state()).metrics.commands===0,'unreachable empty origin never commits');
  if(probe){console.log(JSON.stringify({baselineProbe:results},null,2));writeFileSync('test-results/issue17-input-before.json',JSON.stringify(results,null,2));}else{
  await arrow();await t.slide(dest,{x:9,y:13});
  check(await page.locator('#attackOrder').isDisabled()&&(await page.locator('#actionPreview').innerText()).includes('射程外'),'out-of-range target disabled with reason');
  check(E.dist((await t.draft()).dest,dest)===0,'out-of-range keeps endpoint');
  await arrow();await t.slide(dest,{x:5,y:15});
- check(E.dist((await t.draft()).dest,{x:5,y:15})===0&&(await t.state()).metrics.commands===0,'release on empty edits route without spending action');
+ check(E.dist((await t.draft()).dest,dest)===0&&(await t.state()).metrics.commands===0,'release away from the fixed endpoint keeps route without spending action');
  for(const kind of ['cancel','lostcapture','multitouch']){
   const before=await arrow();await page.locator('#mapViewport').evaluate(v=>v.addEventListener('pointerdown',e=>window.testPointer=e.pointerId,{once:true}));await t.slide(dest,{x:6,y:14},{end:false});
   if(kind==='cancel')await t.touch('touchCancel',[]);

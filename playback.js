@@ -1,3 +1,5 @@
+import {weaponProfile,isBossUnit} from './weapon-fx.js?v=0.8.0-weapon48';
+import {feedbackStyle} from './combat-fx.js?v=0.8.0-fx39';
 import {gemPlan,gemHP,gemSchedule} from './gem-effects.js?v=0.8.0-gems28';
 // Only presentation lives here; all rules have already resolved synchronously.
 export function tween(duration,update){
@@ -15,7 +17,7 @@ export function tween(duration,update){
 }
 export function createPlayback({getState,setState,view,draw,sound,isFast,isReduced,onMessage=()=>{},onCombat=()=>{}}){
  const duration=(normal,quick=0,still=0)=>document.hidden||isFast()?quick:isReduced()?still:normal;
- const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation','sortieEntrance','sortieQuote','jewel'])view[k]=null;};
+ const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation','sortieEntrance','sortieQuote','jewel','impact','stepLanding','strike','bossBreak'])view[k]=null;};
  async function play(frames){
   let lastActor=null;
   for(const {state,event} of frames){
@@ -39,25 +41,39 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
     setState(state);onMessage(`${actor.name}が移動`);
     for(let i=1;i<event.path.length;i++){
      const a=event.path[i-1],b=event.path[i];if(!isFast())sound.play('step');
-     await tween(duration(65),p=>{view.animation={...event,stage:'move',segment:i,progress:p};view.motion={id:event.actor,x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p,bob:Math.sin(p*Math.PI)*.06};draw();});
+     await tween(duration(65),p=>{view.animation={...event,stage:'move',segment:i,progress:p};view.motion={id:event.actor,x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p,bob:Math.sin(p*Math.PI)*.06};
+      // A landing mark lives *inside* the existing 65ms step, never adds delay.
+      view.stepLanding=!isFast()&&!isReduced()&&p>=.68?{x:b.x,y:b.y,progress:(p-.68)/.32}:null;draw();
+     });
     }
-    view.motion=null;
+    view.motion=null;view.stepLanding=null;
    }else if(event.kind==='hit'||event.kind==='heal'){
     const heal=event.kind==='heal',ranged=heal||!actor||Math.abs(actor.x-target.x)+Math.abs(actor.y-target.y)>1||['bow','mage','shooter'].includes(actor.type);
     const dx=actor?target.x-actor.x:0,dy=actor?target.y-actor.y:0,length=Math.max(1,Math.abs(dx)+Math.abs(dy));
     onCombat(before,before,event,'windup');
     onMessage(`${actor?.name||'砲撃'}${event.counter?'の反撃':''} → ${target.name} ${heal?'+':'−'}${event.amount}`);
-    if(!heal)sound.play(['bow','shooter'].includes(actor?.type)?'bow':actor?.type==='mage'?'magic':ranged?'range':'swing');
+    const weapon=weaponProfile(actor?.type||'shooter',{fast:isFast(),reduced:isReduced()});
+    if(!heal)sound.play(['bow','shooter'].includes(actor?.type)?'bow':actor?.type==='mage'?'magic':ranged?'range':'swing',event.amount,false,{type:actor?.type});
+
     await tween(duration(['bow','shooter'].includes(actor?.type)?320:200),p=>{
      view.animation={...event,stage:'windup',progress:p};
-     if(actor&&!ranged)view.motion={id:actor.id,x:actor.x+dx/length*.23*p,y:actor.y+dy/length*.23*p};
-     else if(actor)view.projectile={from:actor,to:target,progress:p,heal,type:actor.type};draw();
+     if(actor&&!ranged){
+      // One decisive final lunge, not a series of small taps; same 200ms budget.
+      const surge=p*p*(3-2*p);
+      view.motion={id:actor.id,x:actor.x+dx/length*.32*surge,y:actor.y+dy/length*.32*surge};
+     }else if(actor)view.projectile={from:actor,to:target,progress:p,heal,type:actor.type};
+     view.strike=!heal&&actor?{from:actor,to:target,progress:p,weapon}:null;
+     draw();
     });
-    view.projectile=null;
+    view.strike=null;view.projectile=null;view.motion=null;
     const afterTarget=state.units.find(u=>u.id===target.id);
     const armoured=!heal&&!!(target.def||target.guard||target.specialty==='guard'&&target.command);
     const plan=gemPlan(target.hp,afterTarget?.hp??target.hp,event.amount,{heal,armoured,ally:target.team==='ally'});
+    const bossLethal=isBossUnit(target)&&plan.lethal;
     const speed=gemSchedule(plan,isFast(),isReduced());
+    const style=feedbackStyle({...plan,fast:isFast(),reduced:isReduced()});
+    const impactPosition={id:target.id,x:target.x,y:target.y,dx:actor?Math.sign(target.x-actor.x):0,dy:actor?Math.sign(target.y-actor.y):0,style};
+    const showImpact=(kind,progress)=>{view.impact={...impactPosition,kind,progress};draw();};
     const animate=ms=>tween(document.hidden?0:ms,()=>{});
     // Hit-stop interrupts the first impact, not the per-jewel rhythm.
     if(!heal){
@@ -66,33 +82,37 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
       await tween(document.hidden?0:speed.hitStopMs,p=>{
        view.animation={...event,stage:'hitstop',progress:p};
        view.jewel={id:target.id,hp:plan.start,index:-1,progress:p,hitStop:true,heavy:true,armoured};
-       view.flash={id:target.id,amount:Math.max(0,.6-p*.3),heal:false};draw();
+       view.flash={id:target.id,amount:Math.max(0,.6-p*.3),heal:false};showImpact('hit',p);
       });
      }
     }
     if(plan.count){
-     await animate(speed.firstDelayMs);
+     // The first impact gets an actual visual reaction before gems start to fall.
+     await tween(document.hidden?0:speed.firstDelayMs,p=>showImpact(heal?'heal':'hit',p));
      sound.play('gem-chain',plan.count,plan.lethal,{...plan,intervalMs:speed.intervalMs});
      for(let i=1;i<=plan.count;i++){
       const hp=gemHP(plan,i),visual={...before,units:before.units.map(u=>u.id===target.id?{...u,hp}:u)};
       onCombat(before,visual,event,'shard');
       await tween(document.hidden?0:speed.intervalMs,p=>{
        view.animation={...event,stage:heal?'reform':'shatter',index:i,progress:p};
-       view.jewel={id:target.id,hp,index:heal?plan.start+i-1:plan.start-i,progress:p,heal,heavy:plan.heavy,armoured,ally:plan.ally};
-       view.flash={id:target.id,amount:isReduced()?0:Math.max(0,(1-p)*(plan.heavy?.42:.25)),heal};
+       view.jewel={id:target.id,hp,index:heal?plan.start+i-1:plan.start-i,progress:p,heal,heavy:plan.heavy,armoured,ally:plan.ally,count:plan.count};
+       view.flash={id:target.id,amount:isReduced()?0:Math.max(0,(1-p)*(plan.heavy?.42:plan.count===2?.37:.25)),heal};
        view.effect={x:target.x,y:target.y,text:`${heal?'+':'−'}${event.amount}`,progress:(i-1+p)/plan.count,heal};
-       draw();
+       if(bossLethal)view.bossBreak={x:target.x,y:target.y,progress:(i-1+p)/plan.count,stage:'crack'};
+       showImpact(heal?'heal':'shard',p);
       });
      }
     }
     setState(state);onCombat(before,state,event,'impact');view.jewel=null;
-    view.flash=null;view.effect=null;
+    view.flash=null;view.effect=null;view.impact=null;
     if(plan.lethal){
-     sound.play('gem-finish',plan.count,true,{ally:plan.ally,heavy:plan.heavy});
-     view.ghost={unit:{...target,hp:0},alpha:1,shatter:true,progress:0};
+     sound.play('gem-finish',plan.count,true,{ally:plan.ally,heavy:plan.heavy,boss:bossLethal});
+     view.ghost={unit:{...target,hp:0},alpha:1,shatter:true,progress:0,boss:bossLethal};
      await tween(document.hidden?0:speed.finishMs+48,p=>{
       view.animation={...event,stage:'collapse',progress:p};
-      view.ghost.progress=p;view.ghost.alpha=1-p;draw();
+      view.ghost.progress=p;view.ghost.alpha=1-p;
+      view.bossBreak=bossLethal?{x:target.x,y:target.y,progress:p,stage:'burst'}:null;
+      draw();
      });
     }else if(plan.count){
      await animate(speed.finishMs);

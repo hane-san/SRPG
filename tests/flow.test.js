@@ -5,9 +5,13 @@ import {unit,MAPS} from '../data.js';
 import {slideDraft,tacticalRanges} from '../ui-model.js';
 import {createAudio} from '../audio.js';
 import {readSave,writeSave} from '../save.js';
+import {readFileSync} from 'node:fs';
+const oldMap01=JSON.parse(readFileSync(new URL('./fixtures/map01-before-38.json',import.meta.url))).map;
+// Route contracts use an explicit historical encounter, independently of level redesigns.
+function routeFixture(){const s=E.createGame();s.map=structuredClone(oldMap01);s.units=[...s.units.filter(u=>u.team==='ally'),...oldMap01.enemies.map(e=>unit(e,'enemy',s.settings))];return s;}
 
 test('continuous slide keeps its route endpoint when entering an enemy and can choose an approach',()=>{
- const s=E.createGame(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const original=structuredClone(s);
+ const s=routeFixture(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const original=structuredClone(s);
  const move=slideDraft(s,u,{x:6,y:13});assert.equal(move.route.length,4);
  const aim=slideDraft(s,u,{x:6,y:12},move.dest);assert.deepEqual(aim.dest,move.dest);assert.deepEqual(aim.route,move.route);assert.equal(aim.target,'e1');
  const jump=slideDraft(s,u,{x:6,y:12});assert.deepEqual(jump.dest,{x:6,y:13});
@@ -34,7 +38,10 @@ test('lethal attacks and P3 attacks never fabricate a counter event',()=>{
 });
 test('enemy move events follow adjacent traversable tiles, one actor at a time',()=>{
  for(let id=0;id<MAPS.length;id++){
-  const s=E.createGame(id),events=[];assert(E.deploy(s,'a1').ok);assert(E.deploy(s,'a2').ok);E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
+  const s=E.createGame(id),events=[];
+  // The tutorial now uses stationary guards; seed one advancing actor to exercise movement.
+  if(id===0)s.units.find(u=>u.id==='e1').ai='advance';
+  assert(E.deploy(s,'a1').ok);assert(E.deploy(s,'a2').ok);E.prepareEnemy(s);E.enemyPhase(s,(state,actor,event)=>{if(event.kind==='move')events.push({event,actor:structuredClone(actor),state:structuredClone(state)});});
   for(const {event,actor,state} of events){assert(event.path.length>1);assert.deepEqual(event.path.at(-1),{x:actor.x,y:actor.y});for(let i=1;i<event.path.length;i++){assert.equal(E.dist(event.path[i-1],event.path[i]),1);assert(Number.isFinite(E.terrain(state,event.path[i]).cost));}}
   assert(events.length);
  }
@@ -54,7 +61,7 @@ test('0.5 preserves stable prior saves and all added battlefield saves',()=>{
 });
 
 test('a drawn endpoint never moves to make an out-of-range enemy attackable',()=>{
- const s=E.createGame(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const draft=slideDraft(s,u,{x:6,y:14});
+ const s=routeFixture(),u=s.units.find(u=>u.id==='a2');s.units.find(a=>a.id==='a1').x=5;u.x=6;u.y=16;const draft=slideDraft(s,u,{x:6,y:14});
  const aim=slideDraft(s,u,{x:6,y:12},draft.dest,{preserve:true,route:draft.route});assert.deepEqual(aim.dest,draft.dest);assert.deepEqual(aim.route,draft.route);assert.equal(aim.target,null);assert(aim.attackError);
  const hit=slideDraft(s,u,{x:6,y:12},{x:6,y:13},{preserve:true,route:E.routeTo(s,u,{x:6,y:13})});assert.equal(hit.target,'e1');assert.equal(hit.dest.y,13);
 });
