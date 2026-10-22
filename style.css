@@ -352,3 +352,26 @@ a{color:#e4c8f0}
 
 /* Issue #43: war record list in the chapter result dialog. */
 .war-record{padding-left:1.3em;line-height:1.6}.war-record li{margin:0 0 10px}.war-record small{color:#cbb9a5}.war-record-note{font-size:12px;opacity:.8}
+
+
+/* Issue #55: quiet, readable previews, no new modal or battlefield overlay.
+   The P2 number is a conservative sum of independent enemy reach scenarios. */
+#commandHint{gap:4px;padding-block:7px}
+#commandHint .route-risk{display:block;min-height:17px;line-height:17px;max-width:100%;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#bfd5c4;font-variant-numeric:tabular-nums}
+#commandHint .route-risk[data-level="caution"]{color:#f4d2a3}
+#commandHint .route-risk[data-level="high"]{color:#f9bd9d;font-weight:700}
+#commandHint .route-risk[data-level="critical"]{color:#ffaca7;font-weight:800}
+#commandHint .route-risk[data-level="cannon"]{color:#ffd08d;font-weight:800}
+#commandHint .route-intent{overflow-wrap:anywhere}
+#commandDock #orders .report-tail-text{color:#ead8bf;font-variant-numeric:tabular-nums}
+#commandDock #orders.battle-report .report-tail-text{font-weight:700;white-space:normal;line-height:1.3;max-height:2.6em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:clip;overflow-wrap:anywhere}
+
+/* Reversible thumb reach zones: only two battlefield overlay controls move.
+   Dock, header, world coordinates and the left/right scroll positions are untouched. */
+#app[data-thumb="left"] #moveUndo{right:auto;left:10px}
+#app[data-thumb="left"] .map-tools{left:auto;right:7px}
+#thumbControl{margin-top:10px}
+#thumbSideToggle{width:100%;min-height:48px;text-align:center}
+#thumbSideToggle[aria-pressed="true"]{background:#66516c;border-color:#ccb19b;color:#fff4e8}
+@media(max-width:340px){#commandHint .route-risk{font-size:11px}#commandHint{gap:3px;padding-block:6px}}
+@media(prefers-reduced-motion:reduce){#app[data-thumb="left"] #moveUndo,#app[data-thumb="left"] .map-tools{transition:none}}
