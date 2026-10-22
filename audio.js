@@ -31,7 +31,20 @@ export function createAudio(storage){
    else if(kind==='lock'){burst(.022,.035,2400);note(820,.04,0,'triangle',610,.025);}
    else if(kind==='cancel')note(360,.07,0,'triangle',220);
    else if(kind==='step')note(125,.035,0,'triangle',70);
-   else if(kind==='swing'){burst(.075,.09,1900);note(760,.075,0,'sawtooth',130,.065);note(150,.09,.02,'triangle',65,.065);}
+   else if(kind==='swing'){
+    // Same movement rhythm, different physical weight; damage crystals remain separate.
+    const type=options.type||'sword';
+    if(type==='horse'){
+     burst(.09,.096,1450);note(980,.115,0,'sawtooth',175,.057);
+     note(210,.105,.012,'triangle',70,.066);
+    }else if(type==='shield'){
+     burst(.075,.105,1050);note(385,.11,0,'sawtooth',85,.059);
+     note(125,.115,.018,'triangle',55,.083);
+    }else{
+     burst(.075,.09,1900);note(760,.075,0,'sawtooth',130,.065);
+     note(150,.09,.02,'triangle',65,.065);
+    }
+   }
    else if(kind==='bow'){note(420,.07,0,'triangle',100,.09);note(1300,.22,.035,'sine',380,.055);}
    else if(kind==='magic'){note(240,.25,0,'sine',1100,.07);note(480,.22,.04,'triangle',1500,.035);}
    else if(kind==='range')note(850,.11,0,'sine',330);
@@ -80,6 +93,11 @@ export function createAudio(storage){
     if(options.ally){
      // An ally's final crystal trails down and falls quiet.
      note(380,.12,0,'sine',160,.035);note(200,.12,.035,'triangle',65,.027);
+    }else if(options.boss){
+     // The last boss crystal has a weighty, descending resonance, not a new
+     // crack. The existing gem-chain already counted every lost HP point.
+     burst(.095,.082,1200);note(980,.18,0,'sine',170,.065);
+     note(185,.20,.027,'triangle',65,.052);
     }else{
      burst(.068,.075,1750);note(1120,.11,0,'sine',370,.048);
      note(520,.1,.025,'triangle',250,.032);
