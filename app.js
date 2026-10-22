@@ -1,12 +1,13 @@
 import {hudSignals,routeIntent} from './ui-hud.js?v=0.8.0-hud50';
 import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
+import {appendChapter,chronicleLines} from './chronicle.js?v=0.8.0-war43';
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26-sortie29';
-import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02';
-import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02';
-import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28-flick35-fx39-weapon48-map38-m02';
+import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43';
+import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43';
+import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28-flick35-fx39-weapon48-map38-m02-war43';
 import {bindMapInput,createHoldLock} from './ui-input.js?v=0.8.0-issue24';
-import {readSave,writeSave} from './save.js?v=0.8.0-p3-26-save37';
-import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26-map38-m02';
+import {readSave,writeSave} from './save.js?v=0.8.0-p3-26-save37-war43';
+import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26-map38-m02-war43';
 import {createAudio} from './audio.js?v=0.8.0-issue17-sortie29-issue24-gems28-flick35-weapon48';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0-issue17-sortie29-gems28-flick35-fx39-weapon48';
@@ -88,7 +89,7 @@ function panel(){
  const root=$('orders'),u=selected();root.innerHTML='';root.className=s.status!=='playing'?'result':u?'selected'+(u.team==='enemy'||u.acted?' readonly':!view.menu?' choosing':''):'idle';
  if(s.status!=='playing'){
   root.innerHTML=`<div class="result-title">${s.status==='victory'?'北城制圧':'敗北'} <small>T${s.turn} · 味方離脱 ${s.metrics.deaths.filter(d=>s.units.find(u=>u.id===d.id)?.team==='ally').length}</small></div>`;
-  const row=document.createElement('div');row.className='action-row';row.append(button('再試行',()=>confirmRestart(s.map.id)));if(s.status==='victory'&&s.map.id<2){if(campaign&&s.map.id===1)row.append(button('上級職の技能を選ぶ',promotionMenu));row.append(button(campaign?'次章へ（補充と昇格）':'次のマップ',()=>start(s.map.id+1,campaign,campaign?s.lost:[],campaign?s.specialties:{}),'primary'));}root.append(row);return;
+  const row=document.createElement('div');row.className='action-row';row.append(button('再試行',()=>confirmRestart(s.map.id)));if(s.status==='victory'&&s.map.id<2){if(campaign&&s.map.id===1)row.append(button('上級職の技能を選ぶ',promotionMenu));row.append(button(campaign?'次章へ（補充と昇格）':'次のマップ',()=>start(s.map.id+1,campaign,campaign?s.lost:[],campaign?s.specialties:{},campaign?appendChapter(s.chronicle,s):[]),'primary'));}if(campaign&&(s.chronicle?.length||s.status==='victory'))row.append(button('戦果記録',warRecord));root.append(row);return;
  }
  if(!u){if(battleCard||lastNotice){renderReport(root);return;}if(locked){root.textContent='部隊が行動中…';return;}
    const hint=document.createElement('span');hint.textContent=E.alive(s,'ally').length?'部隊を動かすか、本城から追加出撃。':'全員本城で待機中。城をタップして出撃！';root.append(hint);
@@ -318,8 +319,14 @@ function requestStart(id,chain=false){
  if(s.metrics.commands===0&&s.turn===1&&s.status==='playing'){start(id,chain);return;}
  modal('<h2>新しい戦闘を開始しますか？</h2><p>現在の戦闘と連戦の進行は、新しい戦闘に置き換わります。</p><div id="newBattleConfirm"></div>');$('newBattleConfirm').append(button('新しい戦闘を開始',()=>start(id,chain),'primary wide'));
 }
-function start(id,chain=false,lost=[],specialties={}){pendingUndo=null;battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
-function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties);},'danger wide'));}
+// Issue #43: the campaign's war record, finished chapters plus the one just won.
+function warRecord(){
+ const list=s.status==='victory'?appendChapter(s.chronicle,s):s.chronicle||[];
+ const rows=chronicleLines(list).map(r=>`<li><strong>${escapeHTML(r.title)}</strong><br>${escapeHTML(r.summary)}<br><small>${escapeHTML(r.memory)}</small></li>`).join('');
+ modal(`<h2>戦果記録</h2>${rows?`<ol class="war-record">${rows}</ol>`:'<p>まだ記録はありません。</p>'}<p class="war-record-note">勝ち方の記録です。結末や難易度は変わりません。</p>`);
+}
+function start(id,chain=false,lost=[],specialties={},chronicle=[]){pendingUndo=null;battleCard=null;lastNotice=null;s=E.createGame(id,settings,lost,{specialties,chronicle});campaign=chain;resetSelection();view.cursor=null;zoom=0;close();save();refresh();home();}
+function confirmRestart(id){modal('<h2>再試行</h2><p>このマップ開始時の部隊構成に戻ります。現在の戦闘記録は消えます。</p><div id="restartConfirm"></div>');const startLost=campaign?s.lost.filter(id=>!s.metrics.deaths.some(d=>d.id===id)):[];$('restartConfirm').append(button('再試行する',()=>{settings={...s.settings};start(id,campaign,startLost,s.specialties,s.chronicle||[]);},'danger wide'));}
 function selectSortie(u){
  const virtual=E.sortieUnit(s,u.id);
  if(!virtual||!E.canDeploy(s))return;

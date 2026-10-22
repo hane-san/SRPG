@@ -1,4 +1,5 @@
 import {CLASSES,SKILLS,RULES} from './config.js?v=0.8.0-p3-26';
+import {sanitizeChronicle} from './chronicle.js?v=0.8.0-war43';
 // Storage is optional. Reject partial turns and malformed/old saves before rendering.
 export const STORAGE='field-command-save-v1';
 export function readSave(storage,release,maps){
@@ -30,6 +31,8 @@ export function readSave(storage,release,maps){
    if(u.skill!==cls.skill){u.skill=cls.skill;u.command=null;}
    if(u.team==='ally'&&cls.skill==='none'){u.charges=0;u.maxCharges=0;u.command=null;}
   }
+  // Issue #43: saves from before the war record start with an empty one.
+  s.chronicle=sanitizeChronicle(s.chronicle);
   // Map rules come from the current release, never from saved or partially edited JSON.
   s.map=structuredClone(m);return {state:s,campaign:!!saved.campaign};
  }catch{return null;}

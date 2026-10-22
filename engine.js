@@ -1,5 +1,5 @@
 import {RULES,TERRAINS,PROMOTIONS} from './config.js?v=0.8.0-p3-26-sortie29';
-import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17-p3-26-map38-m02';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17-p3-26-map38-m02-war43';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
@@ -23,7 +23,7 @@ export function createGame(mapId=0,opts={},lost=[],progress={}){
  });
  const s={version:2,map,settings,units:[...allies,...map.enemies.map(e=>unit(e,'enemy',settings))],
   turn:1,phase:1,status:'playing',lost:[...lost],specialties:{...specialties},deployedThisTurn:0,
-  log:[],warnings:[],southTaken:false,
+  log:[],warnings:[],southTaken:false,chronicle:[...(progress?.chronicle||[])],
   metrics:{commands:0,supports:0,misfires:0,charges:0,deaths:[],turns:0},events:[]};
  log(s,map.briefing);log(s,`全${reserves(s).length}隊が本城で出撃待機。初ターンは${RULES.openingDeployments}隊、以降は毎ターン${RULES.deploymentsPerTurn}隊まで出撃可能`);return s;
 }

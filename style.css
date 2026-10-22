@@ -349,3 +349,6 @@ a{color:#e4c8f0}
  footer{grid-area:foot;padding:5px 6px calc(5px + env(safe-area-inset-bottom));gap:4px;border-left:1px solid var(--line)}
  footer button{padding-inline:5px;font-size:11px;white-space:nowrap}
 }
+
+/* Issue #43: war record list in the chapter result dialog. */
+.war-record{padding-left:1.3em;line-height:1.6}.war-record li{margin:0 0 10px}.war-record small{color:#cbb9a5}.war-record-note{font-size:12px;opacity:.8}
