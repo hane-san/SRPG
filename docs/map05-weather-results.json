@@ -1,0 +1,1297 @@
+{
+ "source": "Issue #61, base main 74ca3b3, node tests/simulate.mjs play(), 35-turn cap, standard difficulty",
+ "policies": {
+  "advance": {
+   "before": {
+    "status": "victory",
+    "turn": 25,
+    "commands": 118,
+    "allyDeaths": [
+     "a2@T9",
+     "a1@T17"
+    ],
+    "noCombatTurns": [
+     6,
+     7,
+     8,
+     10,
+     11,
+     15,
+     18,
+     19
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 10,
+      "attacks": 11,
+      "p3": 3,
+      "advanceSteps": 114,
+      "noCombat": 3
+     },
+     "light": {
+      "turns": 10,
+      "attacks": 7,
+      "p3": 1,
+      "advanceSteps": 75,
+      "noCombat": 4
+     },
+     "heavy": {
+      "turns": 5,
+      "attacks": 4,
+      "p3": 0,
+      "advanceSteps": 20,
+      "noCombat": 1
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 16,
+    "commands": 71,
+    "allyDeaths": [
+     "a3@T10"
+    ],
+    "noCombatTurns": [
+     6,
+     14,
+     16
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 7,
+      "attacks": 7,
+      "p3": 1,
+      "advanceSteps": 88,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 6,
+      "attacks": 7,
+      "p3": 1,
+      "advanceSteps": 54,
+      "noCombat": 0
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 2,
+      "p3": 2,
+      "advanceSteps": 10,
+      "noCombat": 1
+     }
+    }
+   }
+  },
+  "cautious": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a2@T10",
+     "a3@T11",
+     "a4@T13",
+     "a1@T35"
+    ],
+    "noCombatTurns": [
+     6,
+     7,
+     9,
+     14,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 6,
+      "p3": 3,
+      "advanceSteps": 133,
+      "noCombat": 9
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 6,
+      "p3": 0,
+      "advanceSteps": 96,
+      "noCombat": 6
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 2,
+      "p3": 1,
+      "advanceSteps": 28,
+      "noCombat": 5
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 17,
+    "commands": 76,
+    "allyDeaths": [
+     "a2@T9"
+    ],
+    "noCombatTurns": [
+     7,
+     13,
+     14,
+     16
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 9,
+      "p3": 0,
+      "advanceSteps": 86,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 6,
+      "attacks": 5,
+      "p3": 1,
+      "advanceSteps": 58,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 3,
+      "p3": 1,
+      "advanceSteps": 13,
+      "noCombat": 1
+     }
+    }
+   }
+  },
+  "hold": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a3@T4",
+     "a6@T7",
+     "a7@T10",
+     "a8@T13"
+    ],
+    "noCombatTurns": [
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35
+    ],
+    "p3Effects": 1,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 2,
+      "p3": 1,
+      "advanceSteps": 13,
+      "noCombat": 8
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 0,
+      "p3": 0,
+      "advanceSteps": 10,
+      "noCombat": 9
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 0,
+      "p3": 0,
+      "advanceSteps": 2,
+      "noCombat": 5
+     }
+    }
+   },
+   "after": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a3@T4",
+     "a6@T7",
+     "a7@T10",
+     "a8@T13"
+    ],
+    "noCombatTurns": [
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35
+    ],
+    "p3Effects": 1,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 2,
+      "p3": 1,
+      "advanceSteps": 13,
+      "noCombat": 8
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 0,
+      "p3": 0,
+      "advanceSteps": 10,
+      "noCombat": 9
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 0,
+      "p3": 0,
+      "advanceSteps": 2,
+      "noCombat": 5
+     }
+    }
+   }
+  },
+  "fast": {
+   "before": {
+    "status": "victory",
+    "turn": 20,
+    "commands": 89,
+    "allyDeaths": [
+     "a6@T3",
+     "a2@T6",
+     "aux-bow@T9",
+     "a1@T16"
+    ],
+    "noCombatTurns": [
+     5,
+     11,
+     15,
+     20
+    ],
+    "p3Effects": 0,
+    "firstTurnEnemyAttacks": 2,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 6,
+      "p3": 0,
+      "advanceSteps": 124,
+      "noCombat": 1
+     },
+     "light": {
+      "turns": 8,
+      "attacks": 7,
+      "p3": 0,
+      "advanceSteps": 71,
+      "noCombat": 3
+     },
+     "heavy": {
+      "turns": 4,
+      "attacks": 5,
+      "p3": 0,
+      "advanceSteps": 18,
+      "noCombat": 0
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 21,
+    "commands": 94,
+    "allyDeaths": [
+     "a6@T3",
+     "a2@T6",
+     "aux-bow@T11"
+    ],
+    "noCombatTurns": [
+     5,
+     9,
+     10,
+     18,
+     21
+    ],
+    "p3Effects": 0,
+    "firstTurnEnemyAttacks": 2,
+    "byWeather": {
+     "clear": {
+      "turns": 9,
+      "attacks": 10,
+      "p3": 0,
+      "advanceSteps": 114,
+      "noCombat": 1
+     },
+     "light": {
+      "turns": 8,
+      "attacks": 6,
+      "p3": 0,
+      "advanceSteps": 73,
+      "noCombat": 3
+     },
+     "heavy": {
+      "turns": 4,
+      "attacks": 3,
+      "p3": 0,
+      "advanceSteps": 20,
+      "noCombat": 1
+     }
+    }
+   }
+  },
+  "rain": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a1@T22"
+    ],
+    "noCombatTurns": [
+     7,
+     8,
+     17,
+     18,
+     19,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     31,
+     32,
+     33,
+     34,
+     35
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 10,
+      "p3": 0,
+      "advanceSteps": 121,
+      "noCombat": 6
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 4,
+      "p3": 2,
+      "advanceSteps": 76,
+      "noCombat": 7
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 1,
+      "p3": 2,
+      "advanceSteps": 1,
+      "noCombat": 4
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 17,
+    "commands": 77,
+    "allyDeaths": [],
+    "noCombatTurns": [
+     12,
+     14,
+     15
+    ],
+    "p3Effects": 3,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 11,
+      "p3": 0,
+      "advanceSteps": 94,
+      "noCombat": 1
+     },
+     "light": {
+      "turns": 6,
+      "attacks": 4,
+      "p3": 1,
+      "advanceSteps": 52,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 1,
+      "p3": 2,
+      "advanceSteps": 1,
+      "noCombat": 1
+     }
+    }
+   }
+  },
+  "east": {
+   "before": {
+    "status": "victory",
+    "turn": 20,
+    "commands": 90,
+    "allyDeaths": [
+     "a2@T3"
+    ],
+    "noCombatTurns": [
+     1,
+     4,
+     9,
+     11,
+     12,
+     16
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 5,
+      "p3": 2,
+      "advanceSteps": 96,
+      "noCombat": 4
+     },
+     "light": {
+      "turns": 8,
+      "attacks": 10,
+      "p3": 2,
+      "advanceSteps": 63,
+      "noCombat": 0
+     },
+     "heavy": {
+      "turns": 4,
+      "attacks": 3,
+      "p3": 0,
+      "advanceSteps": 17,
+      "noCombat": 2
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 17,
+    "commands": 74,
+    "allyDeaths": [
+     "a2@T3",
+     "a6@T11"
+    ],
+    "noCombatTurns": [
+     1,
+     4,
+     9,
+     10,
+     12,
+     17
+    ],
+    "p3Effects": 3,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 7,
+      "p3": 2,
+      "advanceSteps": 102,
+      "noCombat": 3
+     },
+     "light": {
+      "turns": 6,
+      "attacks": 9,
+      "p3": 1,
+      "advanceSteps": 56,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 1,
+      "p3": 0,
+      "advanceSteps": 15,
+      "noCombat": 2
+     }
+    }
+   }
+  }
+ },
+ "difficulty": {
+  "advance enemyAttack+1": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a2@T6",
+     "a1@T7",
+     "a4@T9",
+     "a7@T15",
+     "a3@T18",
+     "a8@T21"
+    ],
+    "noCombatTurns": [
+     4,
+     12,
+     13,
+     16,
+     19,
+     22,
+     23,
+     24,
+     25,
+     27,
+     28,
+     29,
+     30
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 1,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 11,
+      "p3": 0,
+      "advanceSteps": 150,
+      "noCombat": 4
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 10,
+      "p3": 2,
+      "advanceSteps": 94,
+      "noCombat": 5
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 1,
+      "p3": 0,
+      "advanceSteps": 33,
+      "noCombat": 4
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 31,
+    "commands": 146,
+    "allyDeaths": [
+     "a1@T7",
+     "a3@T26"
+    ],
+    "noCombatTurns": [
+     4,
+     10,
+     11,
+     12,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     27,
+     28,
+     30,
+     31
+    ],
+    "p3Effects": 3,
+    "firstTurnEnemyAttacks": 1,
+    "byWeather": {
+     "clear": {
+      "turns": 13,
+      "attacks": 7,
+      "p3": 0,
+      "advanceSteps": 93,
+      "noCombat": 6
+     },
+     "light": {
+      "turns": 12,
+      "attacks": 5,
+      "p3": 2,
+      "advanceSteps": 100,
+      "noCombat": 5
+     },
+     "heavy": {
+      "turns": 6,
+      "attacks": 2,
+      "p3": 1,
+      "advanceSteps": 36,
+      "noCombat": 3
+     }
+    }
+   }
+  },
+  "cautious enemyAttack+1": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a2@T6",
+     "a6@T10",
+     "a1@T26"
+    ],
+    "noCombatTurns": [
+     4,
+     7,
+     8,
+     9,
+     12,
+     13,
+     14,
+     15,
+     18,
+     19,
+     22,
+     23,
+     24,
+     25,
+     27,
+     28,
+     29,
+     30
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 1,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 11,
+      "p3": 1,
+      "advanceSteps": 110,
+      "noCombat": 4
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 6,
+      "p3": 1,
+      "advanceSteps": 95,
+      "noCombat": 8
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 1,
+      "p3": 2,
+      "advanceSteps": 24,
+      "noCombat": 6
+     }
+    }
+   },
+   "after": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a1@T7",
+     "a4@T20",
+     "a3@T31"
+    ],
+    "noCombatTurns": [
+     4,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     18,
+     21,
+     22,
+     23,
+     25,
+     28,
+     29,
+     32,
+     33,
+     34,
+     35
+    ],
+    "p3Effects": 4,
+    "firstTurnEnemyAttacks": 1,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 8,
+      "p3": 1,
+      "advanceSteps": 108,
+      "noCombat": 5
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 3,
+      "p3": 2,
+      "advanceSteps": 110,
+      "noCombat": 9
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 1,
+      "p3": 1,
+      "advanceSteps": 41,
+      "noCombat": 4
+     }
+    }
+   }
+  },
+  "rain enemyAttack+1": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [],
+    "noCombatTurns": [
+     6,
+     7,
+     8,
+     9,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 7,
+      "p3": 0,
+      "advanceSteps": 93,
+      "noCombat": 10
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 3,
+      "p3": 1,
+      "advanceSteps": 54,
+      "noCombat": 11
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 1,
+      "p3": 1,
+      "advanceSteps": 1,
+      "noCombat": 6
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 21,
+    "commands": 95,
+    "allyDeaths": [
+     "a1@T20"
+    ],
+    "noCombatTurns": [
+     6,
+     9,
+     12,
+     15
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 9,
+      "attacks": 8,
+      "p3": 1,
+      "advanceSteps": 88,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 8,
+      "attacks": 4,
+      "p3": 0,
+      "advanceSteps": 60,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 4,
+      "attacks": 1,
+      "p3": 1,
+      "advanceSteps": 1,
+      "noCombat": 1
+     }
+    }
+   }
+  },
+  "fast enemyAttack+1": {
+   "before": {
+    "status": "timeout",
+    "turn": 36,
+    "commands": 169,
+    "allyDeaths": [
+     "a3@T6",
+     "a2@T11",
+     "a7@T16",
+     "aux-shield@T24"
+    ],
+    "noCombatTurns": [
+     3,
+     4,
+     9,
+     10,
+     13,
+     14,
+     15,
+     18,
+     19,
+     20,
+     21,
+     22,
+     25,
+     26,
+     27,
+     29,
+     30,
+     31,
+     32
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 1,
+    "byWeather": {
+     "clear": {
+      "turns": 14,
+      "attacks": 9,
+      "p3": 1,
+      "advanceSteps": 140,
+      "noCombat": 6
+     },
+     "light": {
+      "turns": 14,
+      "attacks": 3,
+      "p3": 1,
+      "advanceSteps": 104,
+      "noCombat": 8
+     },
+     "heavy": {
+      "turns": 7,
+      "attacks": 1,
+      "p3": 0,
+      "advanceSteps": 31,
+      "noCombat": 5
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 21,
+    "commands": 95,
+    "allyDeaths": [
+     "a7@T5",
+     "a3@T6",
+     "a6@T6"
+    ],
+    "noCombatTurns": [
+     3,
+     11,
+     14,
+     17,
+     19,
+     20
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 1,
+    "byWeather": {
+     "clear": {
+      "turns": 9,
+      "attacks": 10,
+      "p3": 0,
+      "advanceSteps": 100,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 8,
+      "attacks": 7,
+      "p3": 1,
+      "advanceSteps": 74,
+      "noCombat": 2
+     },
+     "heavy": {
+      "turns": 4,
+      "attacks": 0,
+      "p3": 1,
+      "advanceSteps": 22,
+      "noCombat": 2
+     }
+    }
+   }
+  },
+  "advance enemyAttack-1": {
+   "before": {
+    "status": "victory",
+    "turn": 19,
+    "commands": 88,
+    "allyDeaths": [
+     "a2@T9"
+    ],
+    "noCombatTurns": [
+     6,
+     11
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 7,
+      "p3": 0,
+      "advanceSteps": 101,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 7,
+      "attacks": 8,
+      "p3": 2,
+      "advanceSteps": 60,
+      "noCombat": 0
+     },
+     "heavy": {
+      "turns": 4,
+      "attacks": 4,
+      "p3": 0,
+      "advanceSteps": 18,
+      "noCombat": 0
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 16,
+    "commands": 73,
+    "allyDeaths": [],
+    "noCombatTurns": [
+     10,
+     11
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 7,
+      "attacks": 10,
+      "p3": 2,
+      "advanceSteps": 79,
+      "noCombat": 1
+     },
+     "light": {
+      "turns": 6,
+      "attacks": 6,
+      "p3": 0,
+      "advanceSteps": 57,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 3,
+      "p3": 0,
+      "advanceSteps": 15,
+      "noCombat": 0
+     }
+    }
+   }
+  },
+  "cautious enemyAttack-1": {
+   "before": {
+    "status": "victory",
+    "turn": 18,
+    "commands": 81,
+    "allyDeaths": [
+     "a2@T9"
+    ],
+    "noCombatTurns": [
+     6,
+     11
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 9,
+      "p3": 1,
+      "advanceSteps": 105,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 7,
+      "attacks": 8,
+      "p3": 1,
+      "advanceSteps": 59,
+      "noCombat": 0
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 3,
+      "p3": 0,
+      "advanceSteps": 16,
+      "noCombat": 0
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 17,
+    "commands": 76,
+    "allyDeaths": [],
+    "noCombatTurns": [
+     10,
+     11
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 13,
+      "p3": 1,
+      "advanceSteps": 83,
+      "noCombat": 1
+     },
+     "light": {
+      "turns": 6,
+      "attacks": 6,
+      "p3": 1,
+      "advanceSteps": 56,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 3,
+      "p3": 0,
+      "advanceSteps": 16,
+      "noCombat": 0
+     }
+    }
+   }
+  },
+  "rain enemyAttack-1": {
+   "before": {
+    "status": "victory",
+    "turn": 18,
+    "commands": 81,
+    "allyDeaths": [
+     "a2@T14"
+    ],
+    "noCombatTurns": [
+     6,
+     9,
+     15,
+     16
+    ],
+    "p3Effects": 2,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 8,
+      "p3": 1,
+      "advanceSteps": 112,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 7,
+      "attacks": 6,
+      "p3": 0,
+      "advanceSteps": 55,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 2,
+      "p3": 1,
+      "advanceSteps": 1,
+      "noCombat": 1
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 12,
+    "commands": 51,
+    "allyDeaths": [],
+    "noCombatTurns": [
+     6,
+     9,
+     10,
+     12
+    ],
+    "p3Effects": 1,
+    "firstTurnEnemyAttacks": 0,
+    "byWeather": {
+     "clear": {
+      "turns": 6,
+      "attacks": 7,
+      "p3": 0,
+      "advanceSteps": 74,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 4,
+      "attacks": 4,
+      "p3": 0,
+      "advanceSteps": 33,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 2,
+      "attacks": 1,
+      "p3": 1,
+      "advanceSteps": 1,
+      "noCombat": 1
+     }
+    }
+   }
+  },
+  "fast enemyAttack-1": {
+   "before": {
+    "status": "victory",
+    "turn": 18,
+    "commands": 81,
+    "allyDeaths": [
+     "a7@T11"
+    ],
+    "noCombatTurns": [
+     6,
+     9,
+     12,
+     13,
+     14
+    ],
+    "p3Effects": 0,
+    "firstTurnEnemyAttacks": 2,
+    "byWeather": {
+     "clear": {
+      "turns": 8,
+      "attacks": 10,
+      "p3": 0,
+      "advanceSteps": 113,
+      "noCombat": 2
+     },
+     "light": {
+      "turns": 7,
+      "attacks": 6,
+      "p3": 0,
+      "advanceSteps": 52,
+      "noCombat": 1
+     },
+     "heavy": {
+      "turns": 3,
+      "attacks": 1,
+      "p3": 0,
+      "advanceSteps": 18,
+      "noCombat": 2
+     }
+    }
+   },
+   "after": {
+    "status": "victory",
+    "turn": 12,
+    "commands": 54,
+    "allyDeaths": [],
+    "noCombatTurns": [
+     5,
+     10,
+     11
+    ],
+    "p3Effects": 0,
+    "firstTurnEnemyAttacks": 2,
+    "byWeather": {
+     "clear": {
+      "turns": 6,
+      "attacks": 7,
+      "p3": 0,
+      "advanceSteps": 92,
+      "noCombat": 1
+     },
+     "light": {
+      "turns": 4,
+      "attacks": 2,
+      "p3": 0,
+      "advanceSteps": 47,
+      "noCombat": 2
+     },
+     "heavy": {
+      "turns": 2,
+      "attacks": 2,
+      "p3": 0,
+      "advanceSteps": 15,
+      "noCombat": 0
+     }
+    }
+   }
+  }
+ }
+}
