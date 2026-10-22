@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {riskCue,hasAnnouncedCannon,combatCue,thumbSide} from '../tactical-ui.js';
+import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedThreat} from '../tactical-ui.js';
+import * as E from '../engine.js';
 
 test('P2 reaches are *approximate*: thresholds and labels never promise certain damage',()=>{
  for(const [risk,hp,level] of [[0,6,'safe'],[1,6,'caution'],[2,6,'caution'],[3,6,'high'],[5,6,'high'],[2,2,'critical'],[10,6,'critical']]){
@@ -36,4 +37,24 @@ test('thumb setting rejects unknown saved values without changing the save forma
  assert.equal(thumbSide(''),'right');
  assert.equal(thumbSide('bad'),'right');
  assert.equal(thumbSide(null),'right');
+});
+
+test('precomputed enemy attack field matches canonical engine.threatAt on real maps',()=>{
+ for(const mapId of [0,2,4,5]){
+  const state=E.createGame(mapId);
+  const index=buildThreatIndex(state,E),u=state.units.find(a=>a.team==='ally');
+  assert(u&&index.length>0);
+  const choices=[{x:0,y:0},{x:Math.floor(state.map.w/2),y:Math.floor(state.map.h/2)},state.map.camp,...state.units.filter(a=>a.team==='enemy').slice(0,2).map(a=>({x:a.x,y:a.y}))];
+  for(const p of choices){
+   assert.equal(indexedThreat(state,index,u,p,E),E.threatAt(state,p,u),`map${mapId} @ ${p.x},${p.y}`);
+  }
+ }
+});
+test('indexed armour and HP changes affect resulting damage without rebuilding enemy reach',()=>{
+ const state=E.createGame(),u=state.units.find(a=>a.team==='ally'),index=buildThreatIndex(state,E);
+ const tile=state.units.find(a=>a.team==='enemy');
+ if(!tile)return;
+ const p={x:tile.x,y:tile.y},without=indexedThreat(state,index,u,p,E);
+ const armoured=indexedThreat(state,index,{...u,def:Math.max(1,u.def+3)},p,E);
+ assert(armoured<=without,'changing only defence does not need a new reach field');
 });
