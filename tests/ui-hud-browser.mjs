@@ -19,7 +19,7 @@ try{
    const buttons=[...document.querySelectorAll('#battleHeader button,footer button')];
    return {header:head.height,dock:dock.height,mapBottom:map.bottom,dockTop:dock.top,rail:items.map(x=>({phase:x.dataset.step,current:x.getAttribute('aria-current'),width:x.getBoundingClientRect().width})),overflow:document.documentElement.scrollWidth>innerWidth,buttons:buttons.map(b=>({w:b.getBoundingClientRect().width,onScreen:b.getBoundingClientRect().left>=0&&b.getBoundingClientRect().right<=innerWidth}))};
   });
-  assert.equal(metrics.header,52);assert.equal(metrics.dock,144);
+  assert.equal(metrics.header,height<=500?48:52,'existing 48px landscape header must remain unchanged');assert.equal(metrics.dock,144);
   assert(Math.abs(metrics.mapBottom-metrics.dockTop)<=2,'dock must not cover battlefield');
   assert.deepEqual(metrics.rail.map(x=>x.phase),['1','2','3','4']);
   assert.deepEqual(metrics.rail.map(x=>x.current),['step','false','false','false']);
