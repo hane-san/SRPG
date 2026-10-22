@@ -10,10 +10,11 @@
     "check": "node scripts/sync-display-name.mjs --check && node --check display-name.js && node --check app.js && node --check ui-hud.js && node --check tests/ui-hud-browser.mjs && node --check gem-effects.js && node --check combat-fx.js && node --check weapon-fx.js && node --check tests/weapon-fx-browser.mjs && node --check gem-demo.js && node --check data.js && node --check config.js && node --check engine.js && node --check render.js && node --check save.js && node --check ui-input.js && node --check ui-model.js && node --check audio.js && node --check playback.js && node --check music.js && node --test --test-reporter=spec tests/*.test.js",
     "simulate": "node tests/simulate.mjs",
     "audit:balance": "node tests/simulate.mjs --save && node tests/audit-balance.mjs --save",
-    "test:browser": "node tests/hp6-browser-check.mjs && node tests/sound-room-check.mjs && node tests/rename-check.mjs && node tests/issue17-browser-check.mjs && node tests/position-preview-browser.mjs && node tests/quick-flick-browser.mjs && node tests/gem-browser-check.mjs && node tests/combat-fx-browser.mjs && node tests/weapon-fx-browser.mjs && node tests/ui-hud-browser.mjs",
+    "test:browser": "node tests/map01-browser.mjs && node tests/hp6-browser-check.mjs && node tests/sound-room-check.mjs && node tests/rename-check.mjs && node tests/issue17-browser-check.mjs && node tests/position-preview-browser.mjs && node tests/quick-flick-browser.mjs && node tests/gem-browser-check.mjs && node tests/combat-fx-browser.mjs && node tests/weapon-fx-browser.mjs && node tests/ui-hud-browser.mjs",
     "icons": "node scripts/icons.mjs",
     "sync:display-name": "node scripts/sync-display-name.mjs",
-    "audit:issue17": "node tests/issue17-balance.mjs --save"
+    "audit:issue17": "node tests/issue17-balance.mjs --save",
+    "audit:tactical": "node tests/tactical-report.mjs --save"
   },
   "engines": {
     "node": ">=22"
