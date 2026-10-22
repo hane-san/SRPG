@@ -49,8 +49,9 @@ try{
  assert.equal(await page.locator('#commandHint').getAttribute('data-intent'),'attack');
  await t.touch('touchCancel',[]);
  assert.deepEqual(await t.state(),original);
- await t.slide({x:4,y:16},{x:5,y:14});
- await t.slide({x:5,y:14},{x:6,y:14});
+ // Since Issue #35 a flick from the route endpoint onto an enemy attacks at once,
+ // so open the battle forecast without a command: select, then tap the enemy.
+ await t.reset(fixture());await t.select('a');await t.tap({x:6,y:14});
  assert(await page.locator('#orders .hp-track').count()>=2,'forecast still has both HP bar DOM nodes');
  const gem=await page.locator('#orders .hp-track').first().evaluate(el=>({track:getComputedStyle(el).height,cut:getComputedStyle(el,'::after').backgroundImage,fill:el.querySelector('i').getBoundingClientRect().width,bar:el.getBoundingClientRect().width}));
  assert(gem.cut.includes('repeating-linear-gradient'),JSON.stringify(gem));
