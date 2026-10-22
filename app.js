@@ -1,3 +1,4 @@
+import {hudSignals,routeIntent} from './ui-hud.js?v=0.8.0-hud50';
 import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26-sortie29';
 import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29';
@@ -43,6 +44,15 @@ function refresh(){
  const weather=s.map.weatherCycle?`T${s.turn} ${E.WEATHER[E.weatherAt(s)].label} → T${s.turn+1} ${E.WEATHER[E.weatherAt(s,s.turn+1)].label} · 歩兵−${E.WEATHER[E.weatherAt(s)].foot}/騎兵−${E.WEATHER[E.weatherAt(s)].horse}（最低1）`:'';
  const warning=[weather,s.warnings.map(w=>`T${w.turn} ${w.kind==='cannon'?`終了時：赤枠に砲撃 −${RULES.barrageDamage}`:'終了時：紫枠に増援'}`).join(' ／ ')].filter(Boolean).join(' ／ ');
  $('forecast').hidden=!warning;$('forecast').textContent=warning;
+ const signals=hudSignals(s),rail=$('phaseRail');
+ rail.dataset.phase=String(signals.active);
+ for(const [index,tile] of [...rail.children].entries()){
+  const current=signals.active===index+1;
+  tile.classList.toggle('current',current);
+  tile.classList.toggle('past',signals.active>index+1);
+  tile.setAttribute('aria-current',current?'step':'false');
+ }
+ $('forecast').dataset.level=signals.level;
  const ready=E.alive(s,'ally').filter(u=>!u.acted).length;
  $('moveUndo').hidden=locked||!!view.dragging||!pendingUndo||s.phase!==1||s.status!=='playing';
  $('endTurn').disabled=locked||view.dragging||s.status!=='playing';$('endTurn').textContent=locked?'進行中…':`命令終了 (${ready}) →`;
@@ -61,7 +71,7 @@ function placeOrders(){
  root.hidden=!!editing;$('commandHint').hidden=!editing;
  if(editing){
   const dest=view.dest||u,summary=routeSummary(s,u,dest,view.route?.length?view.route:[u]),target=s.units.find(t=>t.id===view.target);
-  const hint=$('commandHint');hint.replaceChildren();
+  const hint=$('commandHint');hint.dataset.intent=routeIntent(view);hint.replaceChildren();
   const route=document.createElement('strong');route.className='route-readout';route.textContent=`移動先 (${dest.x+1}, ${dest.y+1}) · コスト ${summary.cost??'—'}/${summary.budget} · ${summary.weather}`;
   const detail=document.createElement('span');detail.className='route-intent';
   detail.textContent=view.attackError||(target?(()=>{const f=battleForecast(s,u,target,dest);return `${target.name} · 自HP ${u.hp}→${f.allyAfter} ／ 敵HP ${target.hp}→${f.enemyAfter} · 反撃${f.counter}`;})():view.moveArmed?'移動先を固定しました · 離すと移動、敵へ滑らせると攻撃':`通常攻撃 ${summary.targets}隊 · 金の目印が対象`);
