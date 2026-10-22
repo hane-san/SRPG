@@ -25,3 +25,8 @@ test('warned-unit escapes and base loss are observed facts; mapless base is null
  const r=o.summary(s);assert.equal(r.warnedAllyTurns,1);assert.equal(r.escapedBeforeImpact,1);assert.equal(r.cannonHitEvents,0);assert.equal(r.base,null);
  const base=E.createGame(1);base.units.push(unit({id:'raider',type:'horse',name:'raider',...base.map.base},'enemy'));const guard=createTacticalObserver(base);guard.beginTurn(base);E.checkOutcome(base);guard.finishTurn(base);assert.deepEqual(guard.summary(base).base,{heldThroughTurn:0,fallen:true});
 });
+test('cannon telemetry separates allies caught in announced cells from enemies hit by their own barrage',()=>{
+ const s=fixture();s.turn=3;s.warnings=[{kind:'cannon',turn:3,cells:[{x:4,y:14},{x:4,y:15}]}];
+ const o=createTacticalObserver(s);o.beginTurn(s);assert(E.act(s,'a',{x:4,y:15},'wait',null,o.observe).ok);o.command('wait');o.beforeEvents(s);s.phase=4;E.eventPhase(s,o.observe);o.finishTurn(s);
+ const r=o.summary(s);assert.equal(r.cannonHitEvents,2);assert.equal(r.allyCannonHitEvents,1);assert.equal(o.turns[0].allyCannonHits,1);
+});

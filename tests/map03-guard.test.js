@@ -44,3 +44,12 @@ test('03 campaign can deploy replacement soldiers in the same named roster slots
  }
  assert.equal(E.deploymentLimit(s),2);assert.equal(E.alive(s,'ally').length,0);
 });
+test('03 announced barrages never catch a moving policy; any counted hit lands on the enemy',()=>{
+ for(const policy of ['advance','cautious','fast']){
+  const r=play(2,policy,{},35).result.tactical;
+  assert.equal(r.allyCannonHitEvents,0,policy);
+  if(policy!=='fast')assert.equal(r.escapedBeforeImpact,r.warnedAllyTurns,policy);
+ }
+ // A force that never moves is still shelled, so the warning keeps its teeth.
+ assert.ok(play(2,'hold',{},35).result.tactical.allyCannonHitEvents>0);
+});
