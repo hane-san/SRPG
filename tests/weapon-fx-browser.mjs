@@ -61,7 +61,7 @@ try{
  await t.select('a');await page.locator('#attackOrder').click();await t.settled();
  const observed=await page.evaluate(()=>{window.recordWeapon=false;return {weapons:window.weaponTrail,boss:window.bossTrail};});
  assert(observed.weapons.some(x=>x.kind==='slash'&&x.p>.32&&x.p<1),'actual combat makes a visible slash');
- assert(observed.boss.some(x=>x.stage==='crack'),'boss's lethal jewels fracture');
+ assert(observed.boss.some(x=>x.stage==='crack'),'boss lethal jewels fracture');
  assert(observed.boss.some(x=>x.stage==='burst'),'boss collapse is a bigger distinct burst');
  assert.deepEqual(await t.state(),expected,'visuals never change HP, actor flags, counter or logs');
  await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);
