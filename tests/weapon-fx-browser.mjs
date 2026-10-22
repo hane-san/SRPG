@@ -6,7 +6,8 @@ import {launch,setup} from './browser-helpers.mjs';
 
 const browser=await launch();
 try{
- const t=await setup(browser),{page}=t;
+ // This suite measures visible movement; normal browser helpers intentionally use reduced motion.
+ const t=await setup(browser,390,844,{reducedMotion:'no-preference'}),{page}=t;
  const synthetic=await page.evaluate(async()=>{
   const {render,renderStats}=await import('./render.js?v=0.8.0-weapon48');
   const {weaponProfile}=await import('./weapon-fx.js?v=0.8.0-weapon48');
