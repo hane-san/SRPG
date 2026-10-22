@@ -23,6 +23,7 @@ test('real changes, not attack number, determine shattered gemstones',()=>{
  assert.equal(combatCue({kind:'hit',amount:2},6,4,{}),'結晶破砕 2個');
  assert.equal(combatCue({kind:'hit',amount:1,counter:true},5,4,{}),'反撃 · 結晶破砕 1個');
  assert.equal(combatCue({kind:'hit',amount:2},2,1,{guard:1}),'結晶破砕 1個 · 防御適用後');
+ assert.equal(combatCue({kind:'hit',amount:1},6,5,{specialty:'guard',command:'wait'}),'結晶破砕 1個 · 防御適用後');
 });
 test('healing respects the actual cap and has no break / win fanfare',()=>{
  assert.equal(combatCue({kind:'heal',amount:2},5,6,{}),'結晶再生 +1個');
