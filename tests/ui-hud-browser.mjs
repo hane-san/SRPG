@@ -39,7 +39,7 @@ try{
   const color=await page.locator('#forecast').evaluate(el=>getComputedStyle(el).borderLeftColor);
   observations.push({alert:kind,level,color});
  }
- const rainy=fixture();rainy.map.weatherCycle=['rain','heavy'];
+ const rainy=E.createGame(4);rainy.turn=4;
  await t.reset(rainy);
  assert.equal(await page.locator('#forecast').getAttribute('data-level'),'weather');
  await t.reset(fixture());
