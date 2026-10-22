@@ -13,7 +13,7 @@ test('a cannon strike overrides reinforcements and weather in the warning hierar
  assert.equal(hudSignals({weatherCycle:[1]}).level,'weather');
  assert.equal(hudSignals({map:{weatherCycle:['light','heavy']}}).level,'weather','real state nests the cycle on map');
  assert.equal(hudSignals({warnings:[{kind:'spawn'}],weatherCycle:[1]}).level,'reinforcement');
- assert.equal(hudSignals({warnings:[{kind:'reinforcement'}]}).level,'reinforcement');
+ assert.equal(hudSignals({warnings:[{kind:'reinforcement'}]}).level,'none','unknown kind never reports a valid reinforcement');
  assert.equal(hudSignals({warnings:[{kind:'reinforce'},{kind:'cannon'}],weatherCycle:[1]}).level,'cannon');
  assert.equal(hudSignals({warnings:[{kind:'cannon'}]}).level,'cannon');
  assert.equal(hudSignals({}).level,'none');
