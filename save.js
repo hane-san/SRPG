@@ -1,4 +1,4 @@
-import {CLASSES,SKILLS} from './config.js?v=0.8.0-p3-26';
+import {CLASSES,SKILLS,RULES} from './config.js?v=0.8.0-p3-26';
 // Storage is optional. Reject partial turns and malformed/old saves before rendering.
 export const STORAGE='field-command-save-v1';
 export function readSave(storage,release,maps){
@@ -10,7 +10,8 @@ export function readSave(storage,release,maps){
   if(!compatible||!s||!m||s.map.w!==m.w||s.map.h!==m.h||!['playing','victory','defeat'].includes(s.status)||(![1,2,3,4].includes(s.phase))||(s.status==='playing'&&s.phase!==1))return null;
   if(!Number.isInteger(s.turn)||s.turn<1||!Array.isArray(s.units)||!s.units.length||!Array.isArray(s.log)||!Array.isArray(s.lost)||!Array.isArray(s.warnings)||!s.metrics||!s.settings)return null;
   if(!['classic','casual'].includes(s.settings.mode)||![-1,0,1].includes(s.settings.enemyAttack))return null;
-   if(release==='0.8.0'&&(!Number.isInteger(s.deployedThisTurn)||s.deployedThisTurn<0||s.deployedThisTurn>1||!s.specialties||typeof s.specialties!=='object'))return null;
+   const deploymentLimit=s.turn===1?RULES.openingDeployments:RULES.deploymentsPerTurn;
+   if(release==='0.8.0'&&(!Number.isInteger(s.deployedThisTurn)||s.deployedThisTurn<0||s.deployedThisTurn>deploymentLimit||!s.specialties||typeof s.specialties!=='object'))return null;
   if(!s.log.every(x=>typeof x==='string')||!s.lost.every(x=>typeof x==='string')||!Array.isArray(s.metrics.deaths)||!s.metrics.deaths.every(d=>d&&typeof d.id==='string'&&Number.isInteger(d.turn)))return null;
   if(!['commands','supports','misfires','charges','turns'].every(k=>Number.isInteger(s.metrics[k])&&s.metrics[k]>=0))return null;
   const cell=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.y>=0&&p.x<m.w&&p.y<m.h;
