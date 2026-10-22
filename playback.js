@@ -1,3 +1,4 @@
+import {weaponProfile,isBossUnit} from './weapon-fx.js?v=0.8.0-weapon48';
 import {feedbackStyle} from './combat-fx.js?v=0.8.0-fx39';
 import {gemPlan,gemHP,gemSchedule} from './gem-effects.js?v=0.8.0-gems28';
 // Only presentation lives here; all rules have already resolved synchronously.
@@ -16,7 +17,7 @@ export function tween(duration,update){
 }
 export function createPlayback({getState,setState,view,draw,sound,isFast,isReduced,onMessage=()=>{},onCombat=()=>{}}){
  const duration=(normal,quick=0,still=0)=>document.hidden||isFast()?quick:isReduced()?still:normal;
- const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation','sortieEntrance','sortieQuote','jewel','impact','stepLanding'])view[k]=null;};
+ const clear=()=>{for(const k of ['motion','projectile','effect','flash','ghost','active','animation','sortieEntrance','sortieQuote','jewel','impact','stepLanding','strike','bossBreak'])view[k]=null;};
  async function play(frames){
   let lastActor=null;
   for(const {state,event} of frames){
@@ -51,16 +52,24 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
     const dx=actor?target.x-actor.x:0,dy=actor?target.y-actor.y:0,length=Math.max(1,Math.abs(dx)+Math.abs(dy));
     onCombat(before,before,event,'windup');
     onMessage(`${actor?.name||'砲撃'}${event.counter?'の反撃':''} → ${target.name} ${heal?'+':'−'}${event.amount}`);
-    if(!heal)sound.play(['bow','shooter'].includes(actor?.type)?'bow':actor?.type==='mage'?'magic':ranged?'range':'swing');
+    const weapon=weaponProfile(actor?.type||'shooter',{fast:isFast(),reduced:isReduced()});
+    if(!heal)sound.play(['bow','shooter'].includes(actor?.type)?'bow':actor?.type==='mage'?'magic':ranged?'range':'swing',event.amount,false,{type:actor?.type});
+
     await tween(duration(['bow','shooter'].includes(actor?.type)?320:200),p=>{
      view.animation={...event,stage:'windup',progress:p};
-     if(actor&&!ranged)view.motion={id:actor.id,x:actor.x+dx/length*.23*p,y:actor.y+dy/length*.23*p};
-     else if(actor)view.projectile={from:actor,to:target,progress:p,heal,type:actor.type};draw();
+     if(actor&&!ranged){
+      // One decisive final lunge, not a series of small taps; same 200ms budget.
+      const surge=p*p*(3-2*p);
+      view.motion={id:actor.id,x:actor.x+dx/length*.32*surge,y:actor.y+dy/length*.32*surge};
+     }else if(actor)view.projectile={from:actor,to:target,progress:p,heal,type:actor.type};
+     view.strike=!heal&&actor?{from:actor,to:target,progress:p,weapon}:null;
+     draw();
     });
-    view.projectile=null;
+    view.strike=null;view.projectile=null;view.motion=null;
     const afterTarget=state.units.find(u=>u.id===target.id);
     const armoured=!heal&&!!(target.def||target.guard||target.specialty==='guard'&&target.command);
     const plan=gemPlan(target.hp,afterTarget?.hp??target.hp,event.amount,{heal,armoured,ally:target.team==='ally'});
+    const bossLethal=isBossUnit(target)&&plan.lethal;
     const speed=gemSchedule(plan,isFast(),isReduced());
     const style=feedbackStyle({...plan,fast:isFast(),reduced:isReduced()});
     const impactPosition={id:target.id,x:target.x,y:target.y,dx:actor?Math.sign(target.x-actor.x):0,dy:actor?Math.sign(target.y-actor.y):0,style};
@@ -89,6 +98,7 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
        view.jewel={id:target.id,hp,index:heal?plan.start+i-1:plan.start-i,progress:p,heal,heavy:plan.heavy,armoured,ally:plan.ally,count:plan.count};
        view.flash={id:target.id,amount:isReduced()?0:Math.max(0,(1-p)*(plan.heavy?.42:plan.count===2?.37:.25)),heal};
        view.effect={x:target.x,y:target.y,text:`${heal?'+':'−'}${event.amount}`,progress:(i-1+p)/plan.count,heal};
+       if(bossLethal)view.bossBreak={x:target.x,y:target.y,progress:(i-1+p)/plan.count,stage:'crack'};
        showImpact(heal?'heal':'shard',p);
       });
      }
@@ -96,11 +106,13 @@ export function createPlayback({getState,setState,view,draw,sound,isFast,isReduc
     setState(state);onCombat(before,state,event,'impact');view.jewel=null;
     view.flash=null;view.effect=null;view.impact=null;
     if(plan.lethal){
-     sound.play('gem-finish',plan.count,true,{ally:plan.ally,heavy:plan.heavy});
-     view.ghost={unit:{...target,hp:0},alpha:1,shatter:true,progress:0};
+     sound.play('gem-finish',plan.count,true,{ally:plan.ally,heavy:plan.heavy,boss:bossLethal});
+     view.ghost={unit:{...target,hp:0},alpha:1,shatter:true,progress:0,boss:bossLethal};
      await tween(document.hidden?0:speed.finishMs+48,p=>{
       view.animation={...event,stage:'collapse',progress:p};
-      view.ghost.progress=p;view.ghost.alpha=1-p;draw();
+      view.ghost.progress=p;view.ghost.alpha=1-p;
+      view.bossBreak=bossLethal?{x:target.x,y:target.y,progress:p,stage:'burst'}:null;
+      draw();
      });
     }else if(plan.count){
      await animate(speed.finishMs);
