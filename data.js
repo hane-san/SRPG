@@ -21,7 +21,7 @@ function makeMap(id){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
    path(g,13,1,28);path(g,7,1,28);for(let x=7;x<=13;x++)g[2][x]='=';
-   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',7,4,'defend'),enemy('e5','sword',7,25,'defend'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',8,1,'hold'),enemy('southguard','shield',7,28,'hold')];
+   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',5,4,'defend'),enemy('e5','sword',7,25,'defend'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',7,2,'hold'),enemy('southguard','shield',7,28,'hold')];
    spawns=[{x:7,y:27}];
  } else {
    patch(g,0,13,w,2,'~');patch(g,4,13,2,2,'+');patch(g,10,13,2,2,'+');path(g,10,2,23);g[13][10]=g[14][10]='+';
@@ -35,7 +35,7 @@ function makeMap(id){
   subtitle:['正面突破 / 12 × 20','南北挟撃・東側機動 / 16 × 30','予告増援・城砲撃 / 14 × 26'][id],
   briefing:[
    '北の城を制圧。西の広い渡しは見通しのよい迂回路。中央の橋は近道ですが、向こう岸の弓の射程を確かめましょう。盾で受け、剣と弓を続けて動かすと守備を崩せます。魔術師の回復は動かず待機したP3だけ。',
-   '中央の青砦を守り、北城を制圧。本陣の守備役と隣接の回復役を残す配置。南城の守備隊は城を離れず、T4・8・12に各1隊の増援が本陣へ向かう（制圧で停止）。西の主力と東の騎兵を分け、北城を狙う。',
+   '中央の青砦を守り、北城を制圧。守将は城門前に控え、北西の守備隊は街道を押さえる。正面から守備を崩すか、東の道から城へ回り込むか。本陣を空にすると南城からT4・8・12に来る増援に奪われるため、後衛を残す判断が重要。南城制圧で増援は停止する。',
    '北城を制圧。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
   ][id]};
 }
@@ -66,13 +66,16 @@ function extraMap(id){
  const enemies=formations[id].map(([type,x,y,ai],i)=>{g[y][x]='=';return enemy(`extra-${id}-${Math.floor(i/4)}-${i%4}`,type,x,y,ai);});
  // Keep terrain stamped at its original formation cells; move only enemy specs.
  if(id===4){enemies[1].y=21;enemies[2].y=22;enemies[3].y=22;}
+ // Issue #38 second slice: defend the far bank instead of rushing the castle
+ // on T1. Mutate specs after stamping their original cells to preserve all tiles.
+ if(id===3){Object.assign(enemies[0],{y:24,ai:'defend'});Object.assign(enemies[3],{y:22,ai:'defend'});}
  enemies.push(enemy('boss','shield',cx,1,'hold'));
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
  // More troops without introducing a new class, resource or campaign roster.
  const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
-  '縦40マスの河川戦。二本の川を各三つの橋で越え、北城へ。途中の砦で前衛を交代するか、左右の街道で騎兵を先行させるか。味方11隊・敵13隊。砲撃・増援なし。',
+  '縦40マスの河川戦。二本の川を各三つの橋で越え、北城へ。最初の川の手前には剣と弓、対岸には橋を見張る盾と騎兵が待機。どの橋を渡るか、後続をどこに集めるかを選びましょう。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
   '森と岩壁に隔てられた縦36マスの回廊。三か所の横道で部隊を合流できる。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。守備隊を弓で崩すか、左右から包むか。味方11隊・敵13隊。砲撃・増援なし。',
   '縦44マスの長期戦。二つの渡河線と三つの砦を越えて北城へ。味方13隊・敵15隊。砲撃はT2予告・T3着弾、以後3ターンごと。T4・T8に各2隊の有限増援、前ターンに予告し到着直後は攻撃しない。'
  ][id-3];

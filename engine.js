@@ -1,5 +1,5 @@
 import {RULES,TERRAINS,PROMOTIONS} from './config.js?v=0.8.0-p3-26-sortie29';
-import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17-p3-26-map38-m02-war43';
+import {MAPS,ROSTER,unit,positions,enemy as enemySpec} from './data.js?v=0.8.0-issue17-p3-26-map38-m02-war43-m02gate57-m04bridge58';
 export const WEATHER={clear:{label:'雨なし',foot:0,horse:0},light:{label:'小雨',foot:2,horse:3},heavy:{label:'大雨',foot:3,horse:4}};
 export function weatherAt(s,turn=s.turn){const cycle=s.map.weatherCycle;return cycle?.[(turn-1)%cycle.length]||'clear';}
 export function movement(s,u){const weather=WEATHER[weatherAt(s)];return Math.max(1,u.move-weather[u.type==='horse'?'horse':'foot']);}
