@@ -335,3 +335,20 @@ a{color:#e4c8f0}
 #commandDock #orders.battle-report .report-title{font-weight:850;letter-spacing:.025em}
 #nextUnit:not(:disabled){border-color:#c1a7c7;box-shadow:inset 0 2px 0 #c1a7c73d}
 @media(prefers-reduced-motion:reduce){#phaseRail span,#commandDock .hp-track i{transition:none}}
+
+/* Issue #21: landscape phones put the fixed command panel beside the battlefield.
+   The panel keeps one fixed width and the full map height in every draft/command
+   state, so the battlefield geometry still never moves; portrait is unchanged. */
+@media(orientation:landscape) and (max-height:500px) and (min-width:600px){
+ #app{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:48px minmax(0,1fr) auto;grid-template-areas:"head head" "map dock" "map foot"}
+ #battleHeader{grid-area:head}
+ .map-wrap{grid-area:map;min-height:0;border-bottom:0;border-right:2px solid #9c8769}
+ #commandDock{grid-area:dock;height:auto;min-height:0;border-top:0;border-left:1px solid #89b7c6}
+ #commandDock #orders{grid-template-rows:auto minmax(0,1fr) auto}
+ #commandDock #orders.idle{flex-direction:column;justify-content:center;gap:10px}
+ footer{grid-area:foot;padding:5px 6px calc(5px + env(safe-area-inset-bottom));gap:4px;border-left:1px solid var(--line)}
+ footer button{padding-inline:5px;font-size:11px;white-space:nowrap}
+}
+
+/* Issue #43: war record list in the chapter result dialog. */
+.war-record{padding-left:1.3em;line-height:1.6}.war-record li{margin:0 0 10px}.war-record small{color:#cbb9a5}.war-record-note{font-size:12px;opacity:.8}
