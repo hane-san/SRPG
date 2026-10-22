@@ -74,10 +74,13 @@ try{
  const expected=structuredClone(duel);assert(E.act(expected,'a',duel.units[0],'attack','e').ok);
  await t.reset(duel);await t.select('a');await t.tap({x:4,y:15});
  await page.locator('#attackOrder').click();await t.settled();
- const report=await page.locator('#orders').innerText();
- assert(report.includes('結晶破砕 2個'),report);
- assert(report.includes('防御適用後'),report);
- assert(report.includes('残HP分のみ'),report);
+ const report=await page.locator('#orders').textContent();
+ const details=await page.locator('#orders').evaluate(el=>({html:el.innerHTML,display:getComputedStyle(el).display,childRects:[...el.children].map(n=>({className:n.className,text:n.textContent,display:getComputedStyle(n).display,rect:n.getBoundingClientRect().toJSON()}))}));
+ assert(report.includes('結晶破砕 2個'),JSON.stringify({report,details}));
+ assert(report.includes('防御適用後'),JSON.stringify({report,details}));
+ assert(report.includes('残HP分のみ'),JSON.stringify({report,details}));
+ const textArea=await page.locator('#orders .report-tail-text').boundingBox(),dockArea=await page.locator('#commandDock').boundingBox();
+ assert(textArea&&textArea.height>0&&textArea.y>=dockArea.y&&textArea.y+textArea.height<=dockArea.y+dockArea.height+1,JSON.stringify({textArea,dockArea,details}));
  assert.deepEqual(await t.state(),expected,'battle UI does not change the engine result');
  await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);
  assert.deepEqual(await t.state(),expected,'reload does not persist presentation transient');
