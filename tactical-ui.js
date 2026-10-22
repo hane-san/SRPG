@@ -25,3 +25,22 @@ export function combatCue(event,beforeHP,afterHP,{def=0,guard=0,specialty=null,c
  return `${prefix}結晶破砕 ${broken}個${defensive}${overkill}`;
 }
 export function thumbSide(value){return value==='left'?'left':'right';}
+
+// Cache the enemy reach once per *board state*, not once per pointer movement.
+// The generated attack sets are mathematically equivalent to engine.threatAt's
+// per-enemy reachable(...).some(inRange), including stationary "hold" enemies.
+export function buildThreatIndex(state,engine){
+ return engine.alive(state,'enemy').map(enemy=>{
+  const cells=new Set(),steps=engine.reachable(state,enemy,enemy.ai==='hold'?0:engine.movement(state,enemy),{threat:true});
+  const [min,max]=enemy.range;
+  for(const p of steps)for(let dx=-max;dx<=max;dx++)for(let dy=-max;dy<=max;dy++){
+   const dist=Math.abs(dx)+Math.abs(dy),x=p.x+dx,y=p.y+dy;
+   if(dist>=min&&dist<=max&&x>=0&&y>=0&&x<state.map.w&&y<state.map.h)cells.add(`${x},${y}`);
+  }
+  return {enemy,cells};
+ });
+}
+export function indexedThreat(state,index,unit,dest,engine){
+ const cell=`${dest.x},${dest.y}`,target={...unit,...dest};
+ return index.reduce((sum,entry)=>sum+(entry.cells.has(cell)?engine.damage(state,entry.enemy,target):0),0);
+}
