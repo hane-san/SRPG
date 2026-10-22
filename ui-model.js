@@ -1,4 +1,4 @@
-import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo,key,movement,weatherAt,WEATHER,canNormalAttack} from './engine.js?v=0.8.0-issue17-p3-26-map38-m02-war43-m02gate57-m04bridge58';
+import {alive,at,dist,inRange,prediction,terrain,reachable,routeTo,key,movement,weatherAt,WEATHER,canNormalAttack} from './engine.js?v=0.8.0-issue17-p3-26-map38-m02-war43-m02gate57-m04bridge58-m03guard59';
 
 export const attackTargets=(s,u,dest=u)=>canNormalAttack(u)?alive(s,'enemy').filter(t=>inRange({...u,...dest},t)):[];
 // Read the engine's chosen route, including terrain costs and this turn's rain.

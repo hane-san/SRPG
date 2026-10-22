@@ -26,7 +26,7 @@ function makeMap(id){
  } else {
    patch(g,0,13,w,2,'~');patch(g,4,13,2,2,'+');patch(g,10,13,2,2,'+');path(g,10,2,23);g[13][10]=g[14][10]='+';
    cannon={x:7,y:2};spawns=[{x:3,y:21}];g[18][6]='c';
-   enemies=[enemy('e1','sword',7,18),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,10),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',7,5,'defend'),enemy('boss','shield',7,1,'hold')];
+   enemies=[enemy('e1','sword',7,18,'hold'),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,10,'defend'),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',7,5,'defend'),enemy('boss','shield',7,1,'hold')];
  }
  if(id<2)enemies=enemies.map(e=>e.id==='boss'?{...e,rank:'lower'}:e);
  const goal={x:id===1?8:cx,y:1};g[goal.y][goal.x]='c';if(base)g[base.y][base.x]='c';if(south)g[south.y][south.x]='c';
@@ -36,7 +36,7 @@ function makeMap(id){
   briefing:[
    '北の城を制圧。西の広い渡しは見通しのよい迂回路。中央の橋は近道ですが、向こう岸の弓の射程を確かめましょう。盾で受け、剣と弓を続けて動かすと守備を崩せます。魔術師の回復は動かず待機したP3だけ。',
    '中央の青砦を守り、北城を制圧。守将は城門前に控え、北西の守備隊は街道を押さえる。正面から守備を崩すか、東の道から城へ回り込むか。本陣を空にすると南城からT4・8・12に来る増援に奪われるため、後衛を残す判断が重要。南城制圧で増援は停止する。',
-   '北城を制圧。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
+   '北城を制圧。中継砦の剣は定位置、東の剣は橋の北岸を守ります。先に砦を確保するか、東の橋へ急ぐか。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。予告マスから退避して進軍しましょう。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
   ][id]};
 }
 // Optional battlefields; only the original three chapters belong to the campaign.
