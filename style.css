@@ -364,7 +364,7 @@ a{color:#e4c8f0}
 #commandHint .route-risk[data-level="cannon"]{color:#ffd08d;font-weight:800}
 #commandHint .route-intent{overflow-wrap:anywhere}
 #commandDock #orders .report-tail-text{color:#ead8bf;font-variant-numeric:tabular-nums}
-#commandDock #orders.battle-report .report-tail-text{font-weight:700}
+#commandDock #orders.battle-report .report-tail-text{font-weight:700;white-space:normal;line-height:1.3;max-height:2.6em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:clip;overflow-wrap:anywhere}
 
 /* Reversible thumb reach zones: only two battlefield overlay controls move.
    Dock, header, world coordinates and the left/right scroll positions are untouched. */
