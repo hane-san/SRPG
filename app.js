@@ -158,10 +158,15 @@ function presentCombat(before,after,event,stage){
  for(const u of battleCard.units)u.hp=after.units.find(a=>a.id===u.id)?.hp??u.hp;
  // The "impact" callback may already reflect the last shard's HP.
  // The final acknowledgement must not replace "2 shattered" with "0".
- if(stage==='windup')battleCard.cue='';
+ if(stage==='windup'){
+  battleCard.cue='';
+  // Lock the start of this strike. Later shard frames may each carry only
+  // one incremental HP step, never enough to describe the whole hit.
+  battleCard.hitStartHp=target?.hp??0;
+ }
  if(stage==='shard'||(stage==='impact'&&!battleCard.cue)){
   const current=after.units.find(u=>u.id===event.target);
-  battleCard.cue=combatCue(event,target?.hp,current?.hp,target);
+  battleCard.cue=combatCue(event,battleCard.hitStartHp,current?.hp,target);
  }
  lastNotice=null;renderReport();
 }
