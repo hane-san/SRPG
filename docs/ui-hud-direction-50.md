@@ -23,6 +23,6 @@
 ## 実装PRと統合注意
 - `ui-hud.js`（純粋表示関数）、`index.html`上部レール、`app.js`の`refresh/placeOrders`内小変更、`style.css`末尾の独立した区画、テスト・README。
 - main基準で単独ブランチにした。PR #36（移動フリック）が`app.js`/`index.html`、#45/#49はcache/importへ変更を加えるため、**15時昼ランが先に#36→#45→#49を統合した場合は本PRのCSSやUI処理を織り込み、最終`index.html`モジュールのクエリ接尾辞を両立する。** どちらも巻き戻さず、競合があれば小さい分だけ再適用してCIを再実行。
-- CIチェック：`npm run check`に`ui-hud.js`と新ブラウザ試験の構文、`tests/ui-hud.test.js`、`npm run test:browser`に`tests/ui-hud-browser.mjs`。320/360/390x縦・844x390、ヘッダー52px・ドック144px、現フェーズ4区画、危険予告、経路、HPの正確な幅を確認。
+- CIチェック：`npm run check`に`ui-hud.js`と新ブラウザ試験の構文、`tests/ui-hud.test.js`、`npm run test:browser`に`tests/ui-hud-browser.mjs`。320/360/390x縦・844x390、縦画面ヘッダー52px／横長短画面48px・ドック144px、現フェーズ4区画、危険予告、経路、HPの正確な幅を確認。
 - 実機iPhoneでの読める文字・色の差・タッチの邪魔のなさ、人間の承認と他AIによる独立監査は未確認。成功したブラウザは実機の代わりでない。
 - mainへ直接push・force-push・自動マージしない。午後の統合担当へIssue/PRから引継ぐ。
