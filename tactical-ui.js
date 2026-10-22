@@ -14,13 +14,13 @@ export function hasAnnouncedCannon(warnings,position){
 }
 // Each change in displayed HP comes from an already-resolved combat event.
 // Never infer "raw attack" from final damage, and never animate extra gems for overkill.
-export function combatCue(event,beforeHP,afterHP,{def=0,guard=0}={}){
+export function combatCue(event,beforeHP,afterHP,{def=0,guard=0,specialty=null,command=null}={}){
  if(!event||!['hit','heal'].includes(event.kind))return '';
  const before=Math.max(0,Number(beforeHP)||0),after=Math.max(0,Number(afterHP)||0);
  const healed=Math.max(0,after-before),broken=Math.max(0,before-after);
  if(event.kind==='heal')return `結晶再生 +${healed}個`;
  const prefix=event.counter?'反撃 · ':'';
- const defensive=def>0||guard>0?' · 防御適用後':'';
+ const defensive=def>0||guard>0||(specialty==='guard'&&!!command)?' · 防御適用後':'';
  const overkill=Number(event.amount)>broken&&after===0?' · 残HP分のみ':'';
  return `${prefix}結晶破砕 ${broken}個${defensive}${overkill}`;
 }
