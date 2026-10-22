@@ -22,7 +22,7 @@ try{
   await t.touch('touchEnd',[]);
   await page.waitForFunction(y=>!window.srpgDebug.busy()&&window.srpgDebug.snapshot().units.find(u=>u.id==='a1').y===y,to.y,{timeout:5000});
   const crossed=await t.state();assert.equal(crossed.units.find(u=>u.id==='a1').y,to.y,'western bridge route commits');
-  assert.equal(await page.locator('#commandDock').evaluate(e=>e.getBoundingClientRect().height),144);
+  assert.equal(await page.locator('#commandDock').evaluate(e=>{const r=e.getBoundingClientRect();return innerHeight<=500&&innerWidth>=600?r.width:r.height;}),height<500?300:144);
   assert.deepEqual((await t.camera()).slice(2),before.slice(2));
   await page.reload();await page.waitForFunction(()=>!!window.srpgDebug);assert.deepEqual(await t.state(),crossed);
   await t.reset(play(0,'basic').s,'0.8.0',true);
