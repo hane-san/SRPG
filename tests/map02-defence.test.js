@@ -18,7 +18,10 @@ test('map02 trial: north gate is contested but victory tile has a viable flank',
  assert.deepEqual([byId(m,'e2').x,byId(m,'e2').y],[2,6]);
  assert.equal(byId(m,'boss').ai,'hold');
  assert.equal(byId(m,'e4').ai,'defend');
- assert.equal(m.enemies.length,9);
+ assert.equal(m.enemies.length,10);
+ // 2026-10-23 owner decision: the east road keeps a holding bow so the flank is not free.
+ const east=byId(m,'e7');
+ assert.deepEqual([east.x,east.y,east.type,east.ai],[13,4,'bow','hold']);
  // 2026-10-23 owner rule: the captain is off the castle, so one ordinary bow holds it.
  const guard=byId(m,'castle-guard');
  assert.deepEqual([guard.x,guard.y,guard.type,guard.ai],[8,1,'bow','hold']);assert.notEqual(guard.rank,'advanced');
@@ -29,7 +32,7 @@ test('map02 trial: north gate is contested but victory tile has a viable flank',
 
 test('map02: guarded counteroffensive can complete while thoughtless full offense still loses its home',()=>{
  // Restore the prior main layout in-memory; compare with exactly the same engine/policy.
- const before=structuredClone(map02());before.enemies=before.enemies.filter(e=>e.id!=='castle-guard');
+ const before=structuredClone(map02());before.enemies=before.enemies.filter(e=>!['castle-guard','e7'].includes(e.id));
  Object.assign(byId(before,'boss'),{x:8,y:1});
  Object.assign(byId(before,'e4'),{x:7,y:4});
  Object.assign(byId(before,'e2'),{x:4,y:6});
@@ -53,7 +56,7 @@ test('map02: guarded counteroffensive can complete while thoughtless full offens
 test('old valid 0.8 battle positions reload after changing map02 enemy home positions',()=>{
  const s=E.createGame(1);
  // A mid-battle save created before the map edit still remembers the existing actors (and has no castle-guard).
- s.units=s.units.filter(u=>u.id!=='castle-guard');
+ s.units=s.units.filter(u=>!['castle-guard','e7'].includes(u.id));
  Object.assign(s.units.find(u=>u.id==='boss'),{x:8,y:1});
  Object.assign(s.units.find(u=>u.id==='e4'),{x:7,y:4});
  const storage=new Map(),adapter={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)};
@@ -73,5 +76,9 @@ test('map02 castle garrison: the gate captain no longer leaves an empty castle',
  // The guard must actually be fought: it is defeated before the castle is taken.
  const {s}=play(1,'advance',{},32);assert.equal(s.units.find(u=>u.id==='castle-guard').alive,false);
  assert(E.createGame(1).units.some(u=>u.id==='castle-guard'&&u.x===8&&u.y===1&&u.alive));
- assert.ok(play(1,'east',{},32).result.status==='victory','the east flank remains a viable route to the guarded castle');
+ const east=play(1,'east',{},32).result;
+ assert.equal(east.status,'victory','the east flank remains a viable route to the guarded castle');
+ // Owner decision 2026-10-23: the flank is an alternative, not the free fastest line.
+ assert(east.turn>garrisoned.turn,'the east flank must cost more time than the central counteroffensive');
+ assert(east.tactical.allyDeaths.length>=1,'the east flank must carry real risk');
 });

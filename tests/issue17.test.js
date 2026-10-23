@@ -13,7 +13,7 @@ const map05=JSON.parse(readFileSync(new URL('./fixtures/map05-current-61.json',i
 function oldOpening(s){const pos=positions(s.map.id);s.units.filter(u=>u.team==='ally').slice(0,2).forEach((u,i)=>Object.assign(u,{deployed:true,x:pos[i+1][0],y:pos[i+1][1]}));return s;}
 test('approved layouts retain exact terrain, enemy IDs, HP6, castle access and campaign structure',()=>{
  for(const m of MAPS){
-  assert.deepEqual(m.tiles,m.id===0?map01.tiles:m.id===4?map05.tiles:m.id===5?map06.tiles:baseline.terrain[m.id]);assert.deepEqual(m.enemies.map(e=>e.id),[...baseline.maps[m.id].map(e=>e.id),...([1,2,4,5].includes(m.id)?['castle-guard']:[])]);
+  assert.deepEqual(m.tiles,m.id===0?map01.tiles:m.id===4?map05.tiles:m.id===5?map06.tiles:baseline.terrain[m.id]);assert.deepEqual(m.enemies.map(e=>e.id),[...baseline.maps[m.id].map(e=>e.id),...(m.id===1?['e7']:[]),...([1,2,4,5].includes(m.id)?['castle-guard']:[])]);
   const s=E.createGame(m.id);assert.equal(E.alive(s,'ally').length,0);assert.equal(E.reserves(s).length,s.units.filter(u=>u.team==='ally').length);assert(s.units.every(u=>u.maxHp===6));assert(E.canDeploy(s));
  }
  assert.equal(RULES.barrageDamage,2);assert.equal(RULES.deploymentsPerTurn,1);assert.equal(RULES.maxDeployed,5);

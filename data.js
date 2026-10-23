@@ -26,7 +26,9 @@ function makeMap(id){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
    path(g,13,1,28);path(g,7,1,28);for(let x=7;x<=13;x++)g[2][x]='=';
-   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',2,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',4,3,'defend'),enemy('e5','sword',7,25,'defend'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',7,2,'hold'),enemy('southguard','shield',7,28,'hold')];
+   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',2,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',4,3,'defend'),enemy('e5','sword',7,25,'defend'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',7,2,'hold'),enemy('southguard','shield',7,28,'hold'),enemy('e7','bow',13,4,'hold')];
+   // 2026-10-23 owner decision: a bow holds the top of the east road, so the flank still
+   // reaches the castle but costs time and risk instead of being the free fastest route.
    spawns=[{x:7,y:27}];
  } else {
    patch(g,0,13,w,2,'~');patch(g,4,13,2,2,'+');patch(g,10,13,2,2,'+');path(g,10,2,23);g[13][10]=g[14][10]='+';
@@ -45,7 +47,7 @@ function makeMap(id){
   subtitle:['正面突破 / 12 × 20','南北挟撃・東側機動 / 16 × 30','予告増援・城砲撃 / 14 × 26'][id],
   briefing:[
    '北の城を制圧。西の広い渡しは見通しのよい迂回路。中央の橋は近道ですが、向こう岸の弓の射程を確かめましょう。盾で受け、剣と弓を続けて動かすと守備を崩せます。魔術師の回復は動かず待機したP3だけ。',
-   '中央の青砦を守り、北城を制圧。守将は城門前に控え、城の上には弓兵1隊が残る。北西の守備隊は街道を押さえる。正面から守備を崩すか、東の道から城へ回り込むか。本陣を空にすると南城からT4・8・12に来る増援に奪われるため、後衛を残す判断が重要。南城制圧で増援は停止する。',
+   '中央の青砦を守り、北城を制圧。守将は城門前に控え、城の上には弓兵1隊が残る。北西の守備隊は街道を押さえ、東の道の奥にも弓兵が構える。正面から守備を崩すか、東の道から城へ回り込むか。本陣を空にすると南城からT4・8・12に来る増援に奪われるため、後衛を残す判断が重要。南城制圧で増援は停止する。',
    '北城を制圧。守将は城門前に控え、城の上には弓兵1隊が残ります。中継砦の剣は定位置、北西の盾は城への街道脇、東の剣は東街道の奥で待ち構えます。中央を押し上げるか、東の橋から一気に城へ回り込むか（東は守りが薄い分、本隊や回復役から離れます）。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。予告マスから退避して進軍しましょう。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
   ][id]};
 }
