@@ -50,6 +50,9 @@ function extraMap(id){
   for(const y of [8,20,31]){g[y][cx]='c';g[y][1]='v';}
  }else if(id===4){
   patch(g,7,5,2,25,'#');for(const y of [9,18,27])patch(g,7,y,2,2,'=');
+  // Issue #61: the middle and north gaps become forest gates (still passable,
+  // cost 2). Clear weather crosses them; rain stalls movement inside them.
+  for(const y of [9,18])patch(g,7,y,2,2,'f');
   path(g,5,2,h-3);path(g,11,2,h-3);patch(g,3,h-7,10,6,'.');g[18][5]='c';g[27][11]='v';g[7][12]='c';
  }else{
   for(const y of [14,29]){patch(g,0,y,w,2,'~');for(const x of [2,cx,w-3])patch(g,x,y,1,2,'+');}
@@ -66,17 +69,24 @@ function extraMap(id){
  const enemies=formations[id].map(([type,x,y,ai],i)=>{g[y][x]='=';return enemy(`extra-${id}-${Math.floor(i/4)}-${i%4}`,type,x,y,ai);});
  // Keep terrain stamped at its original formation cells; move only enemy specs.
  if(id===4){enemies[1].y=21;enemies[2].y=22;enemies[3].y=22;}
+ // Issue #61: the north shield/bow guard the north forest gate, so the second
+ // clear spell ends in contact; the east mage/horse close on the castle front.
+ if(id===4){Object.assign(enemies[8],{y:10});Object.assign(enemies[9],{y:8});Object.assign(enemies[10],{x:10,y:3});Object.assign(enemies[11],{x:11,y:2});}
  // Issue #38 second slice: defend the far bank instead of rushing the castle
  // on T1. Mutate specs after stamping their original cells to preserve all tiles.
  if(id===3){Object.assign(enemies[0],{y:24,ai:'defend'});Object.assign(enemies[3],{y:22,ai:'defend'});}
- enemies.push(enemy('boss','shield',cx,1,'hold'));
+ // Map 05's captain holds the gate in front of the castle (Issue #61), like map 02.
+ enemies.push(enemy('boss','shield',cx,id===4?2:1,'hold'));
+ // Owner rule (PR #62, 2026-10-23): where the captain is not on the castle, one ordinary
+ // garrison unit holds the castle tile, so skipping the captain still costs one fight.
+ if(id===4)enemies.push(enemy('castle-guard','bow',goal.x,goal.y,'hold'));
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
  // More troops without introducing a new class, resource or campaign roster.
  const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
   '縦40マスの河川戦。二本の川を各三つの橋で越え、北城へ。最初の川の手前には剣と弓、対岸には橋を見張る盾と騎兵が待機。どの橋を渡るか、後続をどこに集めるかを選びましょう。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
-  '森と岩壁に隔てられた縦36マスの回廊。三か所の横道で部隊を合流できる。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。守備隊を弓で崩すか、左右から包むか。味方11隊・敵13隊。砲撃・増援なし。',
+  '森と岩壁に隔てられた縦36マスの回廊。岩壁の切れ目のうち中央と北は森の門（移動コスト2）。晴れなら隣の回廊へ回り込めるが、雨で移動力が落ちると門で足が止まり、大雨では剣士隊以外の歩兵（盾・弓・砲兵・魔道・救護）は森に入れない。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。晴れのうちに次の守備線まで進み、大雨は止まって砲兵・魔術師のP3で支え、晴れたら押し返す。北の守備隊は森の門の前、守将は城門前に控え、城の上には弓兵1隊が残る。味方11隊・敵14隊。砲撃・増援なし。',
   '縦44マスの長期戦。二つの渡河線と三つの砦を越えて北城へ。味方13隊・敵15隊。砲撃はT2予告・T3着弾、以後3ターンごと。T4・T8に各2隊の有限増援、前ターンに予告し到着直後は攻撃しない。'
  ][id-3];
  return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,camp:{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
