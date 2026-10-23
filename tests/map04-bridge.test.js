@@ -4,16 +4,21 @@ import {MAPS} from '../data.js';
 import * as E from '../engine.js';
 import {readSave,writeSave} from '../save.js';
 import {play} from './simulate.mjs';
+import {readFileSync} from 'node:fs';
+
+// Preserve #58's exact historical experiment after the separately adopted #66
+// terrain/AI revision. Production #66 has its own strict fixture and tests.
+const approvedStage=JSON.parse(readFileSync(new URL('./fixtures/map04-before-66.json',import.meta.url))).map;
 
 const originalMap=()=>{
- const m=structuredClone(MAPS[3]);
+ const m=structuredClone(approvedStage);
  Object.assign(m.enemies[0],{y:29,ai:'advance'});
  Object.assign(m.enemies[3],{y:27,ai:'advance'});
  return m;
 };
 
 test('map04 second trial keeps all terrain, bridge topology and IDs; two guards move north',()=>{
- const m=MAPS[3],before=originalMap();
+ const m=approvedStage,before=originalMap();
  assert.deepEqual(m.tiles,before.tiles);
  assert.deepEqual(m.goal,before.goal);
  assert.deepEqual(m.camp,before.camp);
@@ -29,6 +34,8 @@ test('map04 second trial keeps all terrain, bridge topology and IDs; two guards 
 test('map04 staggered defenders turn opening concentration into readable river fighting',()=>{
  const prior=originalMap();
  const original=play(3,'advance',{},34,[],prior).result;
+ // The historic comparison stays frozen, but all success/safety assertions
+ // below continue to run against the actual current production battlefield.
  const next=play(3,'advance',{},34).result;
  const careful=play(3,'cautious',{},34).result;
  const fast=play(3,'fast',{},34).result;
@@ -54,6 +61,6 @@ test('map04 previous v0.8 saves do not teleport enemies when guard homes change'
  assert.equal(restored.state.units.find(u=>u.id==='extra-3-0-0').y,29);
  assert.equal(restored.state.units.find(u=>u.id==='extra-3-0-3').y,27);
  assert.equal(restored.state.map.enemies[0].y,24);
- assert.equal(restored.state.map.enemies[3].y,22);
+ assert.equal(restored.state.map.enemies[3].y,21,'current #66 home; the saved horse remains at y27 above');
  assert.equal(restored.state.status,'playing');
 });

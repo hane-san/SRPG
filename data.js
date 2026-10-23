@@ -59,6 +59,10 @@ function extraMap(id){
  const goal={x:cx,y:1},base=null;let south=null,spawns=[],cannon=null;
  if(id===3){
   for(const y of [12,25]){patch(g,0,y,w,2,'~');for(const x of [2,cx,w-3])patch(g,x,y,1,2,'+');}
+  // Issue #66: widen the crossings without closing any old passable cell.
+  // Central banks also need room: a wide bridge alone still funnels into forest.
+  for(const y of [12,25]){patch(g,1,y,2,2,'+');patch(g,5,y,3,2,'+');patch(g,9,y,2,2,'+');}
+  for(const y of [11,14,24,27])for(const x of [5,7])g[y][x]='=';
   for(const y of [8,20,31]){g[y][cx]='c';g[y][1]='v';}
  }else if(id===4){
   patch(g,7,5,2,25,'#');for(const y of [9,18,27])patch(g,7,y,2,2,'=');
@@ -92,6 +96,12 @@ function extraMap(id){
  // Issue #38 second slice: defend the far bank instead of rushing the castle
  // on T1. Mutate specs after stamping their original cells to preserve all tiles.
  if(id===3){Object.assign(enemies[0],{y:24,ai:'defend'});Object.assign(enemies[3],{y:22,ai:'defend'});}
+ // These three guards hold their posts; the wider crossings must not turn into
+ // a faster enemy pile-up. Other ten units keep the #58 formation and behaviour.
+ if(id===3)for(const i of [0,1,3])enemies[i].ai='hold';
+ // One tile behind the former post leaves room to stage at the east exit,
+ // retaining a winning cautious advance as well as the faster flank.
+ if(id===3)enemies[3].y=21;
  // Issue #63: three stages — the south-river front (shield, sword, bow), the
  // centre around the south castle, then the north river and the castle garrison.
  if(id===5)[[7,27,'defend'],[6,17,'hold'],[2,26,'defend'],[7,25,'hold'],[3,21,'hold'],[7,21,'hold'],[11,20,'defend'],[8,18,'defend'],[3,10,'defend'],[7,12,'defend'],[10,11,'hold'],[7,6,'defend']].forEach(([x,y,ai],i)=>Object.assign(enemies[i],{x,y,ai}));
@@ -105,7 +115,7 @@ function extraMap(id){
  const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
-  '縦40マスの河川戦。二本の川を各三つの橋で越え、北城へ。最初の川の手前には剣と弓、対岸には橋を見張る盾と騎兵が待機。どの橋を渡るか、後続をどこに集めるかを選びましょう。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
+  '縦40マスの河川戦。二本の川を各三つの渡しで越え、北城へ。中央は3マス幅で岸も広く、部隊を並べて攻められます。西と東は2マス幅。最初の中央の盾・南岸の弓・東の騎兵は定位置を守るため、正面から崩すか、別の渡しへ迂回するかを選びましょう。北の守備隊は近づくと動きます。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
   '森と岩壁に隔てられた縦36マスの回廊。岩壁の切れ目のうち中央と北は森の門（移動コスト2）。晴れなら隣の回廊へ回り込めるが、雨で移動力が落ちると門で足が止まり、大雨では剣士隊以外の歩兵（盾・弓・砲兵・魔道・救護）は森に入れない。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。晴れのうちに次の守備線まで進み、大雨は止まって砲兵・魔術師のP3で支え、晴れたら押し返す。北の守備隊は森の門の前、守将は城門前に控え、城の上には弓兵1隊が残る。味方11隊・敵14隊。砲撃・増援なし。',
   '縦44マスの三段の長期戦。①南の河：北岸の盾・剣・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前、城の上には弓兵1隊。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵16隊。'
  ][id-3];
