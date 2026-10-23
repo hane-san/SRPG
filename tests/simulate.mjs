@@ -32,7 +32,7 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
    let goal=s.map.goal;
    // Issue #66: compare the same roster/score on a deliberately chosen map04
    // crossing. Both rivers must actually be crossed on that side.
-   if(mapId===3&&['west','central','east'].includes(policy)&&u.y>=12)goal={x:{west:2,central:6,east:9}[policy],y:u.y>=25?24:11};
+   if(mapId===3&&['west','central','east'].includes(policy)&&u.y>=12)goal={x:{west:2,central:6,east:10}[policy],y:u.y>=25?24:11};
    if(mapId===0&&['west','central'].includes(policy)&&u.y>=10)goal={x:policy==='west'?3:6,y:9};
    if(policy==='detour'&&s.turn===2&&!sortie)goal={x:1,y:s.map.camp.y};
    if(policy==='base'&&u.type==='shield')goal=s.map.base||s.map.camp;

@@ -1,5 +1,5 @@
 {
-  "source": "Issue #66 approved prototype from a6a84fc",
+  "source": "Issue #66 revised prototype from a6a84fc; keep existing production cautious test",
   "map": {
     "id": 3,
     "w": 12,
@@ -89,7 +89,7 @@
         "name": "襲撃騎兵",
         "type": "horse",
         "x": 9,
-        "y": 22,
+        "y": 21,
         "ai": "hold"
       },
       {

@@ -34,9 +34,11 @@ test('map04 second trial keeps all terrain, bridge topology and IDs; two guards 
 test('map04 staggered defenders turn opening concentration into readable river fighting',()=>{
  const prior=originalMap();
  const original=play(3,'advance',{},34,[],prior).result;
- const next=play(3,'advance',{},34,[],approvedStage).result;
- const careful=play(3,'cautious',{},34,[],approvedStage).result;
- const fast=play(3,'fast',{},34,[],approvedStage).result;
+ // The historic comparison stays frozen, but all success/safety assertions
+ // below continue to run against the actual current production battlefield.
+ const next=play(3,'advance',{},34).result;
+ const careful=play(3,'cautious',{},34).result;
+ const fast=play(3,'fast',{},34).result;
  assert.equal(original.tactical.firstTurnEnemyAttacks,3);
  assert.equal(next.tactical.firstTurnEnemyAttacks,0,'player must be able to deploy before all guards collide');
  assert.equal(original.status,'timeout');
@@ -59,6 +61,6 @@ test('map04 previous v0.8 saves do not teleport enemies when guard homes change'
  assert.equal(restored.state.units.find(u=>u.id==='extra-3-0-0').y,29);
  assert.equal(restored.state.units.find(u=>u.id==='extra-3-0-3').y,27);
  assert.equal(restored.state.map.enemies[0].y,24);
- assert.equal(restored.state.map.enemies[3].y,22);
+ assert.equal(restored.state.map.enemies[3].y,21,'current #66 home; the saved horse remains at y27 above');
  assert.equal(restored.state.status,'playing');
 });

@@ -99,6 +99,9 @@ function extraMap(id){
  // These three guards hold their posts; the wider crossings must not turn into
  // a faster enemy pile-up. Other ten units keep the #58 formation and behaviour.
  if(id===3)for(const i of [0,1,3])enemies[i].ai='hold';
+ // One tile behind the former post leaves room to stage at the east exit,
+ // retaining a winning cautious advance as well as the faster flank.
+ if(id===3)enemies[3].y=21;
  // Issue #63: three stages — the south-river front (shield, sword, bow), the
  // centre around the south castle, then the north river and the castle garrison.
  if(id===5)[[7,27,'defend'],[6,17,'hold'],[2,26,'defend'],[7,25,'hold'],[3,21,'hold'],[7,21,'hold'],[11,20,'defend'],[8,18,'defend'],[3,10,'defend'],[7,12,'defend'],[10,11,'hold'],[7,6,'defend']].forEach(([x,y,ai],i)=>Object.assign(enemies[i],{x,y,ai}));
