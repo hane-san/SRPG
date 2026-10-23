@@ -4,6 +4,11 @@ function path(g,x,y0,y1,t='='){for(let y=y0;y<=y1;y++)g[y][x]=t;}
 function patch(g,x,y,w,h,t){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)g[j][i]=t;}
 // The first stronger captains teach attack 3; optional maps introduce elite 4.
 export const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵'}[type],type,x,y,ai,...(id==='boss'?{name:'守将',rank:'advanced'}:{})});
+// Owner rule (PR #62/#64, extended 2026-10-23): when the captain does not stand on the
+// north castle, one ordinary bow unit holds it, so skipping the captain still costs a fight.
+export function castleGarrison(enemies,goal){
+ return enemies.some(e=>e.x===goal.x&&e.y===goal.y)?[]:[enemy('castle-guard','bow',goal.x,goal.y,'hold')];
+}
 function makeMap(id){
  const w=[12,16,14][id],h=[20,30,26][id],g=row(w,h),cx=Math.floor(w/2);
  path(g,cx,1,h-2);
@@ -21,22 +26,29 @@ function makeMap(id){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
    path(g,13,1,28);path(g,7,1,28);for(let x=7;x<=13;x++)g[2][x]='=';
-   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',4,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',5,4,'defend'),enemy('e5','sword',7,25,'defend'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',7,2,'hold'),enemy('southguard','shield',7,28,'hold')];
+   enemies=[enemy('e1','sword',5,12,'skirmish'),enemy('e2','horse',2,6,'defend'),enemy('e3','bow',7,7,'defend'),enemy('e4','shield',4,3,'defend'),enemy('e5','sword',7,25,'defend'),enemy('e6','bow',6,27,'defend'),enemy('boss','shield',7,2,'hold'),enemy('southguard','shield',7,28,'hold'),enemy('e7','bow',13,4,'hold')];
+   // 2026-10-23 owner decision: a bow holds the top of the east road, so the flank still
+   // reaches the castle but costs time and risk instead of being the free fastest route.
    spawns=[{x:7,y:27}];
  } else {
    patch(g,0,13,w,2,'~');patch(g,4,13,2,2,'+');patch(g,10,13,2,2,'+');path(g,10,2,23);g[13][10]=g[14][10]='+';
    cannon={x:7,y:2};spawns=[{x:3,y:21}];g[18][6]='c';
-   enemies=[enemy('e1','sword',7,18,'hold'),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,10,'defend'),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',7,5,'defend'),enemy('boss','shield',7,1,'hold')];
+   // 2026-10-23 owner rule: the captain steps down to the gate and the castle keeps one garrison.
+   // e5 leaves the central road for the north-west flank so a single-file advance no longer jams on it;
+   // e3 waits further north on the east road, so the east bridge is an open but unsupported rush lane.
+   enemies=[enemy('e1','sword',7,18,'hold'),enemy('e2','bow',5,11,'defend'),enemy('e3','sword',10,8,'defend'),enemy('e4','mage',7,7,'defend'),enemy('e5','shield',5,3,'defend'),enemy('boss','shield',7,2,'hold')];
  }
  if(id<2)enemies=enemies.map(e=>e.id==='boss'?{...e,rank:'lower'}:e);
  const goal={x:id===1?8:cx,y:1};g[goal.y][goal.x]='c';if(base)g[base.y][base.x]='c';if(south)g[south.y][south.x]='c';
+ // Owner rule (2026-10-23): a castle the captain does not stand on still keeps one ordinary garrison.
+ enemies.push(...castleGarrison(enemies,goal));
  return {id,w,h,maxWaves:id===2?2:id===1?3:null,tiles:g.map(r=>r.join('')),goal,base,camp:base||{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,enemies,
   title:['01 霧河の渡し','02 二つの戦線','03 灰城の砲火'][id],
   subtitle:['正面突破 / 12 × 20','南北挟撃・東側機動 / 16 × 30','予告増援・城砲撃 / 14 × 26'][id],
   briefing:[
    '北の城を制圧。西の広い渡しは見通しのよい迂回路。中央の橋は近道ですが、向こう岸の弓の射程を確かめましょう。盾で受け、剣と弓を続けて動かすと守備を崩せます。魔術師の回復は動かず待機したP3だけ。',
-   '中央の青砦を守り、北城を制圧。守将は城門前に控え、北西の守備隊は街道を押さえる。正面から守備を崩すか、東の道から城へ回り込むか。本陣を空にすると南城からT4・8・12に来る増援に奪われるため、後衛を残す判断が重要。南城制圧で増援は停止する。',
-   '北城を制圧。中継砦の剣は定位置、東の剣は橋の北岸を守ります。先に砦を確保するか、東の橋へ急ぐか。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。予告マスから退避して進軍しましょう。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
+   '中央の青砦を守り、北城を制圧。守将は城門前に控え、城の上には弓兵1隊が残る。北西の守備隊は街道を押さえ、東の道の奥にも弓兵が構える。正面から守備を崩すか、東の道から城へ回り込むか。本陣を空にすると南城からT4・8・12に来る増援に奪われるため、後衛を残す判断が重要。南城制圧で増援は停止する。',
+   '北城を制圧。守将は城門前に控え、城の上には弓兵1隊が残ります。中継砦の剣は定位置、北西の盾は城への街道脇、東の剣は東街道の奥で待ち構えます。中央を押し上げるか、東の橋から一気に城へ回り込むか（東は守りが薄い分、本隊や回復役から離れます）。砲撃はT2に予告、T3のP4に着弾し以後3ターンごと。予告マスから退避して進軍しましょう。増援はT4・T8のP4に各1隊、前ターンに位置確報。出現直後には攻撃しません。北城を取れば砲撃も止まります。'
   ][id]};
 }
 // Optional battlefields; only the original three chapters belong to the campaign.
@@ -88,7 +100,7 @@ function extraMap(id){
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
  // Owner rule (PR #62/#64, 2026-10-23): where the captain is not on the castle, one ordinary
  // garrison unit holds the castle tile, so skipping the captain still costs one fight.
- if([4,5].includes(id))enemies.push(enemy('castle-guard','bow',goal.x,goal.y,'hold'));
+ enemies.push(...castleGarrison(enemies,goal));
  // More troops without introducing a new class, resource or campaign roster.
  const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];

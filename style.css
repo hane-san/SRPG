@@ -375,3 +375,7 @@ a{color:#e4c8f0}
 #thumbSideToggle[aria-pressed="true"]{background:#66516c;border-color:#ccb19b;color:#fff4e8}
 @media(max-width:340px){#commandHint .route-risk{font-size:11px}#commandHint{gap:3px;padding-block:6px}}
 @media(prefers-reduced-motion:reduce){#app[data-thumb="left"] #moveUndo,#app[data-thumb="left"] .map-tools{transition:none}}
+/* Off-screen announced cells: the banner names it and a tap pans there; height stays within the existing 72px cap. */
+#forecast[data-jump="1"]{cursor:pointer}
+#forecast .forecast-jump{display:inline-block;margin-left:8px;padding:0 6px;border:1px solid currentColor;border-radius:4px;font-size:12px;font-weight:800;white-space:nowrap}
+#forecast .forecast-jump::before{content:"◎ "}

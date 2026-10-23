@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedThreat} from '../tactical-ui.js';
+import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedThreat,warningFocus} from '../tactical-ui.js';
 import * as E from '../engine.js';
 
 test('P2 reaches are *approximate*: thresholds and labels never promise certain damage',()=>{
@@ -57,4 +57,19 @@ test('indexed armour and HP changes affect resulting damage without rebuilding e
  const p={x:tile.x,y:tile.y},without=indexedThreat(state,index,u,p,E);
  const armoured=indexedThreat(state,index,{...u,def:Math.max(1,u.def+3)},p,E);
  assert(armoured<=without,'changing only defence does not need a new reach field');
+});
+
+test('warningFocus centres the most urgent announced cells and reports when they leave the view',()=>{
+ assert.equal(warningFocus([]),null);assert.equal(warningFocus(null),null);
+ const cannon={kind:'cannon',turn:6,cells:[{x:6,y:22},{x:6,y:21},{x:5,y:22},{x:7,y:22},{x:6,y:23}]};
+ const spawn={kind:'spawn',turn:4,cells:[{x:3,y:21}]};
+ // Cannon takes priority over an earlier reinforcement notice; the centre is in tile units (cell centre = x+0.5).
+ assert.deepEqual(warningFocus([spawn,cannon]),{kind:'cannon',turn:6,x:6.5,y:22.5,offscreen:false});
+ assert.deepEqual(warningFocus([spawn]),{kind:'spawn',turn:4,x:3.5,y:21.5,offscreen:false});
+ const top={x0:0,x1:14,y0:0,y1:12},bottom={x0:0,x1:14,y0:14,y1:26};
+ assert.equal(warningFocus([cannon],top).offscreen,true,'north view cannot see the southern barrage');
+ assert.equal(warningFocus([cannon],bottom).offscreen,false);
+ assert.equal(warningFocus([cannon],{x0:0,x1:14,y0:14,y1:23}).offscreen,true,'a partly visible ring still counts as off-screen');
+ // Pure: it never mutates the state's warning list.
+ const list=[spawn,cannon],copy=structuredClone(list);warningFocus(list,top);assert.deepEqual(list,copy);
 });
