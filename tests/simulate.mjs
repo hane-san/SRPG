@@ -17,6 +17,8 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
   // Issue #29: everyone starts in the castle reserve. Sortie candidates are planned
   // from the castle and committed through deployAndAct, exactly like the UI.
   const bench=E.reserves(s).filter(u=>policy!=='basic'||E.canNormalAttack(u));if(policy==='fast')bench.sort((a,b)=>['horse','sword','bow','shield','mage','healer','medic','shooter'].indexOf(a.type)-['horse','sword','bow','shield','mage','healer','medic','shooter'].indexOf(b.type)||a.id.localeCompare(b.id));
+  // Issue #63: a front line with artillery/medics early (shield, sword, shooter, mage first).
+  if(policy==='line')bench.sort((a,b)=>['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(a.type)-['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(b.type)||a.id.localeCompare(b.id));
   // Issue #61: weather-reading map05 trial — front line and support units first.
   if(policy==='rain')bench.sort((a,b)=>['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(a.type)-['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(b.type)||a.id.localeCompare(b.id));
   const sortied=[];for(const r of bench.slice(0,Math.max(0,E.deploymentLimit(s)-s.deployedThisTurn)))if(E.canDeploy(s)&&E.sortieUnit(s,r.id))sortied.push(r.id);
@@ -33,7 +35,7 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
    if(policy==='base'&&u.type==='shield')goal=s.map.base||s.map.camp;
    if(policy==='east'&&mapId===1&&['horse','sword'].includes(u.type)&&u.y>3)goal={x:13,y:Math.max(2,u.y-5)};
    if(policy==='east'&&mapId===4&&u.y>3&&!['healer','medic'].includes(u.type))goal={x:11,y:Math.max(2,u.y-5)};
-   if(policy==='south'&&mapId===1&&!s.southTaken)goal=s.map.south;
+   if(policy==='south'&&[1,5].includes(mapId)&&s.map.south&&!s.southTaken)goal=s.map.south;
    if(policy!=='offense'&&mapId===1&&['shield','bow','healer','medic'].includes(u.type)){
     const attackers=E.alive(s,'enemy').filter(e=>e.y>17);if(attackers.length)goal=s.map.base;
    }
@@ -63,5 +65,5 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
  const result={map:mapId+1,policy,healing:s.settings.healing,status:s.status==='playing'?'timeout':s.status,turn:s.turn,alive:E.alive(s,'ally').length,southTaken:s.southTaken,reachedEast,firstCombatTurn,combatTurns:combatTurns.size,hits,heals,movementSteps,...s.metrics};
  result.tactical=telemetry.summary(s);return {s,result,trace:telemetry.turns};
 }
-if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===0?['pause','fast']:[]),...(id===1?['east','south','garrison']:[]),...([1,5].includes(id)?['base','offense']:[]),...(id===4?['fast','rain','east']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
+if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===0?['pause','fast']:[]),...(id===1?['east','south','garrison']:[]),...([1,5].includes(id)?['base','offense']:[]),...(id===4?['fast','rain','east']:[]),...(id===5?['fast','south','line']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
 
