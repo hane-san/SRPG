@@ -11,7 +11,7 @@ import {play} from './simulate.mjs';
 const historical=JSON.parse(readFileSync(new URL('./fixtures/issue17-enemies-before.json',import.meta.url))).terrain[5];
 const OLD=[[7,32,'defend'],[6,31,'defend'],[2,33,'advance'],[11,32,'defend'],[7,24,'defend'],[6,23,'defend'],[2,23,'defend'],[11,22,'defend'],[7,10,'advance'],[2,9,'defend'],[11,8,'defend'],[7,6,'defend'],[7,1,'hold']];
 const previous=()=>{
- const m=structuredClone(MAPS[5]);m.tiles=[...historical];m.south=null;m.spawns=[{x:2,y:20},{x:11,y:9}];
+ const m=structuredClone(MAPS[5]);m.enemies=m.enemies.filter(e=>e.id!=='castle-guard');m.tiles=[...historical];m.south=null;m.spawns=[{x:2,y:20},{x:11,y:9}];
  m.enemies=m.enemies.map((e,i)=>OLD[i]?{...e,x:OLD[i][0],y:OLD[i][1],ai:OLD[i][2]}:e);return m;
 };
 const passable=t=>Number.isFinite(TERRAINS[t].cost);
@@ -19,8 +19,8 @@ const passable=t=>Number.isFinite(TERRAINS[t].cost);
 test('06 keeps size, castles, rules and IDs; only opens fords and adds the south castle post',()=>{
  const m=MAPS[5],old=previous();
  assert.deepEqual([m.w,m.h,m.goal,m.camp,m.cannon,m.maxWaves],[14,44,{x:7,y:1},{x:7,y:37},{x:7,y:2},2]);
- assert.deepEqual(m.enemies.map(e=>[e.id,e.type]),old.enemies.map(e=>[e.id,e.type]));
- assert.equal(m.enemies.length,15);assert.equal(m.extraAllies.length,4);
+ assert.deepEqual(m.enemies.filter(e=>e.id!=='castle-guard').map(e=>[e.id,e.type]),old.enemies.map(e=>[e.id,e.type]));
+ assert.equal(old.enemies.length,15);assert.equal(m.enemies.length,16,'15 old enemies + the castle garrison');assert.equal(m.extraAllies.length,4);
  for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++){
   if(passable(old.tiles[y][x]))assert(passable(m.tiles[y][x]),`${x},${y} must stay passable`);
   if(m.tiles[y][x]!==old.tiles[y][x])assert(m.tiles[y][x]==='+'&&old.tiles[y][x]==='~'||x===2&&y===21&&m.tiles[y][x]==='c',`${x},${y} unexpected change`);
@@ -54,7 +54,8 @@ test('06 reinforcements are announced on visible flags before they arrive and st
 });
 
 test('06 old v0.8 saves keep positions, HP and announced warnings',()=>{
- const s=E.createGame(5),old=previous();
+ // An old save has no castle-guard unit: it was written before the garrison existed.
+ const s=E.createGame(5),old=previous();s.units=s.units.filter(u=>u.id!=='castle-guard');
  for(const e of old.enemies){const u=s.units.find(u=>u.id===e.id);Object.assign(u,{x:e.x,y:e.y,ai:e.ai});}
  const a1=s.units.find(u=>u.id==='a1');Object.assign(a1,{deployed:true,x:7,y:33,hp:4});
  s.turn=3;s.warnings=[{kind:'spawn',turn:4,cells:[{x:2,y:20},{x:11,y:9}]},{kind:'cannon',turn:3,cells:[{x:7,y:33}]}];
@@ -63,4 +64,31 @@ test('06 old v0.8 saves keep positions, HP and announced warnings',()=>{
  const restored=readSave(storage,'0.8.0',MAPS);assert(restored);
  assert.deepEqual(restored.state.units,s.units);assert.deepEqual(restored.state.warnings,s.warnings);
  assert.deepEqual(restored.state.map.south,{x:2,y:21});assert.equal(restored.state.status,'playing');
+ // The in-progress battle keeps its saved roster (no garrison is injected); new battles get it.
+ assert(!restored.state.units.some(u=>u.id==='castle-guard'));
+ assert(E.createGame(5).units.some(u=>u.id==='castle-guard'&&u.x===7&&u.y===1&&u.alive));
+});
+
+// Owner decision on PR #62/#64 (2026-10-23): where the captain is not on the castle, one
+// ordinary garrison unit sits on it, so skipping the captain still costs one fight. Without
+// it two horses rode straight up the centre past the static guards and took the castle on T7
+// with no combat at all.
+function noFightRaid(lane,riders){
+ const s=E.createGame(5);
+ const step=(u,sortie)=>{const goal=lane===null||u.y<=1?s.map.goal:{x:lane,y:1};const f=E.distanceField(s,goal,'ally'),fg=E.distanceField(s,s.map.goal,'ally');
+  const ps=E.reachable(s,u).filter(p=>!sortie||E.dist(p,u)>0).sort((a,b)=>Number(fg.get(E.key(b))===0)-Number(fg.get(E.key(a))===0)||f.get(E.key(a))-f.get(E.key(b))||a.y-b.y||a.x-b.x);
+  return sortie?E.deployAndAct(s,u.id,ps[0],'wait'):E.act(s,u.id,ps[0],'wait');};
+ while(s.status==='playing'&&s.turn<=12){
+  for(const u of E.alive(s,'ally'))if(!u.acted&&s.status==='playing')step(u,false);
+  for(const r of E.reserves(s).filter(u=>u.type==='horse')){if(E.alive(s,'ally').length>=riders||!E.canDeploy(s)||s.status!=='playing')break;step(E.sortieUnit(s,r.id),true);}
+  if(s.status!=='playing')break;E.endTurn(s);
+ }
+ return s;
+}
+test('06 castle is garrisoned: horses that never fight cannot ride in and take it',()=>{
+ const m=MAPS[5],guard=m.enemies.find(e=>e.x===m.goal.x&&e.y===m.goal.y);
+ assert(guard,'one enemy stands on the castle tile');
+ assert.equal(guard.id,'castle-guard');assert.equal(guard.ai,'hold');assert.notEqual(guard.rank,'advanced');
+ const boss=m.enemies.find(e=>e.id==='boss');assert.deepEqual([boss.x,boss.y],[7,2],'the captain still holds the gate');
+ for(const lane of [null,0,1,12,13])for(const riders of [1,2,3])assert.notEqual(noFightRaid(lane,riders).status,'victory',`lane ${lane} × ${riders}`);
 });

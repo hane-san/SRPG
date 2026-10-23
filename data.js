@@ -80,13 +80,16 @@ function extraMap(id){
  // Map 06's captain holds the gate in front of the castle (Issue #63), like map 02.
  enemies.push(enemy('boss','shield',cx,id===5?2:1,'hold'));
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
+ // Owner rule (PR #62/#64, 2026-10-23): where the captain is not on the castle, one ordinary
+ // garrison unit holds the castle tile, so skipping the captain still costs one fight.
+ if(id===5)enemies.push(enemy('castle-guard','bow',goal.x,goal.y,'hold'));
  // More troops without introducing a new class, resource or campaign roster.
  const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
   '縦40マスの河川戦。二本の川を各三つの橋で越え、北城へ。最初の川の手前には剣と弓、対岸には橋を見張る盾と騎兵が待機。どの橋を渡るか、後続をどこに集めるかを選びましょう。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
   '森と岩壁に隔てられた縦36マスの回廊。三か所の横道で部隊を合流できる。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。守備隊を弓で崩すか、左右から包むか。味方11隊・敵13隊。砲撃・増援なし。',
-  '縦44マスの三段の長期戦。①南の河：北岸の盾・剣・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵15隊。'
+  '縦44マスの三段の長期戦。①南の河：北岸の盾・剣・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前、城の上には弓兵1隊。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵16隊。'
  ][id-3];
  return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,camp:{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
 }

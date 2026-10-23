@@ -1,5 +1,5 @@
 {
- "source": "Issue #63, base main 74ca3b3, tests/simulate.mjs play(), 35-turn cap",
+ "source": "Issue #63, base main 74ca3b3, tests/simulate.mjs play(), 35-turn cap; after = PR #64 incl. owner-approved castle garrison (castle-guard bow at 7,1)",
  "policies": {
   "advance": {
    "before": {
@@ -61,8 +61,6 @@
      10,
      16,
      25,
-     26,
-     27,
      28
     ],
     "p3Effects": 3,
@@ -122,8 +120,7 @@
      "a9@T21"
     ],
     "noCombatTurns": [
-     1,
-     16
+     1
     ],
     "p3Effects": 1,
     "firstTurnEnemyAttacks": 0,
@@ -359,8 +356,6 @@
      10,
      16,
      25,
-     26,
-     27,
      28
     ],
     "p3Effects": 3,
@@ -420,15 +415,14 @@
    "after": {
     "status": "victory",
     "turn": 23,
-    "commands": 105,
+    "commands": 106,
     "allyDeaths": [
      "a6@T9",
      "a2@T9",
      "a3@T11",
      "aux-bow@T14",
      "a1@T18",
-     "aux-horse@T20",
-     "a7@T22"
+     "aux-horse@T20"
     ],
     "noCombatTurns": [
      12
@@ -485,20 +479,20 @@
    },
    "after": {
     "status": "victory",
-    "turn": 18,
-    "commands": 82,
+    "turn": 21,
+    "commands": 96,
     "allyDeaths": [],
     "noCombatTurns": [
      1,
      11
     ],
-    "p3Effects": 2,
+    "p3Effects": 3,
     "firstTurnEnemyAttacks": 0,
     "firstCombatTurn": 2,
     "southTaken": true,
     "reinforcementsArrived": 3,
-    "warnedAllyTurns": 8,
-    "escapedBeforeImpact": 6,
+    "warnedAllyTurns": 10,
+    "escapedBeforeImpact": 7,
     "allyCannonHitEvents": 1
    }
   },
@@ -543,25 +537,26 @@
    },
    "after": {
     "status": "victory",
-    "turn": 13,
-    "commands": 57,
+    "turn": 15,
+    "commands": 67,
     "allyDeaths": [
      "a2@T6",
      "aux-shield@T8",
      "a4@T10",
      "a9@T11",
-     "a1@T12"
+     "a1@T12",
+     "a7@T13"
     ],
     "noCombatTurns": [
      1,
-     13
+     15
     ],
     "p3Effects": 0,
     "firstTurnEnemyAttacks": 0,
     "firstCombatTurn": 2,
     "southTaken": false,
     "reinforcementsArrived": 4,
-    "warnedAllyTurns": 6,
+    "warnedAllyTurns": 7,
     "escapedBeforeImpact": 6,
     "allyCannonHitEvents": 0
    }
@@ -606,8 +601,8 @@
    },
    "after": {
     "status": "victory",
-    "turn": 32,
-    "commands": 145,
+    "turn": 35,
+    "commands": 160,
     "allyDeaths": [
      "a3@T7",
      "a1@T8",
@@ -629,15 +624,15 @@
      26,
      27,
      28,
-     32
+     35
     ],
     "p3Effects": 1,
     "firstTurnEnemyAttacks": 0,
     "firstCombatTurn": 2,
     "southTaken": false,
     "reinforcementsArrived": 4,
-    "warnedAllyTurns": 15,
-    "escapedBeforeImpact": 15,
+    "warnedAllyTurns": 16,
+    "escapedBeforeImpact": 16,
     "allyCannonHitEvents": 0
    }
   },
@@ -840,7 +835,6 @@
      13,
      14,
      15,
-     23,
      26
     ],
     "p3Effects": 0,
@@ -936,23 +930,23 @@
    },
    "after": {
     "status": "victory",
-    "turn": 15,
-    "commands": 66,
+    "turn": 18,
+    "commands": 81,
     "allyDeaths": [
      "a2@T5",
      "a3@T6"
     ],
     "noCombatTurns": [
      1,
-     15
+     18
     ],
     "p3Effects": 0,
     "firstTurnEnemyAttacks": 0,
     "firstCombatTurn": 2,
     "southTaken": false,
     "reinforcementsArrived": 4,
-    "warnedAllyTurns": 8,
-    "escapedBeforeImpact": 6,
+    "warnedAllyTurns": 10,
+    "escapedBeforeImpact": 8,
     "allyCannonHitEvents": 0
    }
   },
@@ -985,8 +979,8 @@
    },
    "after": {
     "status": "victory",
-    "turn": 14,
-    "commands": 61,
+    "turn": 19,
+    "commands": 86,
     "allyDeaths": [
      "a2@T8",
      "a1@T11"
@@ -999,8 +993,8 @@
     "firstCombatTurn": 2,
     "southTaken": true,
     "reinforcementsArrived": 2,
-    "warnedAllyTurns": 4,
-    "escapedBeforeImpact": 4,
+    "warnedAllyTurns": 7,
+    "escapedBeforeImpact": 7,
     "allyCannonHitEvents": 0
    }
   },
@@ -1033,17 +1027,16 @@
    "after": {
     "status": "victory",
     "turn": 17,
-    "commands": 77,
+    "commands": 78,
     "allyDeaths": [
      "aux-shield@T6",
      "a1@T10",
      "a2@T10",
-     "a9@T13"
+     "a9@T14"
     ],
     "noCombatTurns": [
      1,
-     8,
-     17
+     8
     ],
     "p3Effects": 0,
     "firstTurnEnemyAttacks": 0,
