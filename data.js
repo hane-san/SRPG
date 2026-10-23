@@ -44,7 +44,7 @@ function extraMap(id){
  const w=[12,16,14][id-3],h=[40,36,44][id-3],g=row(w,h),cx=Math.floor(w/2);
  path(g,cx,1,h-2);path(g,2,2,h-3);path(g,w-3,2,h-3);
  for(let y=5;y<h-4;y+=6){for(let x=2;x<=w-3;x++)g[y][x]='=';patch(g,3,y-2,2,2,'f');patch(g,w-5,y+1,2,2,'f');}
- const goal={x:cx,y:1},base=null,south=null;let spawns=[],cannon=null;
+ const goal={x:cx,y:1},base=null;let south=null,spawns=[],cannon=null;
  if(id===3){
   for(const y of [12,25]){patch(g,0,y,w,2,'~');for(const x of [2,cx,w-3])patch(g,x,y,1,2,'+');}
   for(const y of [8,20,31]){g[y][cx]='c';g[y][1]='v';}
@@ -55,6 +55,11 @@ function extraMap(id){
   for(const y of [14,29]){patch(g,0,y,w,2,'~');for(const x of [2,cx,w-3])patch(g,x,y,1,2,'+');}
   for(const y of [8,22,36]){g[y][cx]='c';g[y][1]='v';}
   cannon={x:cx,y:2};spawns=[{x:2,y:20},{x:w-3,y:9}];
+  // Issue #63: three-wide central fords and wider flank fords so one enemy can
+  // no longer plug a river (water only opens). The south castle (2,21) is the
+  // reinforcement post: its flags sit beside it and taking it stops later waves.
+  for(const y of [14,29]){patch(g,1,y,3,2,'+');patch(g,cx-1,y,3,2,'+');patch(g,w-3,y,2,2,'+');}
+  south={x:2,y:21};g[south.y][south.x]='c';spawns=[{x:2,y:22},{x:3,y:22}];
  }
  g[goal.y][goal.x]='c';
  // Each front has a purpose: screen, ranged cover, flank, then a guarded approach.
@@ -69,7 +74,11 @@ function extraMap(id){
  // Issue #38 second slice: defend the far bank instead of rushing the castle
  // on T1. Mutate specs after stamping their original cells to preserve all tiles.
  if(id===3){Object.assign(enemies[0],{y:24,ai:'defend'});Object.assign(enemies[3],{y:22,ai:'defend'});}
- enemies.push(enemy('boss','shield',cx,1,'hold'));
+ // Issue #63: three stages — the south-river front (shield, sword, bow), the
+ // centre around the south castle, then the north river and the castle garrison.
+ if(id===5)[[7,27,'defend'],[6,17,'hold'],[2,26,'defend'],[7,25,'hold'],[3,21,'hold'],[7,21,'hold'],[11,20,'defend'],[8,18,'defend'],[3,10,'defend'],[7,12,'defend'],[10,11,'hold'],[7,6,'defend']].forEach(([x,y,ai],i)=>Object.assign(enemies[i],{x,y,ai}));
+ // Map 06's captain holds the gate in front of the castle (Issue #63), like map 02.
+ enemies.push(enemy('boss','shield',cx,id===5?2:1,'hold'));
  if(id===5){enemies.push(enemy('tower-west','bow',3,3,'hold'),enemy('tower-east','mage',w-4,3,'hold'));}
  // More troops without introducing a new class, resource or campaign roster.
  const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
@@ -77,7 +86,7 @@ function extraMap(id){
  const briefing=[
   '縦40マスの河川戦。二本の川を各三つの橋で越え、北城へ。最初の川の手前には剣と弓、対岸には橋を見張る盾と騎兵が待機。どの橋を渡るか、後続をどこに集めるかを選びましょう。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
   '森と岩壁に隔てられた縦36マスの回廊。三か所の横道で部隊を合流できる。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。守備隊を弓で崩すか、左右から包むか。味方11隊・敵13隊。砲撃・増援なし。',
-  '縦44マスの長期戦。二つの渡河線と三つの砦を越えて北城へ。味方13隊・敵15隊。砲撃はT2予告・T3着弾、以後3ターンごと。T4・T8に各2隊の有限増援、前ターンに予告し到着直後は攻撃しない。'
+  '縦44マスの三段の長期戦。①南の河：北岸の盾・剣・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵15隊。'
  ][id-3];
  return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,camp:{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
 }
