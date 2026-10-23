@@ -1,14 +1,14 @@
-import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedThreat} from './tactical-ui.js?v=0.8.0-ui55';
+import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedThreat,warningFocus} from './tactical-ui.js?v=0.8.0-ui55-warnjump';
 import {hudSignals,routeIntent} from './ui-hud.js?v=0.8.0-hud50';
 import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
 import {appendChapter,chronicleLines} from './chronicle.js?v=0.8.0-war43';
 import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26-sortie29';
-import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61';
-import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61';
-import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28-flick35-fx39-weapon48-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61';
+import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61-garrison23';
+import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61-garrison23';
+import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28-flick35-fx39-weapon48-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61-garrison23';
 import {bindMapInput,createHoldLock} from './ui-input.js?v=0.8.0-issue24';
 import {readSave,writeSave} from './save.js?v=0.8.0-p3-26-save37-war43';
-import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61';
+import {attackTargets,battleForecast,nextReady,slideDraft,routeSummary} from './ui-model.js?v=0.8.0-position22-p3-26-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m05rain61-garrison23';
 import {createAudio} from './audio.js?v=0.8.0-issue17-sortie29-issue24-gems28-flick35-weapon48';
 import {createMusic,buildTrack,SCORES,BONUS_SCORES,MUSIC_LIBRARY,trackNumber,assignedTrackNumber,trackByNumber} from './music.js?v=0.8.0-library42';
 import {createPlayback} from './playback.js?v=0.8.0-issue17-sortie29-gems28-flick35-fx39-weapon48';
@@ -58,13 +58,17 @@ function center(){return {x:(vp.scrollLeft+vp.clientWidth/2)/view.tile,y:(vp.scr
 function recenter(p){vp.scrollLeft=p.x*view.tile-vp.clientWidth/2;vp.scrollTop=p.y*view.tile-vp.clientHeight/2;}
 function fit(){lastSize={w:vp.clientWidth,h:vp.clientHeight};view.tile=Math.max(20,Math.floor(vp.clientWidth/s.map.w))*[1,1.4,1.9][zoom];$('zoomLabel').textContent=['全幅','×1.4','×1.9'][zoom];}
 function draw(){render(canvas,s,view);mini($('minimap'),s,vp,view.tile);}
+// Announced cells can sit outside a phone viewport: the banner says so and a tap pans there (explicit navigation, no rule effect).
+function visibleTiles(){const f=$('forecast'),top=f&&!f.hidden?f.offsetHeight:0;return {x0:vp.scrollLeft/view.tile,x1:(vp.scrollLeft+vp.clientWidth)/view.tile,y0:(vp.scrollTop+top)/view.tile,y1:(vp.scrollTop+vp.clientHeight)/view.tile};}
+function updateWarningJump(){const f=$('forecast');if(!f)return;const focus=f.hidden?null:warningFocus(s.warnings,visibleTiles());f.dataset.jump=focus?'1':'';let hint=f.querySelector('.forecast-jump');if(focus?.offscreen){if(!hint){hint=document.createElement('span');hint.className='forecast-jump';f.append(hint);}hint.textContent=focus.kind==='cannon'?'照準は画面外 · タップで表示':'予告マスは画面外 · タップで表示';}else hint?.remove();}
+function jumpToWarning(){if(locked||view.dragging)return;const focus=warningFocus(s.warnings);if(!focus)return;recenter(focus);draw();updateWarningJump();}
 function refresh(){
  music.setScene(s.map.id,s.phase,s.status);
  $('turn').textContent=`T${s.turn}`;$('phaseName').textContent=s.status==='victory'?'勝利':s.status==='defeat'?'敗北':['','味方','敵軍','支援','戦場'][s.phase];
  $('objective').textContent=s.map.base?'北城制圧 / 本陣死守':'北城制圧';
  const weather=s.map.weatherCycle?`T${s.turn} ${E.WEATHER[E.weatherAt(s)].label} → T${s.turn+1} ${E.WEATHER[E.weatherAt(s,s.turn+1)].label} · 歩兵−${E.WEATHER[E.weatherAt(s)].foot}/騎兵−${E.WEATHER[E.weatherAt(s)].horse}（最低1）`:'';
  const warning=[weather,s.warnings.map(w=>`T${w.turn} ${w.kind==='cannon'?`終了時：赤枠に砲撃 −${RULES.barrageDamage}`:'終了時：紫枠に増援'}`).join(' ／ ')].filter(Boolean).join(' ／ ');
- $('forecast').hidden=!warning;$('forecast').textContent=warning;
+ $('forecast').hidden=!warning;$('forecast').textContent=warning;updateWarningJump();
  const signals=hudSignals(s),rail=$('phaseRail');
  rail.dataset.phase=String(signals.active);
  for(const [index,tile] of [...rail.children].entries()){
@@ -307,7 +311,7 @@ $('dangerBtn').onclick=()=>{view.danger=!view.danger;refresh();};
 function setZoom(z){const p=center();zoom=Math.max(0,Math.min(2,z));fit();draw();recenter(p);}
 $('zoomIn').onclick=()=>setZoom(zoom+1);$('zoomOut').onclick=()=>setZoom(zoom-1);
 function home(){const friends=E.alive(s,'ally'),a=selected()?.team==='ally'?selected():friends.find(u=>!u.acted)||friends[0],p=a||s.map.camp;if(p){recenter({x:p.x+.5,y:p.y+.5});mini($('minimap'),s,vp,view.tile);}}
-$('homeBtn').onclick=home;let miniFrame=null;vp.addEventListener('scroll',()=>{if(miniFrame===null)miniFrame=requestAnimationFrame(()=>{miniFrame=null;mini($('minimap'),s,vp,view.tile);placeOrders();});},{passive:true});
+$('homeBtn').onclick=home;$('forecast').onclick=jumpToWarning;let miniFrame=null;vp.addEventListener('scroll',()=>{if(miniFrame===null)miniFrame=requestAnimationFrame(()=>{miniFrame=null;mini($('minimap'),s,vp,view.tile);placeOrders();updateWarningJump();});},{passive:true});
 function nextUnit(){const u=nextReady(s,view.selected);if(!u)return;selectUnit(u,true);recenter({x:u.x+.5,y:u.y+.5});draw();vp.focus({preventScroll:true});}
 $('nextUnit').onclick=nextUnit;
 // Keyboard navigation is explicit camera navigation, like the minimap or roster.

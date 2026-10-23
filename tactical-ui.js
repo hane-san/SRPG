@@ -12,6 +12,18 @@ export function riskCue(risk,availableHp,{cannon=false}={}){
 export function hasAnnouncedCannon(warnings,position){
  return Array.isArray(warnings)&&warnings.some(w=>w.kind==='cannon'&&Array.isArray(w.cells)&&w.cells.some(p=>p.x===position?.x&&p.y===position?.y));
 }
+// Phones can scroll an announced barrage (or reinforcement) out of view. Return the
+// tile-unit centre of the most urgent warning (cannon first, earliest turn) and
+// whether any of its cells lies outside the visible tile rectangle.
+export function warningFocus(warnings,visible=null){
+ const list=(Array.isArray(warnings)?warnings:[]).filter(w=>Array.isArray(w?.cells)&&w.cells.length);
+ const byTurn=(a,b)=>(a.turn??0)-(b.turn??0);
+ const w=list.filter(w=>w.kind==='cannon').sort(byTurn)[0]||[...list].sort(byTurn)[0];
+ if(!w)return null;
+ const xs=w.cells.map(p=>p.x),ys=w.cells.map(p=>p.y);
+ const offscreen=!!visible&&w.cells.some(p=>p.x<visible.x0||p.x+1>visible.x1||p.y<visible.y0||p.y+1>visible.y1);
+ return {kind:w.kind,turn:w.turn,x:(Math.min(...xs)+Math.max(...xs)+1)/2,y:(Math.min(...ys)+Math.max(...ys)+1)/2,offscreen};
+}
 // Each change in displayed HP comes from an already-resolved combat event.
 // Never infer "raw attack" from final damage, and never animate extra gems for overkill.
 export function combatCue(event,beforeHP,afterHP,{def=0,guard=0,specialty=null,command=null}={}){

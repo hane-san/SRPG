@@ -37,6 +37,22 @@ try{
  assert((await page.locator('.route-risk').innerText()).includes('P4砲撃'));
  await t.touch('touchCancel',[]);
 
+ // Phones: an announced barrage can be off-screen. The banner says so and a tap pans
+ // there; the battle, the dock geometry and the command flow stay untouched.
+ const far=E.createGame(2);far.warnings=[{kind:'cannon',turn:3,cells:[{x:6,y:22},{x:6,y:21},{x:5,y:22},{x:7,y:22},{x:6,y:23}]}];
+ await t.reset(far);
+ await page.evaluate(()=>{document.getElementById('zoomIn').click();document.getElementById('zoomIn').click();});
+ await page.locator('#mapViewport').evaluate(e=>{e.scrollTop=0;e.scrollLeft=0;});
+ await page.waitForFunction(()=>!!document.querySelector('#forecast .forecast-jump'));
+ assert((await page.locator('#forecast .forecast-jump').innerText()).includes('タップで表示'));
+ const farState=await t.state(),farDock=await page.locator('#commandDock').boundingBox(),farCamera=await t.camera();
+ await page.locator('#forecast').click();
+ await page.waitForFunction(()=>!document.querySelector('#forecast .forecast-jump'));
+ assert.notDeepEqual(await t.camera(),farCamera,'tapping the banner pans toward the warned cells');
+ assert.deepEqual(await t.state(),farState,'panning to a warning never changes the battle');
+ assert.deepEqual(await page.locator('#commandDock').boundingBox(),farDock,'dock geometry is unchanged');
+ assert.equal(await page.locator('#modal').evaluate(m=>m.open),false,'no confirmation step is added');
+
  // Thumb choice persists separately from the actual saved battle. Under both
  // configurations neither side may move the underlying battlefield camera.
  await t.reset(initial);const camera=await t.camera();

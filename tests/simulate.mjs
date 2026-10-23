@@ -34,6 +34,8 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
    if(policy==='detour'&&s.turn===2&&!sortie)goal={x:1,y:s.map.camp.y};
    if(policy==='base'&&u.type==='shield')goal=s.map.base||s.map.camp;
    if(policy==='east'&&mapId===1&&['horse','sword'].includes(u.type)&&u.y>3)goal={x:13,y:Math.max(2,u.y-5)};
+   // Map 03 east-bridge rush: every non-medical unit takes the eastern road and bridge, then turns to the castle.
+   if(policy==='east'&&mapId===2&&!['healer','medic'].includes(u.type)&&u.y>3)goal={x:10,y:Math.max(2,u.y-5)};
    if(policy==='east'&&mapId===4&&u.y>3&&!['healer','medic'].includes(u.type))goal={x:11,y:Math.max(2,u.y-5)};
    if(policy==='south'&&[1,5].includes(mapId)&&s.map.south&&!s.southTaken)goal=s.map.south;
    if(policy!=='offense'&&mapId===1&&['shield','bow','healer','medic'].includes(u.type)){
@@ -65,5 +67,5 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
  const result={map:mapId+1,policy,healing:s.settings.healing,status:s.status==='playing'?'timeout':s.status,turn:s.turn,alive:E.alive(s,'ally').length,southTaken:s.southTaken,reachedEast,firstCombatTurn,combatTurns:combatTurns.size,hits,heals,movementSteps,...s.metrics};
  result.tactical=telemetry.summary(s);return {s,result,trace:telemetry.turns};
 }
-if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===0?['pause','fast']:[]),...(id===1?['east','south','garrison']:[]),...([1,5].includes(id)?['base','offense']:[]),...(id===4?['fast','rain','east']:[]),...(id===5?['fast','south','line']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
+if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===0?['pause','fast']:[]),...(id===1?['east','south','garrison']:[]),...(id===2?['fast','east']:[]),...([1,5].includes(id)?['base','offense']:[]),...(id===4?['fast','rain','east']:[]),...(id===5?['fast','south','line']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
 
