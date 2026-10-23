@@ -4,16 +4,21 @@ import {MAPS} from '../data.js';
 import * as E from '../engine.js';
 import {readSave,writeSave} from '../save.js';
 import {play} from './simulate.mjs';
+import {readFileSync} from 'node:fs';
+
+// Preserve #58's exact historical experiment after the separately adopted #66
+// terrain/AI revision. Production #66 has its own strict fixture and tests.
+const approvedStage=JSON.parse(readFileSync(new URL('./fixtures/map04-before-66.json',import.meta.url))).map;
 
 const originalMap=()=>{
- const m=structuredClone(MAPS[3]);
+ const m=structuredClone(approvedStage);
  Object.assign(m.enemies[0],{y:29,ai:'advance'});
  Object.assign(m.enemies[3],{y:27,ai:'advance'});
  return m;
 };
 
 test('map04 second trial keeps all terrain, bridge topology and IDs; two guards move north',()=>{
- const m=MAPS[3],before=originalMap();
+ const m=approvedStage,before=originalMap();
  assert.deepEqual(m.tiles,before.tiles);
  assert.deepEqual(m.goal,before.goal);
  assert.deepEqual(m.camp,before.camp);
@@ -29,9 +34,9 @@ test('map04 second trial keeps all terrain, bridge topology and IDs; two guards 
 test('map04 staggered defenders turn opening concentration into readable river fighting',()=>{
  const prior=originalMap();
  const original=play(3,'advance',{},34,[],prior).result;
- const next=play(3,'advance',{},34).result;
- const careful=play(3,'cautious',{},34).result;
- const fast=play(3,'fast',{},34).result;
+ const next=play(3,'advance',{},34,[],approvedStage).result;
+ const careful=play(3,'cautious',{},34,[],approvedStage).result;
+ const fast=play(3,'fast',{},34,[],approvedStage).result;
  assert.equal(original.tactical.firstTurnEnemyAttacks,3);
  assert.equal(next.tactical.firstTurnEnemyAttacks,0,'player must be able to deploy before all guards collide');
  assert.equal(original.status,'timeout');

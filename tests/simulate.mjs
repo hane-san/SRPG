@@ -30,6 +30,9 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
    if(!sortie&&policy==='garrison'&&mapId===1&&garrison.includes(u.id)){command(u,'wait');continue;}
    if(policy==='hold'&&!sortie){command(u,'wait');continue;}
    let goal=s.map.goal;
+   // Issue #66: compare the same roster/score on a deliberately chosen map04
+   // crossing. Both rivers must actually be crossed on that side.
+   if(mapId===3&&['west','central','east'].includes(policy)&&u.y>=12)goal={x:{west:2,central:6,east:9}[policy],y:u.y>=25?24:11};
    if(mapId===0&&['west','central'].includes(policy)&&u.y>=10)goal={x:policy==='west'?3:6,y:9};
    if(policy==='detour'&&s.turn===2&&!sortie)goal={x:1,y:s.map.camp.y};
    if(policy==='base'&&u.type==='shield')goal=s.map.base||s.map.camp;
@@ -46,6 +49,7 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
    if(mapId===0&&['west','central'].includes(policy)&&u.y>=10)pos=pos.filter(p=>E.routeTo(s,u,p).every(c=>![10,11].includes(c.y)||(policy==='west'?c.x<=3:[5,6].includes(c.x))));
    // Heavy rain: units already on the board hold still, so P3 specialists stay armed.
    if(policy==='rain'&&!sortie&&E.weatherAt(s)==='heavy')pos=pos.filter(p=>E.dist(p,u)===0);
+   if(mapId===3&&['west','central','east'].includes(policy))pos=pos.filter(p=>E.routeTo(s,u,p).every(c=>![12,13,25,26].includes(c.y)||({west:c.x<=3,central:c.x>=5&&c.x<=7,east:c.x>=9})[policy]));
    const choices=[];
    const healType=['healer','medic'].includes(u.type),goalDistance=p=>field.get(E.key(p))??999;
    for(const p of pos){const moved=E.dist(p,u)>0;let r=risk(p,u),dangerPenalty=r*(policy==='cautious'?1.1:policy==='fast'?.35:.65)+(r>=u.hp?30:0);const imminent=s.warnings.some(w=>w.kind==='cannon'&&w.turn===s.turn&&w.cells.some(c=>E.dist(c,p)===0));if(imminent)dangerPenalty+=12;
@@ -67,5 +71,5 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
  const result={map:mapId+1,policy,healing:s.settings.healing,status:s.status==='playing'?'timeout':s.status,turn:s.turn,alive:E.alive(s,'ally').length,southTaken:s.southTaken,reachedEast,firstCombatTurn,combatTurns:combatTurns.size,hits,heals,movementSteps,...s.metrics};
  result.tactical=telemetry.summary(s);return {s,result,trace:telemetry.turns};
 }
-if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===0?['pause','fast']:[]),...(id===1?['east','south','garrison']:[]),...(id===2?['fast','east']:[]),...([1,5].includes(id)?['base','offense']:[]),...(id===4?['fast','rain','east']:[]),...(id===5?['fast','south','line']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
+if(process.argv[1]?.endsWith('simulate.mjs')){const results=[];for(const id of [0,1,2,3,4,5])for(const policy of ['advance','cautious','hold',...(id===0?['pause','fast']:[]),...(id===1?['east','south','garrison']:[]),...(id===2?['fast','east']:[]),...(id===3?['fast','west','central','east']:[]),...([1,5].includes(id)?['base','offense']:[]),...(id===4?['fast','rain','east']:[]),...(id===5?['fast','south','line']:[])]){const {result}=play(id,policy);results.push(result);console.log(JSON.stringify(result));}if(process.argv.includes('--save'))writeFileSync(`docs/simulation-results-${RELEASE}.json`,JSON.stringify(results,null,2)+'\n');}
 
