@@ -25,6 +25,13 @@ The human producer wants ideas thrown in at lunch to be playable on GitHub Pages
 - **Scenario and direction documents**: story/world direction lives in `docs/DIRECTION.md` (created by the first PR that needs it). Direction PRs may be docs-only; the afternoon run merges them and implements only the parts the human adopted. Unadopted brainstorms stay marked 「提案」.
 - SRPG specifics during this phase: HP6 rules, the P1→P4 order, determinism and save compatibility (`save.js`) stay binding. Run `npm run simulate` when rules, numbers or maps change and record the result. A change to the save format needs a migration test in the same PR.
 
+## Compact base classes (owner adoption 2026-10-24, Issue #68)
+
+- Keep only seven playable *base* professions: sword=軽装兵, shield=重装兵, spear=槍兵, bow=弓兵, horse=騎兵, mage=魔術師, shooter=砲兵; bandit=賊 is enemy-only, **not a rename of light infantry**. Internal IDs sword/shield/bow/horse/mage/shooter stay for saves.
+- Collapse legacy healer/medic types into mage while retaining all nine slots, two cavalry and **three P3 healer slots**. Teo (a8) stays a mage after the collapse; do not assign a spear to the existing roster until a follow-up balancing decision. Legacy saves must preserve healer supplies and battle progress.
+- Preserve current six maps, enemy IDs/positions/types/AI, existing numeric balance, HP6, sortie/cap/P1-P4, P3 static heal/artillery, progress and save key. Only spear's +1 deterministic damage vs horse is the first small combat experiment. Do **not** opportunistically add bandit mobs or rebalance maps here.
+- **Balance is carried forward now and reevaluated later.** An early Teo-to-spear trial broke multiple historical map outcome tests, so the roster change was reverted; spear anti-cavalry exists as a unit-tested rule only, not an active campaign unit. Full specification: [docs/base-classes-68.md](docs/base-classes-68.md).
+
 ## Shared AI development contract
 - Scope work to this repository and the approved issue. The human producer decides game specifications, playtest acceptance and integration into main.
 - Read [docs/DESIGN.md](docs/DESIGN.md), [docs/DECISIONS.md](docs/DECISIONS.md) and the issue before editing. Distinguish approved, proposed, deferred, superseded and unverified items. Do not invent missing chat context; surface contradictions between approved specs, code and tests.

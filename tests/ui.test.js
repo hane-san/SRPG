@@ -42,3 +42,27 @@ test('destination hold starts at the last legal tile, cancels stale timers and f
  hold.enter('5,13');hold.reset();await new Promise(r=>setTimeout(r,25));
  assert.deepEqual(fired,['5,14'],'cancelled pointer must never arm later');
 });
+
+test('v0.8 legacy healer and medic saves migrate into the compact classes without losing progress',()=>{
+ const store=memory(),s=createGame(5),mina=s.units.find(u=>u.id==='a5'),teo=s.units.find(u=>u.id==='a8'),aux=s.units.find(u=>u.id==='aux-medic');
+ Object.assign(mina,{type:'healer',label:'祈祷隊',glyph:'祈',range:[1,1],hp:3,acted:true,command:'heal'});
+ Object.assign(teo,{type:'medic',label:'救護隊',glyph:'癒',hp:4,charges:1,maxCharges:2,skill:'heal',command:'heal',acted:true});
+ Object.assign(aux,{type:'medic',label:'救護隊',glyph:'癒',hp:5});
+ s.metrics.commands=2;
+ writeSave(store,'0.8.0',s,true);const read=readSave(store,'0.8.0',MAPS);
+ assert(read?.campaign);
+ const restored=read.state;
+ const m=restored.units.find(u=>u.id==='a5'),t=restored.units.find(u=>u.id==='a8'),h=restored.units.find(u=>u.id==='aux-medic');
+ assert.equal(m.type,'mage');assert.equal(m.label,'魔術師');assert.equal(m.hp,3);
+ assert.equal(m.acted,true);assert.equal(m.command,'heal');
+ assert.deepEqual(m.range,[1,1]);
+ assert.equal(t.type,'mage');assert.equal(t.label,'魔術師');assert.equal(t.hp,4);
+ assert.equal(t.charges,1);assert.equal(t.maxCharges,2);assert.equal(t.command,'heal');
+ assert.equal(t.acted,true);assert.equal(t.name,'テオ');
+ assert.equal(h.type,'mage');assert.equal(h.name,'衛生隊');assert.equal(h.hp,5);
+ assert.equal(restored.metrics.commands,2);assert.equal(restored.units.length,s.units.length);
+});
+test('enemy-only bandit cannot appear as a forged allied save unit',()=>{
+ const store=memory(),s=createGame(),u=s.units.find(u=>u.id==='a2');u.type='bandit';u.label='賊';u.glyph='賊';
+ writeSave(store,'0.8.0',s,false);assert.equal(readSave(store,'0.8.0',MAPS),null);
+});
