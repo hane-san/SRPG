@@ -130,6 +130,7 @@ export const ROSTER=[
 ];
 // Rank changes are common to named and replacement soldiers; only named can carry a branch.
 export function unit(spec,team,options={}){
+ if(spec.type==='bandit'&&team!=='enemy')throw Error('賊は敵専用兵種です');
  const rank=spec.rank||'lower',named=spec.named??(team==='ally'&&ROSTER.some(r=>r.id===spec.id)),c=CLASSES[spec.type];
  const promoted=rank==='advanced',specialty=named&&promoted&&PROMOTIONS[spec.specialty]?spec.specialty:null;
  const baseAtk=c.atk+(promoted&&!['bow','shooter'].includes(spec.type)?1:0);
