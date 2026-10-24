@@ -21,7 +21,7 @@ function makeMap(id){
    // any old passable cell, so in-progress v0.8 positions remain legal.
    patch(g,2,10,2,2,'+');path(g,3,4,17);g[10][3]=g[11][3]='+';
    for(let x=3;x<=6;x++)g[4][x]='=';
-   enemies=[enemy('e1','sword',4,12,'hold'),enemy('e2','bow',7,8,'hold'),enemy('e3','shield',3,6,'hold'),enemy('e4','sword',6,5,'hold'),enemy('e5','mage',9,3,'hold'),enemy('boss','shield',6,1,'hold')];
+   enemies=[enemy('e1','bandit',4,12,'hold'),enemy('e2','bow',7,8,'hold'),enemy('e3','shield',3,6,'hold'),enemy('e4','sword',6,5,'hold'),enemy('e5','mage',9,3,'hold'),enemy('boss','shield',6,1,'hold')];
  } else if(id===1){
    base={x:7,y:16};south={x:7,y:28};
    patch(g,9,3,2,24,'#');for(const y of [7,16,24])patch(g,9,y,2,2,'=');
@@ -85,7 +85,7 @@ function extraMap(id){
  const formations={
   3:[['shield',6,29,'advance'],['bow',6,27,'defend'],['sword',2,28,'defend'],['horse',9,27,'advance'],['shield',6,19,'defend'],['mage',5,18,'defend'],['bow',2,19,'defend'],['horse',9,18,'defend'],['sword',6,7,'advance'],['mage',9,6,'defend'],['bow',2,6,'defend'],['shield',6,4,'defend']],
   4:[['sword',5,26,'advance'],['bow',5,24,'defend'],['shield',10,26,'defend'],['horse',12,24,'defend'],['shield',5,17,'defend'],['mage',4,16,'defend'],['bow',11,17,'defend'],['sword',12,15,'defend'],['shield',5,7,'defend'],['bow',4,5,'defend'],['mage',11,6,'defend'],['horse',12,4,'defend']],
-  5:[['shield',7,32,'defend'],['mage',6,31,'defend'],['sword',2,33,'advance'],['bow',11,32,'defend'],['shield',7,24,'defend'],['bow',6,23,'defend'],['horse',2,23,'defend'],['mage',11,22,'defend'],['sword',7,10,'advance'],['shield',2,9,'defend'],['mage',11,8,'defend'],['horse',7,6,'defend']]
+  5:[['shield',7,32,'defend'],['mage',6,31,'defend'],['spear',2,33,'advance'],['bow',11,32,'defend'],['shield',7,24,'defend'],['bow',6,23,'defend'],['horse',2,23,'defend'],['mage',11,22,'defend'],['sword',7,10,'advance'],['shield',2,9,'defend'],['mage',11,8,'defend'],['horse',7,6,'defend']]
  };
  const enemies=formations[id].map(([type,x,y,ai],i)=>{g[y][x]='=';return enemy(`extra-${id}-${Math.floor(i/4)}-${i%4}`,type,x,y,ai);});
  // Keep terrain stamped at its original formation cells; move only enemy specs.
@@ -112,12 +112,12 @@ function extraMap(id){
  // garrison unit holds the castle tile, so skipping the captain still costs one fight.
  enemies.push(...castleGarrison(enemies,goal));
  // More troops without introducing a new class, resource or campaign roster.
- const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'mage',range:[1,1]}]:[])];
+ const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:id===3?'spear':'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'mage',range:[1,1]}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
   '縦40マスの河川戦。二本の川を各三つの渡しで越え、北城へ。中央は3マス幅で岸も広く、部隊を並べて攻められます。西と東は2マス幅。最初の中央の盾・南岸の弓・東の騎兵は定位置を守るため、正面から崩すか、別の渡しへ迂回するかを選びましょう。北の守備隊は近づくと動きます。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
   '森と岩壁に隔てられた縦36マスの回廊。岩壁の切れ目のうち中央と北は森の門（移動コスト2）。晴れなら隣の回廊へ回り込めるが、雨で移動力が落ちると門で足が止まり、大雨では軽装兵以外の歩兵（重装・槍・弓・砲兵・魔術師）は森に入れない。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。晴れのうちに次の守備線まで進み、大雨は止まって砲兵・魔術師のP3で支え、晴れたら押し返す。北の守備隊は森の門の前、守将は城門前に控え、城の上には弓兵1隊が残る。味方11隊・敵14隊。砲撃・増援なし。',
-  '縦44マスの三段の長期戦。①南の河：北岸の盾・剣・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前、城の上には弓兵1隊。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵16隊。'
+  '縦44マスの三段の長期戦。①南の河：北岸の盾・槍・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前、城の上には弓兵1隊。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵16隊。'
  ][id-3];
  return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,camp:{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
 }
