@@ -19,7 +19,7 @@ const passable=t=>Number.isFinite(TERRAINS[t].cost);
 test('06 keeps size, castles, rules and IDs; only opens fords and adds the south castle post',()=>{
  const m=MAPS[5],old=previous();
  assert.deepEqual([m.w,m.h,m.goal,m.camp,m.cannon,m.maxWaves],[14,44,{x:7,y:1},{x:7,y:37},{x:7,y:2},2]);
- assert.deepEqual(m.enemies.filter(e=>e.id!=='castle-guard').map(e=>[e.id,e.type]),old.enemies.map(e=>[e.id,e.type]));
+ assert.deepEqual(m.enemies.filter(e=>e.id!=='castle-guard').map(e=>[e.id,e.type]),old.enemies.map(e=>[e.id,e.id==='extra-5-0-2'?'spear':e.type]),'exactly one southern guard becomes a spear; every other role remains pinned');
  assert.equal(old.enemies.length,15);assert.equal(m.enemies.length,16,'15 old enemies + the castle garrison');assert.equal(m.extraAllies.length,4);
  for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++){
   if(passable(old.tiles[y][x]))assert(passable(m.tiles[y][x]),`${x},${y} must stay passable`);
