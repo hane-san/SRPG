@@ -112,7 +112,7 @@ function extraMap(id){
  // garrison unit holds the castle tile, so skipping the captain still costs one fight.
  enemies.push(...castleGarrison(enemies,goal));
  // More troops without introducing a new class, resource or campaign roster.
- const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'mage',range:[1,1]}]:[])];
+ const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:id===3?'spear':'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'mage',range:[1,1]}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
   '縦40マスの河川戦。二本の川を各三つの渡しで越え、北城へ。中央は3マス幅で岸も広く、部隊を並べて攻められます。西と東は2マス幅。最初の中央の盾・南岸の弓・東の騎兵は定位置を守るため、正面から崩すか、別の渡しへ迂回するかを選びましょう。北の守備隊は近づくと動きます。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',

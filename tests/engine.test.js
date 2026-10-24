@@ -195,7 +195,7 @@ test('exactly seven allied base classes plus enemy-only bandit; named IDs and al
   assert.equal(allies.length,9+(map.extraAllies?.length||0));
   assert(allies.every(u=>playable.includes(u.type)));
   assert(!allies.some(u=>u.type==='bandit'));
-  assert(state.units.filter(u=>u.team==='enemy').every(u=>u.id==='e1'&&map.id===0?u.type==='bandit'&&u.atk===1:u.atk>=2&&u.atk<=3),'only the first tutorial bandit may deal 1 base damage');
+  assert(state.units.filter(u=>u.team==='enemy').every(u=>u.type==='bandit'?(map.id===0&&u.id==='e1'&&u.atk===1):(u.atk>=2&&u.atk<=3)),'only the tutorial e1 bandit has lowered base attack');
  }
  const s=E.createGame(),teo=s.units.find(u=>u.id==='a8');
  assert.equal(teo.type,'mage');assert.equal(teo.name,'テオ');
@@ -218,4 +218,18 @@ test('enemy-only bandit is not a light infantry alias and remains weak against a
  assert.equal(E.damage(s,rogue,light),1);assert.equal(E.damage(s,rogue,heavy),1);
  assert.equal(E.damage(s,light,rogue),2);
  assert.throws(()=>unit({id:'forged',type:'bandit',x:2,y:2},'ally'),/敵専用/);
+});
+
+test('04 advanced reserve spearman deters cavalry but loses two points of old heavy mitigation',()=>{
+ const s=E.createGame(3),spear=s.units.find(u=>u.id==='aux-shield');
+ const rider=E.alive(s,'enemy').find(u=>u.type==='horse');
+ assert(spear&&rider);
+ assert.equal(spear.name,'後衛槍隊');assert.equal(spear.type,'spear');
+ assert.equal(spear.rank,'advanced');assert.equal(spear.atk,3);assert.equal(spear.def,0);
+ assert.equal(E.damage(s,spear,rider),4,'advanced attack 3 and anti-cavalry +1');
+ const before=unit({id:'prior-heavy',type:'shield',rank:'advanced',x:spear.x,y:spear.y},'ally');
+ assert.equal(before.atk,3);assert.equal(before.def,2);
+ assert.equal(E.damage(s,rider,spear),2);
+ assert.equal(E.damage(s,rider,before),1);
+ assert.equal(E.reserves(s).length,11,'the pilot does not inflate the map04 roster');
 });

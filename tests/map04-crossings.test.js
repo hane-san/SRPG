@@ -6,7 +6,15 @@ import * as E from '../engine.js';
 import {readSave,writeSave} from '../save.js';
 import {play} from './simulate.mjs';
 const before=JSON.parse(readFileSync(new URL('./fixtures/map04-before-66.json',import.meta.url))).map;
-const after=JSON.parse(readFileSync(new URL('./fixtures/map04-current-66.json',import.meta.url))).map;
+const after=JSON.parse(readFileSync(new URL('./fixtures/map04-after-72.json',import.meta.url))).map;
+const lastApproved=JSON.parse(readFileSync(new URL('./fixtures/map04-current-66.json',import.meta.url))).map;
+test('04 class pilot changes only the named auxiliary shield slot to a spear',()=>{
+ const old=lastApproved.extraAllies[1],now=after.extraAllies[1];
+ assert.deepEqual(old,{id:'aux-shield',name:'後衛槍隊',type:'shield'});
+ assert.deepEqual(now,{id:'aux-shield',name:'後衛槍隊',type:'spear'});
+ const normalized=structuredClone(after);normalized.extraAllies[1].type='shield';
+ assert.deepEqual(normalized,lastApproved,'all other map04 terrain, enemies, events, counts and briefings remain byte-for-byte equivalent');
+});
 
 test('04 changes exactly sixteen water cells, six bank cells, three AI tags and one horse position',()=>{
  assert.deepEqual(MAPS[3],after,'pin the complete new map, including briefing');
@@ -20,6 +28,7 @@ test('04 changes exactly sixteen water cells, six bank cells, three AI tags and 
  for(const i of [0,1,3]){assert.equal(current.enemies[i].ai,'hold');current.enemies[i].ai=before.enemies[i].ai;}
  assert.deepEqual([current.enemies[3].x,current.enemies[3].y],[9,21]);current.enemies[3].y=before.enemies[3].y;
  current.tiles=before.tiles;current.briefing=before.briefing;
+ current.extraAllies=structuredClone(before.extraAllies); // #72 pilot checked separately above
  assert.deepEqual(current,before,'all other map rules and entity data are identical');
  for(let y=0;y<before.h;y++)for(let x=0;x<before.w;x++)if(Number.isFinite(E.terrain({map:before},{x,y}).cost))assert.ok(Number.isFinite(E.terrain({map:after},{x,y}).cost),'old passable '+x+','+y);
 });
