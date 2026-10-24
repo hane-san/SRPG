@@ -198,10 +198,10 @@ test('exactly seven allied base classes plus enemy-only bandit; named IDs and al
   assert(state.units.filter(u=>u.team==='enemy').every(u=>u.atk>=2&&u.atk<=3),'map enemy power is unchanged');
  }
  const s=E.createGame(),teo=s.units.find(u=>u.id==='a8');
- assert.equal(teo.type,'spear');assert.equal(teo.name,'テオ');
+ assert.equal(teo.type,'mage');assert.equal(teo.name,'テオ');
  assert.equal(s.units.find(u=>u.id==='a5').type,'mage');
  const replacement=E.createGame(2,{},['a8']).units.find(u=>u.id==='general-a8');
- assert.equal(replacement.type,'spear');assert(!replacement.named);
+ assert.equal(replacement.type,'mage');assert(!replacement.named);
 });
 test('spear is a plain P1/P2 unit and gains exactly one deterministic damage against cavalry',()=>{
  const s=fixture(),spear=add(s,'spear',4,4),horse=add(s,'horse',4,5,'enemy','horse'),foot=add(s,'sword',5,4,'enemy','foot');
