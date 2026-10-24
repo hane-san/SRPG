@@ -56,8 +56,8 @@ test('v0.8 legacy healer and medic saves migrate into the compact classes withou
  assert.equal(m.type,'mage');assert.equal(m.label,'魔術師');assert.equal(m.hp,3);
  assert.equal(m.acted,true);assert.equal(m.command,'heal');
  assert.deepEqual(m.range,[1,2]);
- assert.equal(t.type,'spear');assert.equal(t.label,'槍兵');assert.equal(t.hp,4);
- assert.equal(t.charges,0);assert.equal(t.maxCharges,0);assert.equal(t.command,null);
+ assert.equal(t.type,'mage');assert.equal(t.label,'魔術師');assert.equal(t.hp,4);
+ assert.equal(t.charges,1);assert.equal(t.maxCharges,2);assert.equal(t.command,'heal');
  assert.equal(t.acted,true);assert.equal(t.name,'テオ');
  assert.equal(h.type,'mage');assert.equal(h.name,'衛生隊');assert.equal(h.hp,5);
  assert.equal(restored.metrics.commands,2);assert.equal(restored.units.length,s.units.length);
