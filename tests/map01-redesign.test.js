@@ -7,7 +7,16 @@ import {TERRAINS} from '../config.js';
 import {readSave,writeSave} from '../save.js';
 import {play} from './simulate.mjs';
 const previous=JSON.parse(readFileSync(new URL('./fixtures/map01-before-38.json',import.meta.url))).map;
-const expected=JSON.parse(readFileSync(new URL('./fixtures/map01-current-38.json',import.meta.url))).map;
+const expected=JSON.parse(readFileSync(new URL('./fixtures/map01-after-72.json',import.meta.url))).map;
+const beforeBandit=JSON.parse(readFileSync(new URL('./fixtures/map01-current-38.json',import.meta.url))).map;
+test('01 keeps every old route, guard and event; only the first patrol becomes a bandit',()=>{
+ const e=expected.enemies.find(u=>u.id==='e1');
+ assert.deepEqual(e,{id:'e1',name:'賊',type:'bandit',x:4,y:12,ai:'hold'});
+ const normalized=structuredClone(expected);Object.assign(normalized.enemies.find(u=>u.id==='e1'),{name:'斥候',type:'sword'});
+ assert.deepEqual(normalized,beforeBandit,'outside of this one deliberate patrol, map01 matches the previously approved stage');
+ const s=E.createGame(0),rogue=E.alive(s,'enemy').find(u=>u.id==='e1');
+ assert.equal(rogue.atk,1);assert.equal(rogue.maxHp,6);
+});
 
 test('map01 snapshot preserves all old passable coordinates and keeps both campaign anchors',()=>{
  assert.deepEqual(MAPS[0],expected);assert.equal(MAPS[0].w,previous.w);assert.equal(MAPS[0].h,previous.h);
