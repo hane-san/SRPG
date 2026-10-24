@@ -55,7 +55,7 @@ test('v0.8 legacy healer and medic saves migrate into the compact classes withou
  const m=restored.units.find(u=>u.id==='a5'),t=restored.units.find(u=>u.id==='a8'),h=restored.units.find(u=>u.id==='aux-medic');
  assert.equal(m.type,'mage');assert.equal(m.label,'魔術師');assert.equal(m.hp,3);
  assert.equal(m.acted,true);assert.equal(m.command,'heal');
- assert.deepEqual(m.range,[1,2]);
+ assert.deepEqual(m.range,[1,1]);
  assert.equal(t.type,'mage');assert.equal(t.label,'魔術師');assert.equal(t.hp,4);
  assert.equal(t.charges,1);assert.equal(t.maxCharges,2);assert.equal(t.command,'heal');
  assert.equal(t.acted,true);assert.equal(t.name,'テオ');
