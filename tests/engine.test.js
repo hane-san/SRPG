@@ -195,7 +195,7 @@ test('exactly seven allied base classes plus enemy-only bandit; named IDs and al
   assert.equal(allies.length,9+(map.extraAllies?.length||0));
   assert(allies.every(u=>playable.includes(u.type)));
   assert(!allies.some(u=>u.type==='bandit'));
-  assert(state.units.filter(u=>u.team==='enemy').every(u=>u.atk>=2&&u.atk<=3),'map enemy power is unchanged');
+  assert(state.units.filter(u=>u.team==='enemy').every(u=>u.id==='e1'&&map.id===0?u.type==='bandit'&&u.atk===1:u.atk>=2&&u.atk<=3),'only the first tutorial bandit may deal 1 base damage');
  }
  const s=E.createGame(),teo=s.units.find(u=>u.id==='a8');
  assert.equal(teo.type,'mage');assert.equal(teo.name,'テオ');
