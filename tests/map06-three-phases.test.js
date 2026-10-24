@@ -12,7 +12,7 @@ const historical=JSON.parse(readFileSync(new URL('./fixtures/issue17-enemies-bef
 const OLD=[[7,32,'defend'],[6,31,'defend'],[2,33,'advance'],[11,32,'defend'],[7,24,'defend'],[6,23,'defend'],[2,23,'defend'],[11,22,'defend'],[7,10,'advance'],[2,9,'defend'],[11,8,'defend'],[7,6,'defend'],[7,1,'hold']];
 const previous=()=>{
  const m=structuredClone(MAPS[5]);m.enemies=m.enemies.filter(e=>e.id!=='castle-guard');m.tiles=[...historical];m.south=null;m.spawns=[{x:2,y:20},{x:11,y:9}];
- m.enemies=m.enemies.map((e,i)=>OLD[i]?{...e,x:OLD[i][0],y:OLD[i][1],ai:OLD[i][2]}:e);return m;
+ m.enemies=m.enemies.map((e,i)=>OLD[i]?{...e,x:OLD[i][0],y:OLD[i][1],ai:OLD[i][2],...(e.id==='extra-5-0-2'?{type:'sword',name:'斥候'}:{})}:e);return m;
 };
 const passable=t=>Number.isFinite(TERRAINS[t].cost);
 
