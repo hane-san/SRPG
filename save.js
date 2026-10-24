@@ -37,7 +37,10 @@ export function readSave(storage,release,maps){
    const cls=CLASSES[u.type];
    if(u.skill!==cls.skill){u.skill=cls.skill;u.command=null;}
    // Saved localized names and old healer range data are not class definitions.
-   u.label=cls.label;u.glyph=cls.glyph;u.range=[...cls.range];
+   u.label=cls.label;u.glyph=cls.glyph;
+   // Prior dedicated healers had range 1; keep that trait in old campaigns.
+   const legacyMedic=['a5','a8','general-a5','general-a8','aux-medic'].includes(u.id);
+   u.range=legacyMedic&&u.team==='ally'?[1,1]:[...cls.range];
    if(u.team==='ally'&&cls.skill==='none'){u.charges=0;u.maxCharges=0;u.command=null;}
   }
   // Issue #43: saves from before the war record start with an empty one.
