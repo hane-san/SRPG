@@ -106,7 +106,7 @@ export function routeTo(s,u,dest){
  return path.reverse();
 }
 export const supportRange=u=>u.range;
-const mageFamily=u=>['mage','healer','medic'].includes(u.type);
+const mageFamily=u=>u.type==='mage';
 // Enemy casters retain existing P2 AI for this first ally-side P3 playtest.
 export const canNormalAttack=u=>u.team!=='ally'||(!mageFamily(u)&&u.type!=='shooter');
 export function waitCommand(u,dest=u){
@@ -115,8 +115,9 @@ export function waitCommand(u,dest=u){
 }
 export function damage(s,a,b,bonus=0){
  const distance=dist(a,b),power=a.type==='shooter'&&distance>=3?1:a.atk;
+ const cavalryBonus=a.type==='spear'&&b.type==='horse'?1:0;
  const stance=b.specialty==='guard'&&b.command?1:0;
- return Math.max(1,power+bonus-(b.def||0)-stance-(b.guard||0));
+ return Math.max(1,power+bonus+cavalryBonus-(b.def||0)-stance-(b.guard||0));
 }
 export function prediction(s,u,target,position=u,bonus=0){const a={...u,...position};const dealt=damage(s,a,target,bonus);return {damage:dealt,counter:dealt>=target.hp||target.command==='support'||target.command==='heal'||!canNormalAttack(target)||!inRange(target,a)?0:damage(s,target,a,target.specialty==='counter'?1:0)};}
 export function threatAt(s,p,u){return alive(s,'enemy').filter(e=>reachable(s,e,e.ai==='hold'?0:movement(s,e),{threat:true}).some(n=>inRange({...e,...n},p))).reduce((sum,e)=>sum+damage(s,e,{...u,...p}),0);}
