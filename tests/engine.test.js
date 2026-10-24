@@ -217,4 +217,5 @@ test('enemy-only bandit is not a light infantry alias and remains weak against a
  assert.equal(rogue.atk,1);assert.equal(light.atk,2);
  assert.equal(E.damage(s,rogue,light),1);assert.equal(E.damage(s,rogue,heavy),1);
  assert.equal(E.damage(s,light,rogue),2);
+ assert.throws(()=>unit({id:'forged',type:'bandit',x:2,y:2},'ally'),/敵専用/);
 });
