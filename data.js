@@ -126,7 +126,7 @@ export const ROSTER=[
  {id:'a1',name:'リオ',type:'shield'}, {id:'a2',name:'セナ',type:'sword'},
  {id:'a3',name:'エル',type:'bow'}, {id:'a4',name:'ノア',type:'mage'},
  {id:'a5',name:'ミナ',type:'mage'}, {id:'a6',name:'ルカ',type:'horse'},
- {id:'a7',name:'フィン',type:'horse'}, {id:'a8',name:'テオ',type:'spear'}, {id:'a9',name:'ニコ',type:'shooter'},
+ {id:'a7',name:'フィン',type:'horse'}, {id:'a8',name:'テオ',type:'mage'}, {id:'a9',name:'ニコ',type:'shooter'},
 ];
 // Rank changes are common to named and replacement soldiers; only named can carry a branch.
 export function unit(spec,team,options={}){
