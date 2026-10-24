@@ -4,6 +4,11 @@ import {RELEASE} from '../config.js';
 import {writeFileSync} from 'node:fs';
 import {unit} from '../data.js';
 import {createTacticalObserver} from './tactical-observer.mjs';
+// The class names are now unified, but pinned *historical policy* comparisons
+// must still treat the existing named healer slots as their former roles.
+// This affects only test-agent choices, not any unit's game rules.
+const oldPolicyClass=u=>u.type==='mage'&&['a5','general-a5'].includes(u.id)?'healer':u.type==='mage'&&['a8','general-a8','aux-medic'].includes(u.id)?'medic':u.type;
+const oldPolicyHealer=u=>['healer','medic'].includes(oldPolicyClass(u));
 export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialMap=null){const s=E.createGame(mapId,opts,lost);
  if(initialMap){s.map=structuredClone(initialMap);s.units=[...s.units.filter(u=>u.team==='ally'),...s.map.enemies.map(e=>unit(e,'enemy',s.settings))];}
  const telemetry=createTacticalObserver(s);let reachedEast=false,firstCombatTurn=null,hits=0,heals=0,movementSteps=0;const combatTurns=new Set(),garrison=s.map.base?E.alive(s,'ally').filter(u=>E.dist(u,s.map.base)===0||u.skill==='heal'&&E.dist(u,s.map.base)===1).map(u=>u.id):[];
@@ -16,13 +21,13 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
   // Fighters first, healers after movement to recover them. Bow before melee where possible.
   // Issue #29: everyone starts in the castle reserve. Sortie candidates are planned
   // from the castle and committed through deployAndAct, exactly like the UI.
-  const bench=E.reserves(s).filter(u=>policy!=='basic'||E.canNormalAttack(u));if(policy==='fast')bench.sort((a,b)=>['horse','sword','bow','shield','mage','healer','medic','shooter'].indexOf(a.type)-['horse','sword','bow','shield','mage','healer','medic','shooter'].indexOf(b.type)||a.id.localeCompare(b.id));
+  const bench=E.reserves(s).filter(u=>policy!=='basic'||E.canNormalAttack(u));if(policy==='fast')bench.sort((a,b)=>['horse','sword','bow','shield','mage','healer','medic','shooter'].indexOf(oldPolicyClass(a))-['horse','sword','bow','shield','mage','healer','medic','shooter'].indexOf(oldPolicyClass(b))||a.id.localeCompare(b.id));
   // Issue #63: a front line with artillery/medics early (shield, sword, shooter, mage first).
-  if(policy==='line')bench.sort((a,b)=>['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(a.type)-['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(b.type)||a.id.localeCompare(b.id));
+  if(policy==='line')bench.sort((a,b)=>['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(oldPolicyClass(a))-['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(oldPolicyClass(b))||a.id.localeCompare(b.id));
   // Issue #61: weather-reading map05 trial — front line and support units first.
-  if(policy==='rain')bench.sort((a,b)=>['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(a.type)-['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(b.type)||a.id.localeCompare(b.id));
+  if(policy==='rain')bench.sort((a,b)=>['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(oldPolicyClass(a))-['shield','sword','shooter','mage','horse','bow','healer','medic'].indexOf(oldPolicyClass(b))||a.id.localeCompare(b.id));
   const sortied=[];for(const r of bench.slice(0,Math.max(0,E.deploymentLimit(s)-s.deployedThisTurn)))if(E.canDeploy(s)&&E.sortieUnit(s,r.id))sortied.push(r.id);
-  const allies=[...E.alive(s,'ally'),...sortied.map(id=>s.units.find(u=>u.id===id))].sort((a,b)=>Number(['healer','medic'].includes(a.type))-Number(['healer','medic'].includes(b.type))||Number(b.type==='bow')-Number(a.type==='bow')||a.id.localeCompare(b.id));
+  const allies=[...E.alive(s,'ally'),...sortied.map(id=>s.units.find(u=>u.id===id))].sort((a,b)=>Number(oldPolicyHealer(a))-Number(oldPolicyHealer(b))||Number(b.type==='bow')-Number(a.type==='bow')||a.id.localeCompare(b.id));
   for(const unit of allies){if(!unit.alive||s.status!=='playing')continue;
    const sortie=unit.deployed===false;if(sortie&&!E.canDeploy(s))continue;const u=sortie?E.sortieUnit(s,unit.id):unit;
    const command=(p,a,t)=>{const r=sortie?E.deployAndAct(s,u.id,p,a,t,observe):E.act(s,u.id,p,a,t,observe);if(r.ok)telemetry.command(a);return r;};
@@ -38,20 +43,20 @@ export function play(mapId,policy='advance',opts={},maxTurns=35,lost=[],initialM
    if(policy==='base'&&u.type==='shield')goal=s.map.base||s.map.camp;
    if(policy==='east'&&mapId===1&&['horse','sword'].includes(u.type)&&u.y>3)goal={x:13,y:Math.max(2,u.y-5)};
    // Map 03 east-bridge rush: every non-medical unit takes the eastern road and bridge, then turns to the castle.
-   if(policy==='east'&&mapId===2&&!['healer','medic'].includes(u.type)&&u.y>3)goal={x:10,y:Math.max(2,u.y-5)};
-   if(policy==='east'&&mapId===4&&u.y>3&&!['healer','medic'].includes(u.type))goal={x:11,y:Math.max(2,u.y-5)};
+   if(policy==='east'&&mapId===2&&!oldPolicyHealer(u)&&u.y>3)goal={x:10,y:Math.max(2,u.y-5)};
+   if(policy==='east'&&mapId===4&&u.y>3&&!oldPolicyHealer(u))goal={x:11,y:Math.max(2,u.y-5)};
    if(policy==='south'&&[1,5].includes(mapId)&&s.map.south&&!s.southTaken)goal=s.map.south;
-   if(policy!=='offense'&&mapId===1&&['shield','bow','healer','medic'].includes(u.type)){
+   if(policy!=='offense'&&mapId===1&&(['shield','bow'].includes(u.type)||oldPolicyHealer(u))){
     const attackers=E.alive(s,'enemy').filter(e=>e.y>17);if(attackers.length)goal=s.map.base;
    }
-   if(['healer','medic'].includes(u.type)){const wounded=E.alive(s,'ally').filter(a=>a.id!==u.id).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);goal=wounded[0]||goal;if(wounded.every(a=>a.hp===a.maxHp))goal=E.alive(s,'ally').filter(a=>!['healer','medic'].includes(a.type)).sort((a,b)=>a.y-b.y)[0]||goal;}
+   if(oldPolicyHealer(u)){const wounded=E.alive(s,'ally').filter(a=>a.id!==u.id).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp);goal=wounded[0]||goal;if(wounded.every(a=>a.hp===a.maxHp))goal=E.alive(s,'ally').filter(a=>!oldPolicyHealer(a)).sort((a,b)=>a.y-b.y)[0]||goal;}
    const field=E.distanceField(s,goal,u.team);let pos=E.reachable(s,u);
    if(mapId===0&&['west','central'].includes(policy)&&u.y>=10)pos=pos.filter(p=>E.routeTo(s,u,p).every(c=>![10,11].includes(c.y)||(policy==='west'?c.x<=3:[5,6].includes(c.x))));
    // Heavy rain: units already on the board hold still, so P3 specialists stay armed.
    if(policy==='rain'&&!sortie&&E.weatherAt(s)==='heavy')pos=pos.filter(p=>E.dist(p,u)===0);
    if(mapId===3&&['west','central','east'].includes(policy))pos=pos.filter(p=>E.routeTo(s,u,p).every(c=>![12,13,25,26].includes(c.y)||({west:c.x<=3,central:c.x>=5&&c.x<=7,east:c.x>=9})[policy]));
    const choices=[];
-   const healType=['healer','medic'].includes(u.type),goalDistance=p=>field.get(E.key(p))??999;
+   const healType=oldPolicyHealer(u),goalDistance=p=>field.get(E.key(p))??999;
    for(const p of pos){const moved=E.dist(p,u)>0;let r=risk(p,u),dangerPenalty=r*(policy==='cautious'?1.1:policy==='fast'?.35:.65)+(r>=u.hp?30:0);const imminent=s.warnings.some(w=>w.kind==='cannon'&&w.turn===s.turn&&w.cells.some(c=>E.dist(c,p)===0));if(imminent)dangerPenalty+=12;
     let score=-goalDistance(p)*1.5-dangerPenalty+(E.terrain(s,p)?.def||0);
     if(goalDistance(p)===0&&!healType)score+=5;
