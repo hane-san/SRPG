@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../engine.js';
 import {unit,MAPS,ROSTER} from '../data.js';
-import {RULES} from '../config.js';
+import {RULES,CLASSES} from '../config.js';
 import {attackTargets,tacticalRanges,slideDraft} from '../ui-model.js';
 function fixture(){const s=E.createGame();s.map.tiles=Array(20).fill('.'.repeat(12));s.map.spawns=[];s.map.base=null;s.map.goal={x:11,y:0};s.map.camp={x:2,y:17};s.units=[];return s;}
 const add=(s,type,x,y,team='ally',id=type,rank='lower')=>{const u=unit({id,name:id,type,x,y,rank},team);s.units.push(u);return u;};
@@ -114,7 +114,7 @@ test('stationary castle sortie still emits a deployment event before a hit',()=>
 });
 
 test('normal foot, bow, horse cannot arm P3; specialist P1 attacks are rejected without mutation',()=>{
- const s=fixture(),ordinary=['sword','shield','bow','horse'],special=['mage','healer','medic','shooter'];
+ const s=fixture(),ordinary=['sword','shield','spear','bow','horse'],special=['mage','shooter'];
  ordinary.forEach((type,i)=>{const u=add(s,type,1+i*2,10,'ally',type);assert.equal(u.charges,0);assert.equal(E.waitCommand(u),null);});
  const foe=add(s,'sword',6,6,'enemy','foe');
  for(const type of special){
@@ -127,7 +127,7 @@ test('normal foot, bow, horse cannot arm P3; specialist P1 attacks are rejected 
  E.prepareEnemy(s);E.supportPhase(s);assert.equal(foe.hp,6);
 });
 test('stationary mage-family healers and shooter arm P3, moving cancels the ability',()=>{
- for(const type of ['mage','healer','medic','shooter']){
+ for(const type of ['mage','shooter']){
   const s=fixture(),u=add(s,type,3,5),t=type==='shooter'?add(s,'sword',3,3,'enemy','target'):add(s,'shield',4,5,'ally','target');
   if(type!=='shooter')t.hp=2;
   assert.equal(E.waitCommand(u),type==='shooter'?'support':'heal');
@@ -138,7 +138,7 @@ test('stationary mage-family healers and shooter arm P3, moving cancels the abil
  }
 });
 test('P3 specialists do not counter even without a prepared stance or with zero charges',()=>{
- for(const type of ['shooter','mage','healer','medic']){
+ for(const type of ['shooter','mage']){
   const s=fixture(),u=add(s,type,3,5),foe=add(s,'sword',3,4,'enemy','foe');foe.ai='hold';u.charges=0;
   assert(cmd(s,u,'wait').ok);E.prepareEnemy(s);E.enemyPhase(s);
   assert.equal(u.hp,4);assert.equal(foe.hp,6);
@@ -152,7 +152,7 @@ test('no targets, no ammo and no second activation do not produce support',()=>{
 });
 
 test('UI attack targeting and overlays never advertise specialist P1 attacks',()=>{
- for(const type of ['shooter','mage','healer','medic']){
+ for(const type of ['shooter','mage']){
   const s=fixture(),u=add(s,type,3,5),foe=add(s,'sword',3,3,'enemy');
   assert.equal(attackTargets(s,u).length,0);
   assert.equal(tacticalRanges(s,u).attacks.size,0);
@@ -184,4 +184,37 @@ test('P3 specialists moving out of castle do not arm a P3 stance',()=>{
  const dest=E.reachable(s,origin).find(p=>E.dist(p,origin)===1);
  assert(E.deployAndAct(s,u.id,dest,'wait').ok);
  assert.equal(s.units.find(a=>a.id===u.id).command,null);
+});
+
+test('exactly seven allied base classes plus enemy-only bandit; named IDs and all maps preserved',()=>{
+ const playable=['sword','shield','spear','bow','horse','mage','shooter'];
+ const all=Object.keys(CLASSES);
+ assert.deepEqual([...all].sort(),[...playable,'bandit'].sort());
+ for(const map of MAPS){
+  const state=E.createGame(map.id),allies=state.units.filter(u=>u.team==='ally');
+  assert.equal(allies.length,9+(map.extraAllies?.length||0));
+  assert(allies.every(u=>playable.includes(u.type)));
+  assert(!allies.some(u=>u.type==='bandit'));
+  assert(state.units.filter(u=>u.team==='enemy').every(u=>u.atk>=2&&u.atk<=3),'map enemy power is unchanged');
+ }
+ const s=E.createGame(),teo=s.units.find(u=>u.id==='a8');
+ assert.equal(teo.type,'spear');assert.equal(teo.name,'テオ');
+ assert.equal(s.units.find(u=>u.id==='a5').type,'mage');
+ const replacement=E.createGame(2,{},['a8']).units.find(u=>u.id==='general-a8');
+ assert.equal(replacement.type,'spear');assert(!replacement.named);
+});
+test('spear is a plain P1/P2 unit and gains exactly one deterministic damage against cavalry',()=>{
+ const s=fixture(),spear=add(s,'spear',4,4),horse=add(s,'horse',4,5,'enemy','horse'),foot=add(s,'sword',5,4,'enemy','foot');
+ assert.equal(spear.atk,2);assert.equal(spear.def,0);assert.equal(spear.move,4);
+ assert.equal(E.damage(s,spear,horse),3);assert.equal(E.damage(s,spear,foot),2);
+ assert.equal(E.prediction(s,spear,horse).damage,3);
+ assert.equal(E.damage(s,horse,spear),2);
+ assert.equal(E.waitCommand(spear),null);
+ assert.equal(E.damage(s,add(s,'spear',8,8,'enemy','enemy-spear'),add(s,'horse',8,9,'ally','ally-horse')),3);
+});
+test('enemy-only bandit is not a light infantry alias and remains weak against armor',()=>{
+ const s=fixture(),rogue=add(s,'bandit',5,5,'enemy'),light=add(s,'sword',5,6),heavy=add(s,'shield',6,5);
+ assert.equal(rogue.atk,1);assert.equal(light.atk,2);
+ assert.equal(E.damage(s,rogue,light),1);assert.equal(E.damage(s,rogue,heavy),1);
+ assert.equal(E.damage(s,light,rogue),2);
 });
