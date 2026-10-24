@@ -19,12 +19,7 @@ test('01 keeps every old route, guard and event; only the first patrol becomes a
 });
 
 test('map01 snapshot preserves all old passable coordinates and keeps both campaign anchors',()=>{
- const current=structuredClone(MAPS[0]);
- const first=current.enemies.find(u=>u.id==='e1');
- assert.deepEqual([first.type,first.name,first.x,first.y,first.ai],['bandit','賊',4,12,'hold']);
- Object.assign(first,{type:'sword',name:'斥候'}); // Exact historical fixture remains immutable.
- assert.deepEqual(current,expected,'only the approved e1 profession/name may differ from the pinned map');
- assert.equal(MAPS[0].w,previous.w);assert.equal(MAPS[0].h,previous.h);
+ assert.deepEqual(MAPS[0],expected);assert.equal(MAPS[0].w,previous.w);assert.equal(MAPS[0].h,previous.h);
  assert.deepEqual(MAPS[0].goal,previous.goal);assert.deepEqual(MAPS[0].camp,previous.camp);
  for(let y=0;y<previous.h;y++)for(let x=0;x<previous.w;x++)if(Number.isFinite(TERRAINS[previous.tiles[y][x]].cost))assert(Number.isFinite(TERRAINS[MAPS[0].tiles[y][x]].cost),`old occupied coordinate ${x},${y}`);
  assert.deepEqual(MAPS[0].enemies.map(u=>u.id),previous.enemies.map(u=>u.id));
