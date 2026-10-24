@@ -21,7 +21,7 @@ export function readSave(storage,release,maps){
   // Preserve character identity and battle progress; only normalize the profession.
   for(const u of s.units){
    if(u?.type==='healer'||u?.type==='medic'){
-    u.type=u.team==='ally'&&['a8','general-a8'].includes(u.id)?'spear':'mage';
+    u.type='mage';
    }
   }
   const ids=new Set();for(const u of s.units){if(!u||!Object.hasOwn(CLASSES,u.type)||(u.type==='bandit'&&u.team!=='enemy')||!Object.hasOwn(SKILLS,u.skill)||typeof u.name!=='string'||typeof u.glyph!=='string'||typeof u.label!=='string'||typeof u.alive!=='boolean'||typeof u.id!=='string'||ids.has(u.id)||!['ally','enemy'].includes(u.team)||!Number.isInteger(u.x)||!Number.isInteger(u.y)||u.x<0||u.y<0||u.x>=m.w||u.y>=m.h||![u.hp,u.maxHp,u.atk,u.def,u.move,u.charges,u.maxCharges??u.charges].every(Number.isFinite)||u.hp<0||u.hp>u.maxHp||u.charges<0||!Array.isArray(u.range)||u.range.length!==2||!u.range.every(Number.isInteger)||u.range[0]<1||u.range[1]<u.range[0])return null;ids.add(u.id);}
