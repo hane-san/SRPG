@@ -1,4 +1,4 @@
-import {CLASSES,SKILLS,RULES} from './config.js?v=0.8.0-p3-26';
+import {CLASSES,SKILLS,RULES} from './config.js?v=0.8.0-p3-26-classes68';
 import {sanitizeChronicle} from './chronicle.js?v=0.8.0-war43';
 // Storage is optional. Reject partial turns and malformed/old saves before rendering.
 export const STORAGE='field-command-save-v1';
