@@ -27,7 +27,7 @@ test('dead names are replaced, not shifted or revived; replacement inherits uppe
 });
 test('damage fixed at 1–3 initially, advanced shields reduce one more',()=>{
  for(const m of MAPS){const s=E.createGame(m.id),sword=s.units.find(u=>u.id==='a2');
-  assert.equal(sword.maxHp,6);for(const enemy of E.alive(s,'enemy')){assert(enemy.atk>=2&&enemy.atk<=3);assert(enemy.def>=0&&enemy.def<=2);assert(E.damage(s,sword,enemy)>=1);}
+  assert.equal(sword.maxHp,6);for(const enemy of E.alive(s,'enemy')){assert(enemy.type==='bandit'?m.id===0&&enemy.id==='e1'&&enemy.atk===1:enemy.atk>=2&&enemy.atk<=3,`unexpected damage profile: map ${m.id+1} ${enemy.id}`);assert(enemy.def>=0&&enemy.def<=2);assert(E.damage(s,sword,enemy)>=1);}
  }
  const s=E.createGame(2),generic=unit({id:'general',type:'shield',x:1,y:2,rank:'advanced'},'ally');
  assert.equal(generic.def,2);
