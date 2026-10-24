@@ -3,7 +3,7 @@ const row = (w,h) => Array.from({length:h},()=>Array(w).fill('.'));
 function path(g,x,y0,y1,t='='){for(let y=y0;y<=y1;y++)g[y][x]=t;}
 function patch(g,x,y,w,h,t){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)g[j][i]=t;}
 // The first stronger captains teach attack 3; optional maps introduce elite 4.
-export const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵'}[type],type,x,y,ai,...(id==='boss'?{name:'守将',rank:'advanced'}:{})});
+export const enemy=(id,type,x,y,ai='advance')=>({id,name:{shield:'鉄衛',sword:'斥候',bow:'敵弓隊',mage:'灰術師',horse:'襲撃騎兵',spear:'槍兵',bandit:'賊'}[type],type,x,y,ai,...(id==='boss'?{name:'守将',rank:'advanced'}:{})});
 // Owner rule (PR #62/#64, extended 2026-10-23): when the captain does not stand on the
 // north castle, one ordinary bow unit holds it, so skipping the captain still costs a fight.
 export function castleGarrison(enemies,goal){
@@ -112,11 +112,11 @@ function extraMap(id){
  // garrison unit holds the castle tile, so skipping the captain still costs one fight.
  enemies.push(...castleGarrison(enemies,goal));
  // More troops without introducing a new class, resource or campaign roster.
- const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'medic'}]:[])];
+ const extraAllies=[{id:'aux-bow',name:'遊撃弓隊',type:'bow'},{id:'aux-shield',name:'後衛槍隊',type:'shield'},...(id===5?[{id:'aux-horse',name:'増派騎兵',type:'horse'},{id:'aux-medic',name:'衛生隊',type:'mage'}]:[])];
  const title=['04 長河の三橋','05 森壁の回廊','06 暁の城塞線'][id-3];
  const briefing=[
   '縦40マスの河川戦。二本の川を各三つの渡しで越え、北城へ。中央は3マス幅で岸も広く、部隊を並べて攻められます。西と東は2マス幅。最初の中央の盾・南岸の弓・東の騎兵は定位置を守るため、正面から崩すか、別の渡しへ迂回するかを選びましょう。北の守備隊は近づくと動きます。途中の砦で前衛を交代する道もあります。味方11隊・敵13隊。砲撃・増援なし。',
-  '森と岩壁に隔てられた縦36マスの回廊。岩壁の切れ目のうち中央と北は森の門（移動コスト2）。晴れなら隣の回廊へ回り込めるが、雨で移動力が落ちると門で足が止まり、大雨では剣士隊以外の歩兵（盾・弓・砲兵・魔道・救護）は森に入れない。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。晴れのうちに次の守備線まで進み、大雨は止まって砲兵・魔術師のP3で支え、晴れたら押し返す。北の守備隊は森の門の前、守将は城門前に控え、城の上には弓兵1隊が残る。味方11隊・敵14隊。砲撃・増援なし。',
+  '森と岩壁に隔てられた縦36マスの回廊。岩壁の切れ目のうち中央と北は森の門（移動コスト2）。晴れなら隣の回廊へ回り込めるが、雨で移動力が落ちると門で足が止まり、大雨では軽装兵以外の歩兵（重装・槍・弓・砲兵・魔術師）は森に入れない。晴・晴・小雨・大雨・小雨の周期。P4で翌ターンへ切替。小雨は歩兵−2/騎兵−3、大雨は−3/−4（最低1、敵味方共通）。晴れのうちに次の守備線まで進み、大雨は止まって砲兵・魔術師のP3で支え、晴れたら押し返す。北の守備隊は森の門の前、守将は城門前に控え、城の上には弓兵1隊が残る。味方11隊・敵14隊。砲撃・増援なし。',
   '縦44マスの三段の長期戦。①南の河：北岸の盾・剣・弓が渡しを守る（中央の渡しは3マス幅）。②中央：西の南城の旗にT4・T8各2隊の増援が前ターン予告で現れ、到着直後は攻撃しない。南城を先に制圧すれば以後の増援は止まるが、北城への道からは外れる。③北の河と北城：守備隊と二つの塔、守将は城門前、城の上には弓兵1隊。砲撃はT2予告・T3着弾、以後3ターンごとに最も後方の味方を狙う。味方13隊・敵16隊。'
  ][id-3];
  return {id,w,h,tiles:g.map(r=>r.join('')),goal,base,camp:{x:positions(id)[0][0],y:positions(id)[0][1]},south,spawns,cannon,maxWaves:id===5?2:null,enemies,extraAllies,title,weatherCycle:id===4?['clear','clear','light','heavy','light']:null,subtitle:`追加戦場 / ${w} × ${h} / 味方${9+extraAllies.length}・敵${enemies.length}${id===4?' / 周期的な雨':''}`,briefing};
@@ -125,8 +125,8 @@ export const MAPS=[... [0,1,2].map(makeMap),... [3,4,5].map(extraMap)];
 export const ROSTER=[
  {id:'a1',name:'リオ',type:'shield'}, {id:'a2',name:'セナ',type:'sword'},
  {id:'a3',name:'エル',type:'bow'}, {id:'a4',name:'ノア',type:'mage'},
- {id:'a5',name:'ミナ',type:'healer'}, {id:'a6',name:'ルカ',type:'horse'},
- {id:'a7',name:'フィン',type:'horse'}, {id:'a8',name:'テオ',type:'medic'}, {id:'a9',name:'ニコ',type:'shooter'},
+ {id:'a5',name:'ミナ',type:'mage'}, {id:'a6',name:'ルカ',type:'horse'},
+ {id:'a7',name:'フィン',type:'horse'}, {id:'a8',name:'テオ',type:'spear'}, {id:'a9',name:'ニコ',type:'shooter'},
 ];
 // Rank changes are common to named and replacement soldiers; only named can carry a branch.
 export function unit(spec,team,options={}){
