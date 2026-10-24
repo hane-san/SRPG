@@ -2,7 +2,7 @@ import {riskCue,hasAnnouncedCannon,combatCue,thumbSide,buildThreatIndex,indexedT
 import {hudSignals,routeIntent} from './ui-hud.js?v=0.8.0-hud50';
 import {openGemDemo} from './gem-demo.js?v=0.8.0-gems28';
 import {appendChapter,chronicleLines} from './chronicle.js?v=0.8.0-war43';
-import {RELEASE,SKILLS,PROMOTIONS,RULES} from './config.js?v=0.8.0-p3-26-sortie29';
+import {RELEASE,SKILLS,PROMOTIONS,RULES,CLASS_ROLES} from './config.js?v=0.8.0-p3-26-sortie29-classes68';
 import {MAPS} from './data.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m04cross66-m05rain61-garrison23';
 import * as E from './engine.js?v=0.8.0-issue17-p3-26-sortie29-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m04cross66-m05rain61-garrison23';
 import {render,mini} from './render.js?v=0.8.0-position22-p3-26-sortie29-issue24-gems28-flick35-fx39-weapon48-map38-m02-war43-m02gate57-m04bridge58-m03guard59-m06phase63-m04cross66-m05rain61-garrison23';
@@ -109,7 +109,7 @@ function placeOrders(){
 }
 function cancelDraft(){const u=selected();if(u)view.cursor={x:u.x,y:u.y};sound.play('cancel');resetSelection();refresh();}
 function unitDetails(u){const ai={hold:'このマスを守り動かない',defend:'初期位置の周囲3マスまで守備',advance:'接近し射程内へ攻撃',skirmish:'西側の部隊を追う。東道は追わない',raid:'空いた本陣へ突入。回復・弓も狙う'},risk=view.dest&&u.team==='ally'?E.threatAt(s,view.dest,u):null;
- modal(`<h2>${escapeHTML(u.name)} · ${escapeHTML(u.label)}</h2><p>HP ${u.hp}/${u.maxHp}　攻撃 ${u.atk}　軽減 ${u.def}${u.specialty?`　固有：${PROMOTIONS[u.specialty].label}`:''}<br>移動 ${E.movement(s,u)}（基礎${u.move}）　射程 ${u.team==='ally'&&u.skill==='heal'?'P3回復：隣接1':u.range.join('–')}${u.team==='ally'&&u.skill==='support'?` / P3砲撃 ${E.supportRange(u).join('–')}`:''}</p>${u.team==='ally'?`<p>${SKILLS[u.skill].label}${u.skill==='none'?'':`：待機弾薬 ${u.charges}/${u.maxCharges}`}<br>${SKILLS[u.skill].text}</p><p>${u.type==='bow'?'弓の射程は2で隣接不可。<br>':''}仮の移動先のP2被害上限：${risk}。各敵の単独到達を合算した安全側の値で、敵同士の進路競合やP3の効果を省いています。</p>`:`<p>敵方針：${ai[u.ai]||'方針なし'}。</p>`}<div id="unitDetailControls"></div>`);
+ modal(`<h2>${escapeHTML(u.name)} · ${escapeHTML(u.label)}</h2><p>HP ${u.hp}/${u.maxHp}　攻撃 ${u.atk}　軽減 ${u.def}${u.specialty?`　固有：${PROMOTIONS[u.specialty].label}`:''}<br>移動 ${E.movement(s,u)}（基礎${u.move}）　射程 ${u.team==='ally'&&u.skill==='heal'?'P3回復：隣接1':u.range.join('–')}${u.team==='ally'&&u.skill==='support'?` / P3砲撃 ${E.supportRange(u).join('–')}`:''}</p>${u.team==='ally'?`<p>${escapeHTML(CLASS_ROLES[u.type]||'')}<br>${SKILLS[u.skill].label}${u.skill==='none'?'':`：待機弾薬 ${u.charges}/${u.maxCharges}`}<br>${SKILLS[u.skill].text}</p><p>${u.type==='bow'?'弓の射程は2で隣接不可。<br>':u.type==='spear'?'対騎兵にダメージ+1（予測・反撃も同じ）。<br>':''}仮の移動先のP2被害上限：${risk}。各敵の単独到達を合算した安全側の値で、敵同士の進路競合やP3の効果を省いています。</p>`:`<p>敵方針：${ai[u.ai]||'方針なし'}。</p>`}<div id="unitDetailControls"></div>`);
  if(u.team==='ally'&&!view.sortie&&['heal','support'].includes(u.skill))supportControls($('unitDetailControls'),u);
 }
 function panel(){
